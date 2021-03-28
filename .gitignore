@@ -1,0 +1,6 @@
+*.sh
+*.o
+*.img
+bin/
+build/
+obj/
