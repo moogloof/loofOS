@@ -2,7 +2,8 @@
 .global _start
 _start:
 	// Setup stack
-	ldr sp, =_start
+	ldr r5, =_start
+	mov sp, r5
 
 	// Call kernel
 	bl kernel_main
