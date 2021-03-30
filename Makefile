@@ -24,7 +24,7 @@ $(BUILD_DIR)/arm/kernel.img: $(ARM_OBJS)
 # Build C files
 $(OBJ_DIR)/%.c.o: %.c
 	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c -o $@ $< -I$(ARCH_DIR)/arm # TODO: This is bad, please fix
+	$(CC) $(CFLAGS) -c -o $@ $< -Iinclude
 
 # Build assembly files
 $(OBJ_DIR)/%.s.o: %.s
