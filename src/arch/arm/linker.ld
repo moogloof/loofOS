@@ -1,26 +1,30 @@
+OUTPUT_FORMAT(elf32-littlearm)
 ENTRY(_start)
 
 SECTIONS {
-	. = 0x8000;
-	__text_start = .;
-	.text : {
+	. = 0x00008000;
+
+	.text : ALIGN(0x1000) {
+		KEEP(*(.text.boot))
 		*(.text)
 	}
-	. = ALIGN(4096);
-	__text_end = .;
 
-	__data_start = .;
-	.data : {
+	.data : ALIGN(0x1000) {
 		*(.data)
 	}
-	. = ALIGN(4096);
-	__data_end = .;
 
-	__bss_start = .;
-	.bss : {
+	.rodata : ALIGN(0x1000) {
+		*(.rodata)
+	}
+
+	.bss : ALIGN(0x1000) {
+		_sbss = .;
+		*(COMMON)
 		*(.bss)
 	}
-	. = ALIGN(4096);
-	__bss_end = .;
-	__end = .;
+	_ebss = .;
+
+	STACK_BASE = .;
+	. += 0x10000;
+	STACK_TOP = .;
 }
