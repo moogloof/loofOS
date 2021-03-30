@@ -1,6 +1,7 @@
 CC=gcc
 AS=as
-CFLAGS=-Wall -O2 -ffreestanding -nostdlib
+CFLAGS=-Wall -O2 -ffreestanding -nostdlib -nostartfiles
+ASFLAGS=-Iinclude
 BUILD_DIR=build
 OBJ_DIR=obj
 SRC_DIR=src
@@ -29,7 +30,7 @@ $(OBJ_DIR)/%.c.o: %.c
 # Build assembly files
 $(OBJ_DIR)/%.s.o: %.s
 	mkdir -p $(dir $@)
-	$(AS) -o $@ $<
+	$(AS) -o $@ $< $(ASFLAGS)
 
 .PHONY: clean
 clean:
