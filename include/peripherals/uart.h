@@ -1,9 +1,11 @@
 #ifndef _P_UART_H
 #define _P_UART_H
 
+#include <peripherals/base.h>
+
 // UART registers
 // Base UART address
-#define UART_BASE 0x7e201000
+#define UART_BASE (P_BASE + 0x201000)
 
 // Data register
 #define UART_DR (UART_BASE)
