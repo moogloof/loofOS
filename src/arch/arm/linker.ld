@@ -2,7 +2,7 @@ OUTPUT_FORMAT(elf32-littlearm)
 ENTRY(_start)
 
 SECTIONS {
-	. = 0x00008000;
+	. = 0x8000;
 
 	.text : ALIGN(0x1000) {
 		KEEP(*(.text.boot))
