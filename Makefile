@@ -15,10 +15,10 @@ ARM_OBJS=$(ARM_SRCS:%=$(OBJ_DIR)/%.o)
 all:
 	@echo "Specify an arch:\n- arm"
 
-arm: $(BUILD_DIR)/arm/kernel.img
+arm: $(BUILD_DIR)/arm/kernel7.img
 
 # Build kernel image
-$(BUILD_DIR)/arm/kernel.img: $(ARM_OBJS)
+$(BUILD_DIR)/arm/kernel7.img: $(ARM_OBJS)
 	mkdir -p $(dir $@)
 	ld -o $@ $^ -T $(ARCH_DIR)/arm/linker.ld
 
