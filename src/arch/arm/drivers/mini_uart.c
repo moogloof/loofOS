@@ -12,8 +12,8 @@ void mini_uart_init() {
 	selector &= ~(7 << 12);
 	selector &= ~(7 << 15);
 	// Set function select to alt5
-	selector |= ~(2 << 12);
-	selector |= ~(2 << 15);
+	selector |= 2 << 12;
+	selector |= 2 << 15;
 	// Update select register
 	put32(GPFSEL1, selector);
 
