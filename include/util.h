@@ -9,5 +9,7 @@ extern uint32_t get32(uint32_t);
 extern void put32(uint32_t, uint32_t);
 // delay function
 extern void delay(uint32_t);
+// get_mode function
+extern uint8_t get_mode();
 
 #endif

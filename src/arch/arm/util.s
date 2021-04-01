@@ -16,3 +16,10 @@ delay:
 	subs r0, r0, #1
 	bne delay
 	bx lr
+
+.global get_mode
+get_mode:
+	// Get EL of process
+	mrs r0, cpsr
+	and r0, #0x1f
+	bx lr
