@@ -25,7 +25,7 @@ $(BUILD_DIR)/arm/kernel7.img: $(ARM_OBJS)
 # Build C files
 $(OBJ_DIR)/%.c.o: %.c
 	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c -o $@ $< -Iinclude
+	$(CC) $(CFLAGS) -c -o $@ $< -Iinclude -I$(ARCH_DIR)/arm
 
 # Build assembly files
 $(OBJ_DIR)/%.s.o: %.s
