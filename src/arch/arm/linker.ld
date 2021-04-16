@@ -2,6 +2,10 @@ OUTPUT_FORMAT(elf32-littlearm)
 ENTRY(_start)
 
 SECTIONS {
+	.vectors : {
+		*(.vectors)
+	}
+
 	. = 0x8000;
 
 	.text : ALIGN(0x1000) {
