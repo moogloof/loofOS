@@ -15,6 +15,8 @@ qemu-system-aarch64 -M raspi2 -kernel PATH/TO/KERNEL
 (Will expand in the future)
 - Stupid Bootloader (DONE)
 - Processes
+- Scheduler
+- Paging
 - Drivers
 	- Serial Output (DONE)
 	- Keyboard
