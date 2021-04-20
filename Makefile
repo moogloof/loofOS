@@ -6,6 +6,11 @@ BUILD_DIR=build
 OBJ_DIR=obj
 SRC_DIR=src
 ARCH_DIR=$(SRC_DIR)/arch
+LIBC_DIR=$(SRC_DIR)/libc
+
+# Standard library specific build info
+LIBC_SRCS=$(shell find $(LIBC_DIR) -name *.c -or -name *.s)
+LIBC_OBJS=$(LIBC_SRCS:%=$(OBJ_DIR)/%.o)
 
 # Arch specific build info
 ARM_SRCS=$(shell find $(ARCH_DIR)/arm -name *.c -or -name *.s)
@@ -18,7 +23,7 @@ all:
 arm: $(BUILD_DIR)/arm/kernel7.img
 
 # Build kernel image
-$(BUILD_DIR)/arm/kernel7.img: $(ARM_OBJS)
+$(BUILD_DIR)/arm/kernel7.img: $(ARM_OBJS) $(LIBC_OBJS)
 	mkdir -p $(dir $@)
 	ld -o $@ $^ -T $(ARCH_DIR)/arm/linker.ld
 
