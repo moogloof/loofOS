@@ -21,6 +21,7 @@ void irq_init() {
 
 // IRQ handler
 void _irq_handler() {
+	print(&uart_sendstr, "Some IRQ.\r\n");
 	// Get pending IRQs
 	uint64_t irqs = ((uint64_t)get32(IRQ_PENDING2) << 32) | get32(IRQ_PENDING1);
 
@@ -28,7 +29,7 @@ void _irq_handler() {
 
 	// Handle IRQs
 	switch (irqs) {
-		case 1: // Timer 1 irq
+		case IRQ_TIMER1: // Timer 1 irq
 			irq_timer_handler();
 			break;
 		default: // Unknown irq
