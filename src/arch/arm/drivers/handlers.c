@@ -13,7 +13,3 @@ void _prefetch_abort_handler() {
 void _data_abort_handler() {
 	// TODO: Implement
 }
-
-void _irq_handler() {
-	// TODO: Implement
-}
