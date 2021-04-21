@@ -1,9 +1,15 @@
 // Include drivers
 #include <drivers/uart.h>
+#include <drivers/irq.h>
+#include <print.h>
 #include <util.h>
 
 // Main kernel func
 void kernel_main() {
+	// Setup IRQs
+	irq_enable();
+	irq_init();
+
 	// Setup uart
 	uart_init();
 
