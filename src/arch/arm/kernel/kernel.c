@@ -13,7 +13,7 @@ void kernel_main() {
 	// Print Mode
 	print(&uart_sendstr, "Processor Mode: ");
 	printint(&uart_sendstr, el, 10, 16);
-	print("\n");
+	print(&uart_sendstr, "\r\n");
 
 	while (1) {
 		uart_sendc(uart_recv());
