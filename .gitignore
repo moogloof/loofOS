@@ -4,3 +4,4 @@
 bin/
 build/
 obj/
+.DS_Store
