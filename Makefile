@@ -1,7 +1,7 @@
 CC=gcc
 AS=as
-CFLAGS=-Wall -O2 -ffreestanding -nostdlib -nostartfiles
-ASFLAGS=-Iinclude
+CFLAGS=-Wall -O0 -ffreestanding -nostdlib -nostartfiles
+ASFLAGS=-Iinclude -O0
 BUILD_DIR=build
 OBJ_DIR=obj
 SRC_DIR=src
@@ -24,25 +24,23 @@ LIBC_OBJS=$(LIBC_SRCS:%=$(OBJ_DIR)/%.o)
 ARM_SRCS=$(shell find $(ARCH_DIR)/arm -name *.c -or -name *.s)
 ARM_OBJS=$(ARM_SRCS:%=$(OBJ_DIR)/%.o)
 
-# x86_64 specific build info
-x86_SRCS=$(shell find $(ARCH_DIR)/x86 -name *.c -or -name *.s)
-x86_OBJS=$(x86_SRCS:%=$(OBJ_DIR)/%.o)
-
 all:
 	@echo "Specify an arch:\n- arm\n- x86_64"
 
 arm: $(BUILD_DIR)/arm/kernel7.img
 
-x86_64: $(BUILD_DIR)/x86_64/kernel.img
+x86_64:
+	$(MAKE) -C $(ARCH_DIR)/x86
+
+x86_64_boot:
+	$(MAKE) -C $(ARCH_DIR)/x86 ../../../$(BUILD_DIR)/x86_64/boot
+x86_64_kernel:
+	$(MAKE) -C $(ARCH_DIR)/x86 ../../../$(BUILD_DIR)/x86_64/kernel
 
 # Build kernel image
 $(BUILD_DIR)/arm/kernel7.img: $(ARM_OBJS) $(LIBC_OBJS)
 	mkdir -p $(dir $@)
 	ld -o $@ $^ -T $(ARCH_DIR)/arm/linker.ld
-
-$(BUILD_DIR)/x86_64/kernel.img: $(x86_OBJS)
-	mkdir -p $(dir $@)
-	x86_64-elf-ld -o $@ $^ -T$(ARCH_DIR)/x86/linker.ld
 
 # Build C files
 $(OBJ_DIR)/%.c.o: %.c
