@@ -9,13 +9,6 @@ ARCH_DIR=$(SRC_DIR)/arch
 LIBC_DIR=$(SRC_DIR)/libc
 CUR_ARCH=arm
 
-# Set platform specific compilers and linkers
-ifeq ($(shell uname),Darwin)
-	CC=x86_64-elf-gcc
-	AS=x86_64-elf-as
-	CUR_ARCH=x86
-endif
-
 # Standard library specific build info
 LIBC_SRCS=$(shell find $(LIBC_DIR) -name *.c -or -name *.s)
 LIBC_OBJS=$(LIBC_SRCS:%=$(OBJ_DIR)/%.o)
