@@ -26,9 +26,11 @@ x86_64:
 	$(MAKE) -C $(ARCH_DIR)/x86
 
 x86_64_boot:
-	$(MAKE) -C $(ARCH_DIR)/x86 ../../../$(BUILD_DIR)/x86_64/boot
+	rm $(BUILD_DIR)/x86_64/boot
+	$(MAKE) -C $(ARCH_DIR)/x86
 x86_64_kernel:
-	$(MAKE) -C $(ARCH_DIR)/x86 ../../../$(BUILD_DIR)/x86_64/kernel
+	rm $(BUILD_DIR)/x86_64/kernel
+	$(MAKE) -C $(ARCH_DIR)/x86
 
 # Build kernel image
 $(BUILD_DIR)/arm/kernel7.img: $(ARM_OBJS) $(LIBC_OBJS)
