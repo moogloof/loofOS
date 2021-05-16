@@ -19,7 +19,7 @@ all: $(BUILD_DIR)/x86_64/loof.img
 
 $(BUILD_DIR)/x86_64/loof.img: $(BUILD_DIR)/x86_64/boot $(BUILD_DIR)/x86_64/kernel
 	dd seek=0 if=$(BUILD_DIR)/x86_64/boot of=$@
-	dd seek=1 if=$(BUILD_DIR)/x86_64/kernel of=$@
+	dd seek=3 if=$(BUILD_DIR)/x86_64/kernel of=$@
 
 $(BUILD_DIR)/x86_64/boot:
 	mkdir -p $(dir $@)

@@ -1,3 +1,4 @@
+; ----BOOT0----
 [bits 16]
 [org 0x7c00]
 
@@ -7,7 +8,7 @@ _start:
 	; Set CS
 	jmp 0:next
 next:
-	; Setup segment registers
+	; Setup segment registers for bootloader
 	mov ax, 0
 	mov ss, ax
 	mov ds, ax
@@ -21,10 +22,34 @@ next:
 	lea si, [hello]
 	call print_string
 
-	lea si, [load_msg]
+	; Loading stage 1 boot
+	; Reset drive
+	; The drive ID is already loaded at the DL register
+	; Resetting drive message
+	lea si, [reset_drive_msg]
 	call print_string
+	; Reset drive
+	mov ah, 0
+	int 0x13
 
-	jmp halt
+	; Load second stage bootloader
+	; Loading second bootloader message
+	lea si, [next_stage_msg]
+	call print_string
+	; Set ES:BS for loading
+	mov ax, 0x7e0
+	mov es, ax
+	mov bx, 0
+	; Load 2 sectors of next stage bootloader
+	mov ah, 0x2
+	mov al, 2
+	mov ch, 0
+	mov cl, 2
+	mov dh, 0
+	int 0x13
+
+	; Jump to second bootloader
+	jmp next_boot
 
 ; Halting
 halt:
@@ -61,7 +86,17 @@ print_string:
 
 ; Messages
 hello: db "LoofOS booting...", 0x0d, 0x0a, 0
-a20_msg: db "Enabling A20 line", 0x0d, 0x0a, 0
+reset_drive_msg: db "Resetting drive...", 0x0d, 0x0a, 0
+next_stage_msg: db "Loading next stage boot...", 0x0d, 0x0a, 0
 
 times 510-($-$$) db 0
 dw 0xaa55
+
+; ----BOOT1----
+next_boot:
+	; Success load message
+	lea si, [load_success_msg]
+	call print_string
+
+; Messages
+load_success_msg: db "Next stage boot successfully loaded.", 0x0d, 0x0a, 0
