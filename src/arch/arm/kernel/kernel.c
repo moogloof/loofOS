@@ -32,6 +32,8 @@ void kernel_main() {
 	printint(&uart_sendstr, el, 10, 16);
 	print(&uart_sendstr, "\r\n");
 
+	// TODO: Work on this later on. For now, work on the arm arch kernel is being halted as there is no support for some crucial hardware for the raspberry pi on qemu.
+
 	while (1) {
 	}
 }
