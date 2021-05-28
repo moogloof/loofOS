@@ -1,6 +1,6 @@
-CC=clang
+CC=x86_64-elf-gcc
 AS=nasm
-CFLAGS=-Wall -O0 -ffreestanding -nostdlib -I../../../include -Ix86 -nostartfiles
+CFLAGS=-Wall -O0 -ffreestanding -I../../../include -Ix86 -m32
 ASFLAGS=-I../../../include -O0 -f bin
 BUILD_DIR=../../../build
 OBJ_DIR=../../../obj
@@ -27,7 +27,8 @@ $(BUILD_DIR)/x86_64/boot:
 
 $(BUILD_DIR)/x86_64/kernel: $(x86_OBJS)
 	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -o $@ $^ -e _kernel_main -fuse-ld=lld -target x86_64-none-elf
+	x86_64-elf-ld -o $@ $^ -e _kernel_main -m elf_i386
+	x86_64-elf-objcopy -O binary $@ $@
 
 # Build C files
 $(OBJ_DIR)/%.c.o: %.c
