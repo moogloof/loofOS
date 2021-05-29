@@ -149,7 +149,22 @@ a20_fail:
 a20_success:
 	lea si, [a20_success_msg]
 	call print_string
-	jmp halt
+; Load the gdt
+load_gdt:
+	lea si, [gdt_load_msg]
+	call print_string
+	; Set linear address of gdt
+	mov eax, 0
+	mov ax, ds
+	shl eax, 4
+	add eax, gdt_start
+	mov [gdtr + 2], eax
+; Load the kernel at 0x100000
+load_kernel:
+	lea si, [kernel_load_msg]
+	call print_string
+
+	; TODO
 
 ; Test if A20 line is enabled
 a20_test:
@@ -208,3 +223,35 @@ load_success_msg: db "Next stage boot successfully loaded.", 0x0d, 0x0a, 0
 a20_disable_msg: db "Disabling A20 line...", 0x0d, 0x0a, 0
 a20_fail_msg: db "A20 line disabling failed.", 0x0d, 0x0a, 0
 a20_success_msg: db "A20 line disabled.", 0x0d, 0x0a, 0
+gdt_load_msg: db "Loading the GDT...", 0x0d, 0x0a, 0
+kernel_load_msg: db "Loading the kernel...", 0x0d, 0x0a, 0
+
+; GDTR
+gdtr:
+	dw gdt_end - gdt_start
+	dd 0
+
+; GDT
+; Flat memory model
+gdt_start:
+	; Null descriptor.
+	gdt_null:
+		dd 0
+		dd 0
+	; Code descriptor
+	gdt_code:
+		dw 0xffff
+		dw 0
+		db 0
+		db 1001_1010b
+		db 1100_1111b
+		db 0
+	; Data descriptor
+	gdt_data:
+		dw 0xffff
+		dw 0
+		db 0
+		db 1001_0010b
+		db 1100_1111b
+		db 0
+gdt_end:
