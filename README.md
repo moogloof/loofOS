@@ -1,6 +1,8 @@
 # loofOS
 A novice OS. I'm still learning OS theory and computer architecture. A complete OS for one architecture will probably take me 1-2 years.
 
+**NOTE:** Currently I have paused work on the ARM arch kernel, as qemu for some reason decided to leave out emulation for the timer. Without the timer, I will not be able to test out context switching, multitasking, nor will I be able to write the scheduler. So until I find a solution that doesn't involve overwriting the kernel of my only ARM system that I need for development, I will be dropping all work on that end.
+
 ### Building
 Just `make` at the root path of the repo to see what architectures are currently available. Then, do `make <arch>`. Also, the Makefile is incredibly scuffed, so basically you will need to compile on an `ARM` system in order to compile for `ARM` and you will need the LLVM and cross compile toolchain in order to compile for `x86`.
 
