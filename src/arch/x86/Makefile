@@ -27,7 +27,7 @@ $(BUILD_DIR)/x86_64/boot:
 
 $(BUILD_DIR)/x86_64/kernel: $(x86_OBJS)
 	mkdir -p $(dir $@)
-	x86_64-elf-ld -o $@ $^ -e _kernel_main -m elf_i386
+	x86_64-elf-ld -o $@ $^ -e _kernel_main -m elf_i386 -Ttext=0x100000
 	x86_64-elf-objcopy -O binary $@ $@
 
 # Build C files
