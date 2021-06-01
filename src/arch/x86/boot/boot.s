@@ -153,18 +153,90 @@ a20_success:
 load_gdt:
 	lea si, [gdt_load_msg]
 	call print_string
-	; Set linear address of gdt
-	mov eax, 0
-	mov ax, ds
-	shl eax, 4
-	add eax, gdt_start
-	mov [gdtr + 2], eax
+	cli
+	lgdt [gdtr]
+; Enter huge unreal mode
+; So that we can load the kernel above the 16 bit limit
+unreal_mode:
+	; Switch to pmode for cache
+	mov eax, cr0
+	or al, 1
+	mov cr0, eax
+	; Save DS segment register before
+	push ds
+	; Load the gdt data into segment register, which will save it to cache
+	mov bx, 0x10
+	mov ds, bx
+	; Swtich back to real mode, now in unreal mode
+	and al, 0xfe
+	mov cr0, eax
+	; Restore DS segment register
+	pop ds
+	; Enable interrupts
+	sti
 ; Load the kernel at 0x100000
 load_kernel:
 	lea si, [kernel_load_msg]
 	call print_string
 
-	; TODO
+	; Set ES:BS for loading at 0x9200 initially
+	mov ax, 0x920
+	mov es, ax
+	mov ebx, 0x0
+	; Load the kernel
+	mov ah, 0x2
+	mov al, [kernel_size]
+	mov ch, 0
+	mov cl, 4
+	mov dh, 0
+	int 0x13
+
+	; Relocate kernel to 0x100000
+	; Setup registers for copying bytes
+	shl ax, 9
+	mov bx, 0
+	mov ds, bx
+	mov es, bx
+	mov esi, 0x9200
+	mov edi, 0x100000
+	relocate_loop:
+		; Copy from 0x9200 to 0x100000
+		mov bl, byte [ds:esi]
+		mov byte [es:edi], bl
+		; Zero out after copying
+		mov byte [ds:esi], 0
+		; Increment addresses
+		inc esi
+		inc edi
+		; Decrement bytes needed and check if done
+		sub ax, 1
+		cmp ax, 0
+		jne relocate_loop
+; Enter protected mode and then kernel
+protected_mode:
+	; Disable interrupts
+	lea si, [interrupt_disable_msg]
+	call print_string
+	lea si, [pmode_enable_msg]
+	call print_string
+	lea si, [kernel_jump_msg]
+	call print_string
+	cli
+
+	; Setup for protected mode
+	; Update segment registers
+	mov ax, 0x10
+	mov ds, ax
+	mov es, ax
+	mov ss, ax
+
+	; Enable protected mode by setting protected mode enable bit
+	mov eax, cr0
+	or eax, 1
+	mov cr0, eax
+
+	; Jump to set CS
+	jmp 0x8:kernel_jmp
 
 ; Test if A20 line is enabled
 a20_test:
@@ -225,11 +297,16 @@ a20_fail_msg: db "A20 line disabling failed.", 0x0d, 0x0a, 0
 a20_success_msg: db "A20 line disabled.", 0x0d, 0x0a, 0
 gdt_load_msg: db "Loading the GDT...", 0x0d, 0x0a, 0
 kernel_load_msg: db "Loading the kernel...", 0x0d, 0x0a, 0
+interrupt_disable_msg: db "Disabling interrupts...", 0x0d, 0x0a, 0
+pmode_enable_msg: db "Enabling protected mode...", 0x0d, 0x0a, 0
+kernel_jump_msg: db "Jumping to the kernel...", 0x0d, 0x0a, 0
+; Size of the kernel to load
+kernel_size: db 1
 
 ; GDTR
 gdtr:
-	dw gdt_end - gdt_start
-	dd 0
+	dw gdt_end - gdt_start - 1
+	dd gdt_start
 
 ; GDT
 ; Flat memory model
@@ -255,3 +332,9 @@ gdt_start:
 		db 1100_1111b
 		db 0
 gdt_end:
+
+[bits 32]
+; Jump to the kernel
+kernel_jmp:
+	jmp 0x100000
+
