@@ -212,6 +212,11 @@ load_kernel:
 		sub ax, 1
 		cmp ax, 0
 		jne relocate_loop
+; Set the VGA 80x25 video text mode
+vga_mode_set:
+	mov ah, 0
+	mov al, 0x2
+	int 0x10
 ; Enter protected mode and then kernel
 protected_mode:
 	; Disable interrupts
@@ -223,20 +228,13 @@ protected_mode:
 	call print_string
 	cli
 
-	; Setup for protected mode
-	; Update segment registers
-	mov ax, 0x10
-	mov ds, ax
-	mov es, ax
-	mov ss, ax
-
 	; Enable protected mode by setting protected mode enable bit
 	mov eax, cr0
 	or eax, 1
 	mov cr0, eax
 
 	; Jump to set CS
-	jmp 0x8:kernel_jmp
+	jmp (gdt_code - gdt_start):kernel_jmp
 
 ; Test if A20 line is enabled
 a20_test:
@@ -301,7 +299,7 @@ interrupt_disable_msg: db "Disabling interrupts...", 0x0d, 0x0a, 0
 pmode_enable_msg: db "Enabling protected mode...", 0x0d, 0x0a, 0
 kernel_jump_msg: db "Jumping to the kernel...", 0x0d, 0x0a, 0
 ; Size of the kernel to load
-kernel_size: db 1
+kernel_size: db 2
 
 ; GDTR
 gdtr:
@@ -336,5 +334,12 @@ gdt_end:
 [bits 32]
 ; Jump to the kernel
 kernel_jmp:
+	; Setup for protected mode
+	; Update segment registers
+	mov ax, (gdt_data - gdt_start)
+	mov ds, ax
+	mov es, ax
+	mov ss, ax
+
 	jmp 0x100000
 
