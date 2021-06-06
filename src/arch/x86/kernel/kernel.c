@@ -1,6 +1,13 @@
-#include <stdint.h>
+#include <drivers/vga_text.h>
 
-void kernel_main() {
-	*((uint16_t*)0xb8000) = 0b1000111101001100;
+__attribute__((section(".text.kernel"))) void kernel_main() {
+	// Reset the vga and display stuff
+	reset_display();
+	display_string("Hello, world!", 0, 0);
+
+	set_color(0, 0xb);
+	display_string("Bello, borld!", 24, 20);
+
+	while (1) {
+	}
 }
-
