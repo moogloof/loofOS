@@ -1,6 +1,6 @@
 CC=x86_64-elf-gcc
 AS=nasm
-CFLAGS=-Wall -O0 -ffreestanding -I../../../include -Ix86 -m32
+CFLAGS=-Wall -O0 -ffreestanding -I../../../include -I./ -m32 -nostdlib
 ASFLAGS=-I../../../include -O0 -f bin
 BUILD_DIR=../../../build
 OBJ_DIR=../../../obj
@@ -19,7 +19,8 @@ all: $(BUILD_DIR)/x86_64/loof.img
 
 $(BUILD_DIR)/x86_64/loof.img: $(BUILD_DIR)/x86_64/boot $(BUILD_DIR)/x86_64/kernel
 	dd seek=0 if=$(BUILD_DIR)/x86_64/boot of=$@
-	dd seek=3 if=$(BUILD_DIR)/x86_64/kernel of=$@
+	dd skip=2048 seek=3 if=$(BUILD_DIR)/x86_64/kernel of=$@
+	dd if=$@ of=$(BUILD_DIR)/x86_64/loof_padded.img bs=100m conv=sync
 
 $(BUILD_DIR)/x86_64/boot:
 	mkdir -p $(dir $@)
@@ -27,8 +28,8 @@ $(BUILD_DIR)/x86_64/boot:
 
 $(BUILD_DIR)/x86_64/kernel: $(x86_OBJS)
 	mkdir -p $(dir $@)
-	x86_64-elf-ld -o $@ $^ -e _kernel_main -m elf_i386 -Ttext=0x100000
-	x86_64-elf-objcopy -O binary $@ $@
+	x86_64-elf-ld -o $@ $^ -m elf_i386 -Tkernel_linker.ld
+#	x86_64-elf-objcopy -O binary --adjust-vma 0x100000 $@ $@
 
 # Build C files
 $(OBJ_DIR)/%.c.o: %.c
