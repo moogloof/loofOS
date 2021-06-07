@@ -13,4 +13,13 @@ void reset_display();
 // Set the color of the background and foreground
 void set_color(int, int);
 
+// Enable the cursor
+void enable_cursor(uint8_t, uint8_t);
+
+// Disable the cursor
+void disable_cursor();
+
+// Set the cursor position
+void cursor_pos(int, int);
+
 #endif
