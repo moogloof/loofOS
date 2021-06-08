@@ -340,6 +340,9 @@ kernel_jmp:
 	mov ds, ax
 	mov es, ax
 	mov ss, ax
+	; Set new stack
+	mov esp, 0xf00000
+	mov ebp, esp
 
 	jmp 0x100000
 
