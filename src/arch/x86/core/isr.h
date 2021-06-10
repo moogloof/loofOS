@@ -21,4 +21,11 @@ void enable_interrupts();
 // Disable interrupts
 void disable_interrupts();
 
+// Enable and add exceptions
+void init_exceptions();
+
+// Exception handlers
+// Divide-by-zero error
+__attribute__((interrupt)) void divbyzero_handler(struct interrupt_frame*);
+
 #endif

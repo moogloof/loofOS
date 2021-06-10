@@ -20,6 +20,9 @@ __attribute__((section(".text.kernel"))) void kernel_main() {
 	init_timer();
 	// Initialize PIC
 	init_pic();
+	// Initialize exception handlers
+	init_exceptions();
+	// Load the IDT
 	load_idt();
 
 	// Unmask interrupts

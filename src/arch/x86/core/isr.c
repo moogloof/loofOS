@@ -1,6 +1,7 @@
 #include <core/idt.h>
 #include <core/isr.h>
 #include <core/port.h>
+#include <core/panic.h>
 
 // Initialize the PIC
 void init_pic() {
@@ -38,4 +39,16 @@ void enable_interrupts() {
 // Disable interrupts
 void disable_interrupts() {
 	__asm__("cli");
+}
+
+// Enable and add exceptions
+void init_exceptions() {
+	// Set the divide-by-zero exception
+	set_id(0, divbyzero_handler, 0x08, IDT_PROT_TRAP, 0, 1);
+}
+
+// Exception handlers
+// Divide-by-zero error
+__attribute__((interrupt)) void divbyzero_handler(struct interrupt_frame* frame) {
+	kernel_panic("Division-by-zero exception occured.");
 }
