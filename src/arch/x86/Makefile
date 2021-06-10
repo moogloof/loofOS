@@ -1,6 +1,6 @@
 CC=x86_64-elf-gcc
 AS=nasm
-CFLAGS=-Wall -O0 -ffreestanding -I../../../include -I./ -m32 -nostdlib
+CFLAGS=-Wall -O0 -ffreestanding -I../../../include -I./ -m32 -nostdlib -mgeneral-regs-only
 ASFLAGS=-I../../../include -O0 -f bin
 BUILD_DIR=../../../build
 OBJ_DIR=../../../obj
