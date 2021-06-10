@@ -6,7 +6,7 @@
 // Initialize the timer interrupt
 void init_timer() {
 	// Add IRQ0
-	set_id(0, timer_handler, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(IRQ_OFFSET, timer_handler, 0x08, IDT_PROT_INTR, 0, 1);
 }
 
 // Timer handler

@@ -16,14 +16,14 @@ struct idt_desc {
 // Add interrupt descriptor to the IDT
 void set_id(uint8_t idt_pos, uint32_t offset, uint16_t selector, uint8_t type, uint8_t dpl, uint8_t present) {
 	// Set the ID at position in the IDT
-	idt[idt_pos] = (struct idt_desc){.offset1 = (offset + IRQ_OFFSET) & 0xffff,
+	idt[idt_pos] = (struct idt_desc){.offset1 = offset & 0xffff,
 			.selector = selector,
 			.unused = 0,
 			.type = type,
 			.s = 0,
 			.dpl = dpl,
 			.present = present,
-			.offset2 = ((offset + IRQ_OFFSET) >> 16) & 0xffff};
+			.offset2 = (offset >> 16) & 0xffff};
 }
 
 // Load the interrupt descriptor table
