@@ -12,6 +12,9 @@ uint8_t color = 0x0f;
 void display_char(char c, int row, int col) {
 	// Write the character to the corresponding position in the buffer with the color
 	text_buffer[80*row + col] = ((uint16_t)color << 8) | (uint16_t)c;
+
+	// Reposition cursor
+	cursor_pos(row + (col + 1)/80, (col + 1) % 80);
 }
 
 // Display a string on screen

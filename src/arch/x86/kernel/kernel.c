@@ -8,7 +8,6 @@ __attribute__((section(".text.kernel"))) void kernel_main() {
 	reset_display();
 	// Set cursor as max height and position at origin
 	enable_cursor(0, 15);
-	cursor_pos(0, 0);
 
 	// Start screen stuff
 	display_string("Hello, world!", 0, 0);
