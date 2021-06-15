@@ -329,6 +329,10 @@ gdt_start:
 		db 1001_0010b
 		db 1100_1111b
 		db 0
+	; TSS section
+	gdt_tss:
+		dd 0
+		dd 0
 gdt_end:
 
 [bits 32]
