@@ -12,8 +12,8 @@ void init_pic() {
 
 	// ICW2
 	// Set the PIC vector offsets
-	outportb(0x21, 0x20);
-	outportb(0xa1, 0x28);
+	outportb(0x21, IRQ_OFFSET);
+	outportb(0xa1, IRQ_OFFSET);
 
 	// ICW3
 	// Tell master PIC to commuicate through IRQ2 with slave PIC
