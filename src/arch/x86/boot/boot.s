@@ -60,6 +60,7 @@ halt:
 print_string:
 	; Push registers to stack
 	pusha
+	pushf
 
 	; Set background, foreground, and mode
 	mov bh, 0
@@ -81,6 +82,7 @@ print_string:
 
 	exit_print:
 		; Pop previously saved registers from stack and return
+		popf
 		popa
 		ret
 
@@ -167,6 +169,7 @@ unreal_mode:
 	; Load the gdt data into segment register, which will save it to cache
 	mov bx, 0x10
 	mov ds, bx
+	mov es, bx
 	; Swtich back to real mode, now in unreal mode
 	and al, 0xfe
 	mov cr0, eax
@@ -179,39 +182,48 @@ load_kernel:
 	lea si, [kernel_load_msg]
 	call print_string
 
-	; Set ES:BS for loading at 0x9200 initially
+	; Set ES:BX for loading at 0x9200 initially
 	mov ax, 0x920
 	mov es, ax
-	mov ebx, 0x0
-	; Load the kernel
-	mov ah, 0x2
-	mov al, [kernel_size]
-	mov ch, 0
-	mov cl, 4
-	mov dh, 0
-	int 0x13
 
-	; Relocate kernel to 0x100000
-	; Setup registers for copying bytes
-	shl ax, 9
-	mov bx, 0
-	mov ds, bx
-	mov es, bx
-	mov esi, 0x9200
 	mov edi, 0x100000
-	relocate_loop:
-		; Copy from 0x9200 to 0x100000
-		mov bl, byte [ds:esi]
-		mov byte [es:edi], bl
-		; Zero out after copying
-		mov byte [ds:esi], 0
-		; Increment addresses
-		inc esi
-		inc edi
-		; Decrement bytes needed and check if done
-		sub ax, 1
-		cmp ax, 0
-		jne relocate_loop
+
+	; Load the kernel
+	load_kernel_loop:
+		; Load a sector into 0x9200
+		mov ah, 0x2
+		mov al, 1
+		mov ch, 0 ; Cylinder
+		mov cl, 4 ; Sector
+		add cl, byte [kernel_load_offset]
+		mov dh, 0 ; Head
+		mov bx, 0x0 ; ES:BX sector destination
+		int 0x13
+
+		; Update sector position to load
+		inc byte [kernel_load_offset]
+		; Update sectors to load
+		dec byte [kernel_size]
+
+		; Relocate kernel sector to 0x100000 + pos
+		push ds
+		push es
+		; Set ES and DS for memory access
+		mov ax, 0x0
+		mov ds, ax
+		mov es, ax
+		; Setup registers for copying bytes
+		mov ecx, 128
+		mov esi, 0x9200
+		; Copy over bytes
+		cld
+		a32 rep movsd
+
+		pop es
+		pop ds
+		; Check if there are sectors left to load
+		cmp byte [kernel_size], 0
+		jne load_kernel_loop
 ; Set the VGA 80x25 video text mode
 vga_mode_set:
 	mov ah, 0
@@ -300,6 +312,8 @@ pmode_enable_msg: db "Enabling protected mode...", 0x0d, 0x0a, 0
 kernel_jump_msg: db "Jumping to the kernel...", 0x0d, 0x0a, 0
 ; Size of the kernel to load
 kernel_size: db 0x10
+; Position of kernel load offset
+kernel_load_offset: db 0
 
 ; GDTR
 gdtr:
