@@ -1,0 +1,3 @@
+floppya: 1_44=build/x86_64/loof.img, status=inserted
+boot: floppy
+clock: sync=realtime, time0=local
