@@ -19,13 +19,13 @@ void init_timer() {
 	//  Low byte
 	outportb(TIMER_CHANNEL0, 0xff);
 	// High byte
-	outportb(TIMER_CHANNEL0, 0xff);
+	outportb(TIMER_CHANNEL0, 0x00);
 }
 
 // Timer handler
 __attribute__((interrupt)) void timer_handler(struct interrupt_frame* frame) {
 	display_char(cur_char++, 0, 0);
-	display_char(cur_char, 1, 0);
+	cur_char %= 128;
 	// Call switch process for stuff
 //	switch_process();
 
