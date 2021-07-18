@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <core/idt.h>
 #include <core/isr.h>
 #include <core/port.h>
@@ -98,5 +99,8 @@ __attribute__((interrupt)) void nodevice_handler(struct interrupt_frame* frame) 
 
 // Double fault
 __attribute__((interrupt)) void doublefault_handler(struct interrupt_frame* frame) {
+	// Pop error code
+	uint32_t error_code;
+	__asm__("pop %0" : "=r"(error_code));
 	kernel_panic("Double fault exception.");
 }
