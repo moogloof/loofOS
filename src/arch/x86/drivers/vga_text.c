@@ -14,7 +14,7 @@ void display_char(char c, int row, int col) {
 	text_buffer[80*row + col] = ((uint16_t)color << 8) | (uint16_t)c;
 
 	// Reposition cursor
-	cursor_pos(row + (col + 1)/80, (col + 1) % 80);
+	set_cursor_pos(row + (col + 1)/80, (col + 1) % 80);
 }
 
 // Display a string on screen
@@ -53,40 +53,60 @@ void set_color(int b, int f) {
 void enable_cursor(uint8_t start, uint8_t end) {
 	// Set the start of the cursor
 	// Select the 0Ah cursor start register
-	outportb(0x3d4, 0x0a);
+	outportb(VGA_TEXT_INDEX, 0x0a);
 	// Enable the cursor and set the start scanline
-	outportb(0x3d5, (0b000 << 5) | start);
+	outportb(VGA_TEXT_DATA, (0b000 << 5) | start);
 
 	// Set the end of the cursor
 	// Select the 0Ah cursor end register
-	outportb(0x3d4, 0x0b);
+	outportb(VGA_TEXT_INDEX, 0x0b);
 	// Set the end scanline
-	outportb(0x3d5, (0b000 << 5) | end);
+	outportb(VGA_TEXT_DATA, (0b000 << 5) | end);
 }
 
 // Disable the cursor with vga ports
 void disable_cursor() {
 	// Set the start of the cursor
 	// Select the 0Ah cursor start register
-	outportb(0x3d4, 0x0a);
+	outportb(VGA_TEXT_INDEX, 0x0a);
 	// Write to cursor start register to disable
-	outportb(0x3d5, 0b00100000);
+	outportb(VGA_TEXT_DATA, 0b00100000);
 }
 
 // Set the cursor position with vga ports
-void cursor_pos(int row, int col) {
+void set_cursor_pos(int row, int col) {
 	// Calculate the cursor pos
 	int pos = row*80 + col;
 
 	// Set the low cursor location
 	// Select the 0Fh cursor low pos register
-	outportb(0x3d4, 0x0f);
+	outportb(VGA_TEXT_INDEX, 0x0f);
 	// Set the low position bits
-	outportb(0x3d5, (uint8_t)(pos & 0xff));
+	outportb(VGA_TEXT_DATA, (uint8_t)(pos & 0xff));
 
 	// Set the high cursor location
 	// Select the 0Eh cursor high pos register
-	outportb(0x3d4, 0x0e);
+	outportb(VGA_TEXT_INDEX, 0x0e);
 	// Set the high position bits
-	outportb(0x3d5, (uint8_t)((pos >> 8) & 0xff));
+	outportb(VGA_TEXT_DATA, (uint8_t)((pos >> 8) & 0xff));
+}
+
+// Get the cursor position as offset from text buffer
+uint16_t get_cursor_pos() {
+	// Cursor position offset from text buffer
+	uint16_t pos;
+
+	// Get the low cursor location
+	// Select the 0Fh cursor low pos register
+	outportb(VGA_TEXT_INDEX, 0x0f);
+	// Get the low position bits
+	pos = (uint16_t)inportb(VGA_TEXT_DATA);
+
+	// Get the high cursor location
+	// Select the 0Eh cursor high pos register
+	outportb(VGA_TEXT_INDEX, 0x0e);
+	// Get the high position bits
+	pos |= (uint16_t)inportb(VGA_TEXT_DATA) << 8;
+
+	return pos;
 }
