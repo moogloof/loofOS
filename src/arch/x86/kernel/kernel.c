@@ -1,5 +1,7 @@
+#include <sys/kernel_print.h>
 #include <drivers/vga_text.h>
 #include <drivers/timer.h>
+#include <drivers/rtc.h>
 #include <core/isr.h>
 #include <core/idt.h>
 
@@ -8,6 +10,8 @@ __attribute__((section(".text.kernel"))) void kernel_main() {
 	reset_display();
 	// Set cursor as max height and position at origin
 	enable_cursor(0, 15);
+	// Set outb for printing
+	set_outb(output_char);
 
 	// Start screen stuff
 	display_string("Hello, world!", 0, 0);
@@ -26,6 +30,14 @@ __attribute__((section(".text.kernel"))) void kernel_main() {
 
 	// Unmask interrupts
 	enable_interrupts();
+
+	// Initialize the RTC
+	init_rtc();
+	// Get time
+	time_struct cur_time = read_time();
+	// Display time
+	set_cursor_pos(1, 0);
+	kernel_print("It's %x:%x\r\n", (uint32_t)cur_time.hours, (uint32_t)cur_time.minutes);
 
 	while (1) {
 	}
