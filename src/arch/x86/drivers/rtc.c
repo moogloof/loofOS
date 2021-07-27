@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <drivers/vga_text.h>
 #include <drivers/rtc.h>
 #include <core/port.h>
 
@@ -12,14 +13,14 @@ void init_rtc() {
 
 	// Select 24 hour mode and binary mode and daylight savings time
 	outportb(RTC_INDEX, RTC_NMI_DISABLE | RTC_REG_STATUSB);
-	outportb(RTC_DATA, 0b00000111);
+	outportb(RTC_DATA, 0b00000110);
 }
 
 // Read the current time from CMOS
 time_struct read_time() {
 	// Time struct to return
 	time_struct cur_time;
-
+/*
 	// Wait for toggle of status register A
 	// Wait for RTC to update
 	do {
@@ -31,6 +32,7 @@ time_struct read_time() {
 		// Set to read status A register
 		outportb(RTC_INDEX, RTC_NMI_DISABLE | RTC_REG_STATUSA);
 	} while (inportb(RTC_DATA) & 0b10000000);
+*/
 
 	// Read the current time
 	// YOU MUST DO THIS SUPAH FAST
