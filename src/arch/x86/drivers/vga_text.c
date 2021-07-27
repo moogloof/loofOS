@@ -40,6 +40,9 @@ void reset_display() {
 	for (int i = 0; i < 2000; i++) {
 		display_char(' ', i / 80, i % 80);
 	}
+
+	// Reset cursor pos
+	set_cursor_pos(0, 0);
 }
 
 // Set the background and foreground color
@@ -109,4 +112,25 @@ uint16_t get_cursor_pos() {
 	pos |= (uint16_t)inportb(VGA_TEXT_DATA) << 8;
 
 	return pos;
+}
+
+// Output method for prints
+void output_char(char c) {
+	// Cursor position for display stuff
+	uint16_t cur_pos = get_cursor_pos();
+
+	switch (c) {
+		case '\n':
+			// Create newline
+			set_cursor_pos(cur_pos/80 + 1, cur_pos % 80);
+			break;
+		case '\r':
+			// Create carriage return
+			set_cursor_pos(cur_pos/80, 0);
+			break;
+		default:
+			// Just display
+			display_char(c, cur_pos / 80, cur_pos % 80);
+			break;
+	}
 }

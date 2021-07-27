@@ -31,4 +31,7 @@ void set_cursor_pos(int, int);
 // Get the cursor position
 uint16_t get_cursor_pos();
 
+// Output method for prints
+void output_char(char);
+
 #endif
