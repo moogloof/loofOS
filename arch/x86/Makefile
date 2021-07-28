@@ -10,22 +10,22 @@ LIBC_DIR=libc
 LIBC_SRCS=$(shell find $(LIBC_DIR) -name *.c -or -name *.s)
 LIBC_OBJS=$(LIBC_SRCS:%=$(OBJ_DIR)/%.o)
 
-# x86_64 specific build info
+# x86 specific build info
 x86_SRCS=$(shell find . -name *.c -or -name *.s ! -name *boot.s)
 x86_OBJS=$(x86_SRCS:%=$(OBJ_DIR)/%.o)
 
-all: $(BUILD_DIR)/x86_64/loof.img
+all: $(BUILD_DIR)/x86/loof.img
 
-$(BUILD_DIR)/x86_64/loof.img: $(BUILD_DIR)/x86_64/boot $(BUILD_DIR)/x86_64/kernel
-	dd seek=0 if=$(BUILD_DIR)/x86_64/boot of=$@
-	dd seek=3 if=$(BUILD_DIR)/x86_64/kernel of=$@
-	dd if=$@ of=$(BUILD_DIR)/x86_64/loof_padded.img bs=100m conv=sync
+$(BUILD_DIR)/x86/loof.img: $(BUILD_DIR)/x86/boot $(BUILD_DIR)/x86/kernel
+	dd seek=0 if=$(BUILD_DIR)/x86/boot of=$@
+	dd seek=3 if=$(BUILD_DIR)/x86/kernel of=$@
+	dd if=$@ of=$(BUILD_DIR)/x86/loof_padded.img bs=100m conv=sync
 
-$(BUILD_DIR)/x86_64/boot:
+$(BUILD_DIR)/x86/boot:
 	mkdir -p $(dir $@)
 	$(AS) -o $@ boot/boot.s $(ASFLAGS)
 
-$(BUILD_DIR)/x86_64/kernel: $(x86_OBJS)
+$(BUILD_DIR)/x86/kernel: $(x86_OBJS)
 	mkdir -p $(dir $@)
 	x86_64-elf-ld -o $@ $^ -m elf_i386 -Tkernel_linker.ld
 #	x86_64-elf-objcopy -O binary --adjust-vma 0x100000 $@ $@
