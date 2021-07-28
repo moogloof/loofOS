@@ -17,18 +17,18 @@ ARM_SRCS=$(shell find $(ARCH_DIR)/arm -name *.c -or -name *.s)
 ARM_OBJS=$(ARM_SRCS:%=$(OBJ_DIR)/%.o)
 
 all:
-	@echo "Specify an arch:\n- arm\n- x86_64"
+	@echo "Specify an arch:\n- arm\n- x86"
 
 arm: $(BUILD_DIR)/arm/kernel7.img
 
-x86_64:
+x86:
 	$(MAKE) -C $(ARCH_DIR)/x86
 
-x86_64_boot:
-	rm $(BUILD_DIR)/x86_64/boot
+x86_boot:
+	rm $(BUILD_DIR)/x86/boot
 	$(MAKE) -C $(ARCH_DIR)/x86
-x86_64_kernel:
-	rm $(BUILD_DIR)/x86_64/kernel
+x86_kernel:
+	rm $(BUILD_DIR)/x86/kernel
 	$(MAKE) -C $(ARCH_DIR)/x86
 
 # Build kernel image
