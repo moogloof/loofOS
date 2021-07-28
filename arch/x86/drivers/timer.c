@@ -23,7 +23,7 @@ void init_timer() {
 }
 
 // Timer handler
-__attribute__((interrupt)) void timer_handler(struct interrupt_frame* frame) {
+__attribute__((interrupt)) void timer_handler(interrupt_frame frame) {
 //	display_char(cur_char++, 0, 0);
 	cur_char %= 128;
 	// Call switch process for stuff

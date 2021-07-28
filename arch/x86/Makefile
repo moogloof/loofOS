@@ -2,10 +2,9 @@ CC=x86_64-elf-gcc
 AS=nasm
 CFLAGS=-Wall -O0 -ffreestanding -I./ -m32 -nostdlib -mgeneral-regs-only
 ASFLAGS=-O0 -f bin
-BUILD_DIR=../../../build
-OBJ_DIR=../../../obj
-SRC_DIR=../../../src
-LIBC_DIR=$(SRC_DIR)/libc
+BUILD_DIR=../../build
+OBJ_DIR=../../obj
+LIBC_DIR=libc
 
 # Standard library specific build info
 LIBC_SRCS=$(shell find $(LIBC_DIR) -name *.c -or -name *.s)
@@ -24,7 +23,7 @@ $(BUILD_DIR)/x86_64/loof.img: $(BUILD_DIR)/x86_64/boot $(BUILD_DIR)/x86_64/kerne
 
 $(BUILD_DIR)/x86_64/boot:
 	mkdir -p $(dir $@)
-	$(AS) -o $@ $(SRC_DIR)/arch/x86/boot/boot.s $(ASFLAGS)
+	$(AS) -o $@ boot/boot.s $(ASFLAGS)
 
 $(BUILD_DIR)/x86_64/kernel: $(x86_OBJS)
 	mkdir -p $(dir $@)

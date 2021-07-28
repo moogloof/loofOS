@@ -4,9 +4,8 @@ CFLAGS=-Wall -O0 -ffreestanding -nostdlib -nostartfiles
 ASFLAGS=-Iinclude -O0
 BUILD_DIR=build
 OBJ_DIR=obj
-SRC_DIR=src
-ARCH_DIR=$(SRC_DIR)/arch
-LIBC_DIR=$(SRC_DIR)/libc
+ARCH_DIR=arch
+LIBC_DIR=libc
 CUR_ARCH=arm
 
 # Standard library specific build info
