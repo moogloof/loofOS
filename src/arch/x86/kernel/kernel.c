@@ -37,7 +37,7 @@ __attribute__((section(".text.kernel"))) void kernel_main() {
 	time_struct cur_time = read_time();
 	// Display time
 	set_cursor_pos(1, 0);
-	kernel_print("It's %x:%x\r\n", (uint32_t)cur_time.hours, (uint32_t)cur_time.minutes);
+	kernel_print("It's %d:%d\r\n", (int)cur_time.hours, (int)cur_time.minutes);
 
 	while (1) {
 	}
