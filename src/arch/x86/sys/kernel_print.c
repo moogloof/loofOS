@@ -36,6 +36,30 @@ void kernel_print(const char* format, ...) {
 					// Substitute a character
 					outb(va_arg(arglist, char));
 					break;
+				case 'd':
+					// Substitute a signed integer in decimal
+					int sign_integer = va_arg(arglist, int);
+					int reversed_int = 0;
+
+					// Output sign if present
+					if (sign_integer < 0) {
+						outb('-');
+						sign_integer = -sign_integer;
+					}
+
+					// Reverse integer
+					while (sign_integer > 0) {
+						reversed_int *= 10;
+						reversed_int += sign_integer % 10;
+						sign_integer /= 10;
+					}
+
+					// Output in decimal
+					do {
+						outb('0' + (reversed_int % 10));
+						reversed_int /= 10;
+					} while (reversed_int > 0);
+					break;
 				case 's':
 					// Substitute a string
 					char* nstr = va_arg(arglist, char*);
