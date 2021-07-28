@@ -58,46 +58,46 @@ void init_exceptions() {
 
 // Exception handlers
 // Divide-by-zero error
-__attribute__((interrupt)) void divbyzero_handler(interrupt_frame frame) {
+__attribute__((interrupt)) void divbyzero_handler(interrupt_frame* frame) {
 	kernel_panic("Division-by-zero exception occured.");
 }
 
 // Debug
-__attribute__((interrupt)) void debug_handler(interrupt_frame frame) {
+__attribute__((interrupt)) void debug_handler(interrupt_frame* frame) {
 	kernel_panic("Debug exception.");
 }
 
 // Non-maskable interrupt
-__attribute__((interrupt)) void nonmask_handler(interrupt_frame frame) {
+__attribute__((interrupt)) void nonmask_handler(interrupt_frame* frame) {
 	kernel_panic("Non-maskable interrupt.");
 }
 
 // Breakpoint
-__attribute__((interrupt)) void breakpoint_handler(interrupt_frame frame) {
+__attribute__((interrupt)) void breakpoint_handler(interrupt_frame* frame) {
 	kernel_panic("Breakpoint exception.");
 }
 
 // Overflow
-__attribute__((interrupt)) void overflow_handler(interrupt_frame frame) {
+__attribute__((interrupt)) void overflow_handler(interrupt_frame* frame) {
 	kernel_panic("Overflow exception.");
 }
 
 // Bound range exceeded
-__attribute__((interrupt)) void boundrange_handler(interrupt_frame frame) {
+__attribute__((interrupt)) void boundrange_handler(interrupt_frame* frame) {
 	kernel_panic("Bound range exceeded exception.");
 }
 
 // Invalid opcode
-__attribute__((interrupt)) void invalop_handler(interrupt_frame frame) {
+__attribute__((interrupt)) void invalop_handler(interrupt_frame* frame) {
 	kernel_panic("Invalid opcode exception.");
 }
 
 // Device not available
-__attribute__((interrupt)) void nodevice_handler(interrupt_frame frame) {
+__attribute__((interrupt)) void nodevice_handler(interrupt_frame* frame) {
 	kernel_panic("Device not available exception.");
 }
 
 // Double fault
-__attribute__((interrupt)) void doublefault_handler(uint32_t errorcode, interrupt_frame frame) {
+__attribute__((interrupt)) void doublefault_handler(interrupt_frame* frame) {
 	kernel_panic("Double fault exception.");
 }

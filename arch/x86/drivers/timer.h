@@ -15,6 +15,6 @@
 void init_timer();
 
 // Timer handler
-__attribute__((interrupt)) void timer_handler(struct interrupt_frame*);
+__attribute__((interrupt)) void timer_handler(interrupt_frame*);
 
 #endif
