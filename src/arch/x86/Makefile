@@ -39,5 +39,5 @@ $(OBJ_DIR)/%.c.o: %.c
 # Build assembly files
 $(OBJ_DIR)/%.s.o: %.s
 	mkdir -p $(dir $@)
-	x86_64-elf-as -o $@ $< -mmnemonic=intel -msyntax=intel -march=i386 --32
+	$(AS) -o $@ $< -f elf32
 
