@@ -18,11 +18,11 @@
 
 // The interrupt frame struct
 typedef struct {
-	uint32_t ss;
-	uint32_t esp;
-	uint32_t eflags;
-	uint32_t cs;
 	uint32_t eip;
+	uint32_t cs;
+	uint32_t eflags;
+	uint32_t esp;
+	uint32_t ss;
 } interrupt_frame;
 
 // Initialize the PIC
