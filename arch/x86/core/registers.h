@@ -10,16 +10,13 @@ typedef struct {
 	uint32_t edx;
 	uint32_t esi; // String operation registers
 	uint32_t edi;
-	uint32_t esp; // Stack registers
-	uint32_t ebp;
-	uint32_t eip; // Instruction pointer
-	uint32_t flags; // CPU Flags register
-} register_set;
+	uint32_t ebp; // Base pointer
+} gen_register_set;
 
 // Save current registers to the register set passed
-register_set save_registers();
+gen_register_set save_registers();
 
 // Load passed register set to current register set
-void load_registers(register_set);
+void load_registers(gen_register_set);
 
 #endif
