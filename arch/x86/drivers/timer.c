@@ -3,9 +3,7 @@
 #include <drivers/timer.h>
 #include <core/idt.h>
 #include <core/isr.h>
-#include <proc/queue.h>
-
-static uint8_t cur_char = 'A';
+#include <sys/kernel_print.h>
 
 // Initialize the timer interrupt
 void init_timer() {
@@ -24,10 +22,9 @@ void init_timer() {
 
 // Timer handler
 __attribute__((interrupt)) void timer_handler(interrupt_frame* frame) {
-//	display_char(cur_char++, 0, 0);
-	cur_char %= 128;
-	// Call switch process for stuff
-//	switch_process();
+	set_cursor_pos(5, 0);
+	kernel_print("EIP=%x, CS=%x\r\n", frame->eip, frame->cs);
+	kernel_print("EFLAGS=%x\r\n", frame->eflags);
 
 	// Send EOI
 	outportb(PIC_COMMAND1, PIC_EOI);
