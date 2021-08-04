@@ -14,7 +14,7 @@ typedef struct {
 } gen_register_set;
 
 // Save current registers to the register set passed
-gen_register_set save_registers();
+gen_register_set dump_registers();
 
 // Load passed register set to current register set
 void load_registers(gen_register_set);
