@@ -311,7 +311,7 @@ interrupt_disable_msg: db "Disabling interrupts...", 0x0d, 0x0a, 0
 pmode_enable_msg: db "Enabling protected mode...", 0x0d, 0x0a, 0
 kernel_jump_msg: db "Jumping to the kernel...", 0x0d, 0x0a, 0
 ; Size of the kernel to load
-kernel_size: db 0x10
+kernel_size: db 0xff
 ; Position of kernel load offset
 kernel_load_offset: db 0
 
