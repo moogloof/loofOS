@@ -22,10 +22,6 @@ void init_timer() {
 
 // Timer handler
 __attribute__((interrupt)) void timer_handler(interrupt_frame* frame) {
-	set_cursor_pos(5, 0);
-	kernel_print("EIP=%x, CS=%x\r\n", frame->eip, frame->cs);
-	kernel_print("EFLAGS=%x\r\n", frame->eflags);
-
 	// Send EOI
 	outportb(PIC_COMMAND1, PIC_EOI);
 }
