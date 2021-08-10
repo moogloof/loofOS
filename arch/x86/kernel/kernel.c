@@ -40,5 +40,11 @@ __attribute__((section(".text.kernel"))) void kernel_main() {
 	kernel_print("It's %d:%d\r\n", (int)cur_time.hours, (int)cur_time.minutes);
 
 	while (1) {
+		__asm__("mov $1, %eax\n"
+			"mov $2, %ebx\n"
+			"mov $3, %ecx\n"
+			"mov $4, %edx\n"
+			"mov $5, %esi\n"
+			"mov $6, %edi");
 	}
 }
