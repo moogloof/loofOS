@@ -2,6 +2,7 @@
 #define TIMER_DRIVER_H
 
 #include <core/isr.h>
+#include <core/registers.h>
 
 // Peripheral ports for timer
 // PIT channels
@@ -14,7 +15,10 @@
 // Initialize the timer interrupt
 void init_timer();
 
+// Wrapper for timer handler
+__attribute__((interrupt)) void timer_handler_wrapper(interrupt_frame*);
+
 // Timer handler
-__attribute__((interrupt)) void timer_handler(interrupt_frame*);
+void timer_handler(seg_register_set, gen_register_set, interrupt_frame);
 
 #endif
