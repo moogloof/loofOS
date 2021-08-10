@@ -24,11 +24,10 @@ dump_registers:
 	mov ecx, [ebp]
 	mov [eax + 24], ecx
 	; Save eax register
-	mov ecx, [esp]
-	mov [eax], ecx
-
-	; Temp restore eax
+	mov ecx, eax
 	pop eax
+	mov [ecx], eax
+
 	; Restore ecx
 	pop ecx
 
