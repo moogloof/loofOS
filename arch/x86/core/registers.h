@@ -5,18 +5,20 @@
 
 typedef struct {
 	uint32_t eax; // General registers
-	uint32_t ebx;
 	uint32_t ecx;
 	uint32_t edx;
+	uint32_t ebx;
+	uint32_t esp; // Stack pointer
+	uint32_t ebp; // Base pointer
 	uint32_t esi; // String operation registers
 	uint32_t edi;
-	uint32_t ebp; // Base pointer
-} gen_register_set;
+} gen_register_set; // Reflective of pusha
 
-// Save current registers to the register set passed
-gen_register_set dump_registers();
-
-// Load passed register set to current register set
-void load_registers(gen_register_set);
+typedef struct {
+	uint32_t ds;
+	uint32_t es;
+	uint32_t fs;
+	uint32_t gs;
+} seg_register_set; // Segment registers not included in the interrupt frame
 
 #endif
