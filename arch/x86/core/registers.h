@@ -4,15 +4,15 @@
 #include <stdint.h>
 
 typedef struct {
-	uint32_t eax; // General registers
-	uint32_t ecx;
-	uint32_t edx;
-	uint32_t ebx;
-	uint32_t esp; // Stack pointer
+	uint32_t edi; // String operation registers
+	uint32_t esi;
 	uint32_t ebp; // Base pointer
-	uint32_t esi; // String operation registers
-	uint32_t edi;
-} gen_register_set; // Reflective of pusha
+	uint32_t esp; // Stack pointer
+	uint32_t ebx; // General registers
+	uint32_t edx;
+	uint32_t ecx;
+	uint32_t eax;
+} gen_register_set; // Symmetric of pusha
 
 typedef struct {
 	uint32_t ds;
