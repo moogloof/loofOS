@@ -8,6 +8,9 @@
 
 // Initialize the timer interrupt
 void init_timer() {
+	// Divider for the interrputs
+	uint16_t divider = TIMER_FREQ / TIMER_INT_FREQ;
+
 	// Add IRQ0
 	set_id(IRQ_OFFSET, timer_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
 
@@ -16,9 +19,9 @@ void init_timer() {
 
 	//  Set channel0 divider for timer interrupts
 	//  Low byte
-	outportb(TIMER_CHANNEL0, 0xff);
+	outportb(TIMER_CHANNEL0, (uint8_t)(divider & 0xff));
 	// High byte
-	outportb(TIMER_CHANNEL0, 0x0f);
+	outportb(TIMER_CHANNEL0, (uint8_t)((divider >> 8) & 0xff));
 }
 
 // Timer handler
