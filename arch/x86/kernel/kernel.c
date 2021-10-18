@@ -38,6 +38,8 @@ __attribute__((section(".text.kernel"))) void kernel_main() {
 	// Display time
 	set_cursor_pos(1, 0);
 	kernel_print("It's %d:%d\r\n", (int)cur_time.hours, (int)cur_time.minutes);
+	// Display date
+	kernel_print("The date is %d/%d/%d\r\n", (int)cur_time.month, (int)cur_time.day_month, (int)cur_time.year);
 
 	while (1) {
 	}
