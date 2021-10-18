@@ -40,6 +40,7 @@ void kernel_print(const char* format, ...) {
 					// Substitute a signed integer in decimal
 					int sign_integer = va_arg(arglist, int);
 					int reversed_int = 0;
+					int integer_len = 0;
 
 					// Output sign if present
 					if (sign_integer < 0) {
@@ -47,18 +48,19 @@ void kernel_print(const char* format, ...) {
 						sign_integer = -sign_integer;
 					}
 
-					// Reverse integer
+					// Get length of integer and reverse integer
 					while (sign_integer > 0) {
 						reversed_int *= 10;
 						reversed_int += sign_integer % 10;
 						sign_integer /= 10;
+						integer_len++;
 					}
 
 					// Output in decimal
-					do {
-						outb('0' + (reversed_int % 10));
+					for (int dec_place = integer_len-1; dec_place >= 0; dec_place--) {
+						outb(hex_chars[reversed_int % 10]);
 						reversed_int /= 10;
-					} while (reversed_int > 0);
+					}
 					break;
 				case 's':
 					// Substitute a string
