@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 /// Set writeb
-void set_writeb(void (*)(char));
+void set_outb(void (*)(char));
 
 // Print for kernel
 void kernel_print(const char*, ...);

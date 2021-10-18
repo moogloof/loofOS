@@ -2,6 +2,7 @@
 #define _IDT_H
 
 #include <stdint.h>
+#include <core/isr.h>
 
 // Define IDT constraints
 #define IDT_LIMIT 256
@@ -15,7 +16,7 @@
 #define IRQ_OFFSET 0x20
 
 // Add interrupt descriptor to the IDT
-void set_id(uint8_t, uint32_t, uint16_t, uint8_t, uint8_t, uint8_t);
+void set_id(uint8_t, void (*)(interrupt_frame*), uint16_t, uint8_t, uint8_t, uint8_t);
 
 // Load the IDT
 void load_idt();

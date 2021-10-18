@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <core/idt.h>
+#include <core/isr.h>
 
 // The interrupt descriptor structure
 struct idt_desc {
@@ -14,16 +15,16 @@ struct idt_desc {
 } __attribute__((packed)) idt[IDT_LIMIT]; // IDT buffer
 
 // Add interrupt descriptor to the IDT
-void set_id(uint8_t idt_pos, uint32_t offset, uint16_t selector, uint8_t type, uint8_t dpl, uint8_t present) {
+void set_id(uint8_t idt_pos, void (*offset)(interrupt_frame*), uint16_t selector, uint8_t type, uint8_t dpl, uint8_t present) {
 	// Set the ID at position in the IDT
-	idt[idt_pos] = (struct idt_desc){.offset1 = offset & 0xffff,
+	idt[idt_pos] = (struct idt_desc){.offset1 = (uint32_t)offset & 0xffff,
 			.selector = selector,
 			.unused = 0,
 			.type = type,
 			.s = 0,
 			.dpl = dpl,
 			.present = present,
-			.offset2 = (offset >> 16) & 0xffff};
+			.offset2 = ((uint32_t)offset >> 16) & 0xffff};
 }
 
 // Load the interrupt descriptor table
@@ -32,7 +33,7 @@ void load_idt() {
 	struct {
 		uint16_t size;
 		uint32_t offset;
-	} __attribute__((packed)) idtr = {.size = sizeof(idt) - 1, .offset = &idt};
+	} __attribute__((packed)) idtr = {.size = sizeof(idt) - 1, .offset = (uint32_t)(&idt)};
 
 	// Load the idtr
 	__asm__("lidt %0" : : "m"(idtr));
