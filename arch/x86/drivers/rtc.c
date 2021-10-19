@@ -20,19 +20,18 @@ void init_rtc() {
 time_struct read_time() {
 	// Time struct to return
 	time_struct cur_time;
-/*
+
 	// Wait for toggle of status register A
 	// Wait for RTC to update
-	do {
+/*	do {
 		// Set to read status A register
 		outportb(RTC_INDEX, RTC_NMI_DISABLE | RTC_REG_STATUSA);
 	} while (~(inportb(RTC_DATA) & 0b10000000));
 	// Wait for RTC to finish updating
-	do {
+*/	do {
 		// Set to read status A register
 		outportb(RTC_INDEX, RTC_NMI_DISABLE | RTC_REG_STATUSA);
 	} while (inportb(RTC_DATA) & 0b10000000);
-*/
 
 	// Read the current time
 	// YOU MUST DO THIS SUPAH FAST
