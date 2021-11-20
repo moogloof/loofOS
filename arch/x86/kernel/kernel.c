@@ -2,6 +2,8 @@
 #include <drivers/vga_text.h>
 #include <drivers/timer.h>
 #include <drivers/rtc.h>
+#include <drivers/ps2/controller.h>
+#include <drivers/ps2/keyboard.h>
 #include <core/isr.h>
 #include <core/idt.h>
 
@@ -21,6 +23,10 @@ __attribute__((section(".text.kernel"))) void kernel_main() {
 	// Load the interrupt descriptor table
 	// Initialize the timer (IRQ0)
 	init_timer();
+	// Initialize the PS/2 controller
+//	init_ps2_controller();
+	// Initialize the PS/2 keyboard
+	init_ps2_keyboard();
 	// Initialize PIC
 	init_pic();
 	// Initialize exception handlers
