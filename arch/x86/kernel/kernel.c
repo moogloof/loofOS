@@ -24,7 +24,7 @@ __attribute__((section(".text.kernel"))) void kernel_main() {
 	// Initialize the timer (IRQ0)
 	init_timer();
 	// Initialize the PS/2 controller
-//	init_ps2_controller();
+	init_ps2_controller();
 	// Initialize the PS/2 keyboard
 	init_ps2_keyboard();
 	// Initialize PIC

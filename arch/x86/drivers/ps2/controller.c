@@ -71,14 +71,14 @@ void init_ps2_controller() {
 	outportb(PS2_COMMAND, 0x20);
 	config_byte = poll_ps2_dataport();
 	// Enable first port interrupt
-	config_byte |= 3;
+	config_byte |= 1;
 	// Disable second port interrupt
 	config_byte &= 0b11111101;
-	kernel_print("%x", config_byte);
 	// Update configuration byte
 	outportb(PS2_COMMAND, 0x60);
 	write_ps2_dataport(config_byte);
 
+	/* TODO: WTF is wrong with the resets????
 	// Reset devices
 	// Reset first port device
 	write_ps2_dataport(0xff);
@@ -99,6 +99,7 @@ void init_ps2_controller() {
 		init_success = 0;
 		return;
 	}
+	*/
 
 	init_success = 1;
 	// TODO: Make configuration more airtight
