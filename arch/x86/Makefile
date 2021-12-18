@@ -17,8 +17,8 @@ x86_OBJS=$(x86_SRCS:%=$(OBJ_DIR)/%.o)
 all: $(BUILD_DIR)/x86/loof.img
 
 $(BUILD_DIR)/x86/loof.img: $(BUILD_DIR)/x86/boot $(BUILD_DIR)/x86/kernel
-	dd seek=0 if=$(BUILD_DIR)/x86/boot of=$@
-	dd seek=3 if=$(BUILD_DIR)/x86/kernel of=$@
+	dd seek=0 if=$(BUILD_DIR)/x86/boot of=$@ bs=512 conv=notrunc
+	dd seek=3 if=$(BUILD_DIR)/x86/kernel of=$@ bs=512 conv=notrunc
 #	dd if=$@ of=$(BUILD_DIR)/x86/loof_padded.img bs=100m conv=sync
 
 $(BUILD_DIR)/x86/boot:
