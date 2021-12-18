@@ -17,7 +17,6 @@ __attribute__((section(".text.kernel"))) void kernel_main() {
 
 	// Start screen stuff
 	display_string("Hello, world!", 0, 0);
-	set_color(0, 0xb);
 	display_string("Bello, borld!", 24, 20);
 
 	// Load the interrupt descriptor table
