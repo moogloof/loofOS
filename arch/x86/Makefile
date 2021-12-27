@@ -17,9 +17,15 @@ x86_OBJS=$(x86_SRCS:%=$(OBJ_DIR)/%.o)
 all: $(BUILD_DIR)/x86/loof.img
 
 $(BUILD_DIR)/x86/loof.img: $(BUILD_DIR)/x86/boot $(BUILD_DIR)/x86/kernel
+	dd if=/dev/zero of=$@ bs=1024 count=1440
 	dd seek=0 if=$(BUILD_DIR)/x86/boot of=$@ bs=512 conv=notrunc
 	dd seek=3 if=$(BUILD_DIR)/x86/kernel of=$@ bs=512 conv=notrunc
-#	dd if=$@ of=$(BUILD_DIR)/x86/loof_padded.img bs=100m conv=sync
+	# Formatting
+	mkdir $(BUILD_DIR)/x86/iso
+	cp $@ $(BUILD_DIR)/x86/iso/
+	mkisofs -quiet -V 'loofOS' -input-charset iso8859-1 -o $(BUILD_DIR)/x86/loof.iso -b loof.img $(BUILD_DIR)/x86/iso
+	# Cleanup
+	rm -rf $(BUILD_DIR)/x86/iso
 
 $(BUILD_DIR)/x86/boot:
 	mkdir -p $(dir $@)
