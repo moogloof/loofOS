@@ -56,6 +56,8 @@ void kernel_print(const char* format, ...) {
 						integer_len++;
 					}
 
+					integer_len = integer_len ? integer_len : 1;
+
 					// Output in decimal
 					for (int dec_place = integer_len-1; dec_place >= 0; dec_place--) {
 						outb(hex_chars[reversed_int % 10]);
