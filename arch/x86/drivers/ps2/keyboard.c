@@ -52,7 +52,7 @@ static const char scancodes2_shift[] = {
 	NOK, NOK, NOK, NOK, NOK, 'Q', '!', NOK, NOK, NOK, 'Z', 'S', 'A', 'W', '@', NOK, // 0x10
 	NOK, 'C', 'X', 'D', 'E', '$', '#', NOK, NOK, ' ', 'V', 'F', 'T', 'R', '%', NOK, // 0x20
 	NOK, 'N', 'B', 'H', 'G', 'Y', '^', NOK, NOK, NOK, 'M', 'J', 'U', '&', '*', NOK, // 0x30
-	NOK, '<', 'K', 'I', 'O', ')', '(', NOK, NOK, '<', '?', 'L', ':', 'P', '_', NOK, // 0x40
+	NOK, '<', 'K', 'I', 'O', ')', '(', NOK, NOK, '>', '?', 'L', ':', 'P', '_', NOK, // 0x40
 	NOK, NOK, '"', NOK, '{', '+', NOK, NOK, NOK, NOK, '\n', '}', NOK, '|', NOK, NOK, // 0x50
 	NOK, NOK, NOK, NOK, NOK, NOK, '\b', NOK, NOK, '1', NOK, '4', '7', NOK, NOK, NOK, // 0x60
 	'0', '.', '2', '5', '6', '8', NOK, NOK, NOK, '+', '3', '-', '*', '9', NOK, NOK // 0x70
