@@ -7,11 +7,11 @@ OBJ_DIR=../../obj
 LIBC_DIR=libc
 
 # Standard library specific build info
-LIBC_SRCS=$(shell find $(LIBC_DIR) -name *.c -or -name *.s)
+LIBC_SRCS=$(shell find $(LIBC_DIR) -name "*.c" -or -name "*.s")
 LIBC_OBJS=$(LIBC_SRCS:%=$(OBJ_DIR)/%.o)
 
 # x86 specific build info
-x86_SRCS=$(shell find . -name *.c -or -name *.s ! -name *boot.s)
+x86_SRCS=$(shell find . -name "*.c" -or -name "*.s" ! -name "*boot.s")
 x86_OBJS=$(x86_SRCS:%=$(OBJ_DIR)/%.o)
 
 all: $(BUILD_DIR)/x86/loof.img
