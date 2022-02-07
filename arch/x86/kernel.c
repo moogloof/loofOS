@@ -10,41 +10,43 @@
 __attribute__((section(".text.kernel"))) void kernel_main() {
 	// Reset the vga and display stuff
 	reset_display();
-	// Set cursor as max height and position at origin
-	enable_cursor(0, 15);
 	// Set outb for printing
 	set_outb(output_char);
 
 	// Start screen stuff
-	display_string("Hello, world!", 0, 0);
-	display_string("Bello, borld!", 24, 20);
+	kernel_print("Setup VGA text mode display.\r\n");
 
 	// Load the interrupt descriptor table
 	// Initialize the timer (IRQ0)
 	init_timer();
+	kernel_print("Initialized timer.\r\n");
 	// Initialize the PS/2 controller
 	init_ps2_controller();
+	kernel_print("Initialized PS/2 controller.\r\n");
 	// Initialize the PS/2 keyboard
 	init_ps2_keyboard();
+	kernel_print("Initialized PS/2 keyboard.\r\n");
 	// Initialize PIC
 	init_pic();
+	kernel_print("Initialized PIC.\r\n");
 	// Initialize exception handlers
 	init_exceptions();
+	kernel_print("Initialized exception handlers.\r\n");
 	// Load the IDT
 	load_idt();
+	kernel_print("Loaded IDT.\r\n");
 
 	// Unmask interrupts
 	enable_interrupts();
+	kernel_print("Interrupts enabled.\r\n");
 
 	// Initialize the RTC
 	init_rtc();
+	kernel_print("Initialized RTC.\r\n");
 	// Get time
 	time_struct cur_time = read_time();
 	// Display time
-	set_cursor_pos(1, 0);
-	kernel_print("It's %d:%d\r\n", (int)cur_time.hours, (int)cur_time.minutes);
-	// Display date
-	kernel_print("The date is %d/%d/%d\r\n", (int)cur_time.month, (int)cur_time.day_month, (int)cur_time.year);
+	kernel_print("It's %d:%d, on %d/%d/%d\r\n", (int)cur_time.hours, (int)cur_time.minutes, (int)cur_time.month, (int)cur_time.day_month, (int)cur_time.year);
 
 	while (1) {
 	}
