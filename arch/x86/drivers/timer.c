@@ -4,7 +4,6 @@
 #include <drivers/vga_text.h>
 #include <core/idt.h>
 #include <core/isr.h>
-#include <sys/kernel_print.h>
 
 // Initialize the timer interrupt
 void init_timer() {

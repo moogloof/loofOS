@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include <drivers/vga_text.h>
 #include <drivers/rtc.h>
 #include <core/port.h>
 
