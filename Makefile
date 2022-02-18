@@ -10,6 +10,7 @@ all:
 	@echo "Specify an arch:\n- arm\n- x86"
 
 x86:
+	rm -r $(BUILD_DIR)
 	$(MAKE) -C $(ARCH_DIR)/x86
 
 x86_boot:
