@@ -226,9 +226,9 @@ load_kernel:
 		jne load_kernel_loop
 ; Set the VGA 80x25 video text mode
 vga_mode_set:
-	mov ah, 0
-	mov al, 0x2
-	int 0x10
+;	mov ah, 0
+;	mov al, 0x3
+;	int 0x10
 ; Enter protected mode and then kernel
 protected_mode:
 	; Disable interrupts
