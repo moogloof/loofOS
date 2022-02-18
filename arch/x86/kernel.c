@@ -6,10 +6,12 @@
 #include <drivers/ps2/keyboard.h>
 #include <core/isr.h>
 #include <core/idt.h>
+#include <mm/paging.h>
 
 __attribute__((section(".text.kernel"))) void kernel_main() {
 	// Reset the vga and display stuff
 	reset_display();
+
 	// Set outb for printing
 	set_outb(output_char);
 
@@ -47,6 +49,9 @@ __attribute__((section(".text.kernel"))) void kernel_main() {
 	time_struct cur_time = read_time();
 	// Display time
 	kernel_print("It's %d:%d, on %d/%d/%d\r\n", (int)cur_time.hours, (int)cur_time.minutes, (int)cur_time.month, (int)cur_time.day_month, (int)cur_time.year);
+
+	// Setup paging
+	init_paging();
 
 	while (1) {
 	}
