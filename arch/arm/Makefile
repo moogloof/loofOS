@@ -2,10 +2,10 @@ CC=gcc
 AS=as
 CFLAGS=-Wall -O0 -ffreestanding -nostdlib -nostartfiles
 ASFLAGS=-Iinclude -O0
-BUILD_DIR=build
-OBJ_DIR=obj
-ARCH_DIR=arch
-LIBC_DIR=libc
+BUILD_DIR=../../build
+OBJ_DIR=../../obj
+ARCH_DIR=../../arch
+LIBC_DIR=../../libc
 CUR_ARCH=arm
 
 # Standard library specific build info
