@@ -27,6 +27,11 @@ void kernel_print(const char* format, ...) {
 	// Character to analyze
 	char cur_char = *format;
 
+	// Stuff needed
+	int sign_integer, reversed_int, integer_len;
+	uint32_t sub_integer;
+	char* nstr;
+
 	// Print all characters
 	while (cur_char) {
 		if (substituting) {
@@ -38,9 +43,9 @@ void kernel_print(const char* format, ...) {
 					break;
 				case 'd':
 					// Substitute a signed integer in decimal
-					int sign_integer = va_arg(arglist, int);
-					int reversed_int = 0;
-					int integer_len = 0;
+					sign_integer = va_arg(arglist, int);
+					reversed_int = 0;
+					integer_len = 0;
 
 					// Output sign if present
 					if (sign_integer < 0) {
@@ -66,7 +71,7 @@ void kernel_print(const char* format, ...) {
 					break;
 				case 's':
 					// Substitute a string
-					char* nstr = va_arg(arglist, char*);
+					nstr = va_arg(arglist, char*);
 
 					// Print the string
 					while (nstr) {
@@ -76,7 +81,7 @@ void kernel_print(const char* format, ...) {
 				case 'x':
 					// Substitute an unsigned integer in hex
 					// Get integer arg
-					uint32_t sub_integer = va_arg(arglist, uint32_t);
+					sub_integer = va_arg(arglist, uint32_t);
 
 					// Output hex header
 					outb('0');
