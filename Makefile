@@ -10,7 +10,7 @@ all:
 	@echo "Specify an arch:\n- arm\n- x86"
 
 x86:
-	rm -r $(BUILD_DIR)
+	rm -rf $(BUILD_DIR)
 	$(MAKE) -C $(ARCH_DIR)/x86
 
 x86_boot:
@@ -25,4 +25,4 @@ arm:
 
 .PHONY: clean
 clean:
-	rm -r $(BUILD_DIR) $(OBJ_DIR)
+	rm -rf $(BUILD_DIR) $(OBJ_DIR)
