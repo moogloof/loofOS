@@ -1,6 +1,8 @@
-CC=x86_64-elf-gcc
+LD=ld.lld
+CC=clang
 AS=nasm
-CFLAGS=-Wall -O0 -ffreestanding -I./ -m32 -nostdlib -mgeneral-regs-only
+LDFLAGS=--oformat binary --format=elf -O0 --nmagic -nostdlib --gc-sections --script=kernel_linker.ld
+CFLAGS=-Wall -O0 -ffreestanding -I./ -m32 -nostdlib -mgeneral-regs-only --target=i386-unknown-linux-gnu
 ASFLAGS=-O0 -f bin
 BUILD_DIR=../../build
 OBJ_DIR=../../obj
@@ -16,7 +18,7 @@ x86_OBJS=$(x86_SRCS:%=$(OBJ_DIR)/%.o)
 
 all: $(BUILD_DIR)/x86/loof.img
 
-$(BUILD_DIR)/x86/loof.img: $(BUILD_DIR)/x86/boot $(BUILD_DIR)/x86/kernel
+$(BUILD_DIR)/x86/loof.img: $(BUILD_DIR)/x86/kernel $(BUILD_DIR)/x86/boot
 	dd if=/dev/zero of=$@ bs=1024 count=1440
 	dd seek=0 if=$(BUILD_DIR)/x86/boot of=$@ bs=512 conv=notrunc
 	dd seek=3 if=$(BUILD_DIR)/x86/kernel of=$@ bs=512 conv=notrunc
@@ -33,7 +35,7 @@ $(BUILD_DIR)/x86/boot:
 
 $(BUILD_DIR)/x86/kernel: $(x86_OBJS)
 	mkdir -p $(dir $@)
-	x86_64-elf-ld -o $@ $^ -m elf_i386 -Tkernel_linker.ld
+	$(LD) $(LDFLAGS) -o $@ $^
 #	x86_64-elf-objcopy -O binary --adjust-vma 0x100000 $@ $@
 
 # Build C files
