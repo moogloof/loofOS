@@ -5,22 +5,26 @@ SECTIONS {
 	.text : {
 		KEEP(*(.kernel))
 		*(.text .text.*)
-		. = ALIGN(4096);
+		. = ALIGN(512);
+	}
+
+	.rodata : {
+		*(.rodata .rodata.*)
+		. = ALIGN(512);
 	}
 
 	.data : {
-		*(.rodata .rodata.*)
 		*(.data .data.*)
-		. = ALIGN(4096);
+		. = ALIGN(512);
 	}
 
 	.bss : {
 		*(.bss .bss.*)
-		. = ALIGN(4096);
+		. = ALIGN(512);
 	}
 
 	.gdb_index : {
 		KEEP(*(.gdb_index .gdb_index.*))
-		. = ALIGN(4096);
+		. = ALIGN(512);
 	}
 }
