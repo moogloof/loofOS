@@ -18,4 +18,9 @@ SECTIONS {
 		*(.bss .bss.*)
 		. = ALIGN(4096);
 	}
+
+	.gdb_index : {
+		KEEP(*(.gdb_index .gdb_index.*))
+		. = ALIGN(4096);
+	}
 }

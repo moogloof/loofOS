@@ -1,8 +1,8 @@
 LD=ld.lld
 CC=clang
 AS=nasm
-LDFLAGS=--oformat binary --format=elf -O0 --nmagic -nostdlib --gc-sections --script=kernel_linker.ld
-CFLAGS=-Wall -O0 -ffreestanding -I./ -m32 -nostdlib -mgeneral-regs-only --target=i386-unknown-linux-gnu
+LDFLAGS=--oformat binary --format=elf -O0 --nmagic -nostdlib --gc-sections --gdb-index --script=kernel_linker.ld
+CFLAGS=-Wall -O0 -ffreestanding -I./ -m32 -nostdlib -mgeneral-regs-only --target=i386-unknown-linux-gnu -g
 ASFLAGS=-O0 -f bin
 BUILD_DIR=../../build
 OBJ_DIR=../../obj
@@ -36,6 +36,7 @@ $(BUILD_DIR)/x86/boot:
 $(BUILD_DIR)/x86/kernel: $(x86_OBJS)
 	mkdir -p $(dir $@)
 	$(LD) $(LDFLAGS) -o $@ $^
+	$(LD) --oformat elf_i386 --format=elf -O0 --nmagic -nostdlib --gc-sections --gdb-index --script=kernel_linker.ld -o $@.o $^
 #	x86_64-elf-objcopy -O binary --adjust-vma 0x100000 $@ $@
 
 # Build C files
