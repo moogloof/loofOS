@@ -8,7 +8,7 @@
 #include <core/idt.h>
 #include <mm/paging.h>
 
-__attribute__((section(".kernel"))) void kernel_main() {
+__attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Reset the vga and display stuff
 	reset_display();
 
