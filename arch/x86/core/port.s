@@ -17,7 +17,7 @@ inportb:
 global outportb
 outportb:
 	push ebp
-	mov ebp, es
+	mov ebp, esp
 
 	mov al, BYTE [ebp + 12]
 	mov edx, [ebp + 8]
