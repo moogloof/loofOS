@@ -1,3 +1,4 @@
+section .text
 global enable_paging
 enable_paging:
 	mov eax, 0xf00000

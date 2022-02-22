@@ -1,3 +1,4 @@
+section .text
 ; Input port byte function
 ; Read byte from port
 global inportb
