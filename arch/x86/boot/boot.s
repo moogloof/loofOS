@@ -198,6 +198,21 @@ load_kernel:
 		add cl, byte [kernel_load_offset]
 		mov dh, 0 ; Head
 		mov bx, 0x0 ; ES:BX sector destination
+
+		; Modulo the loaded sector by 18
+		; 18 sectors per cylinder in a 1.44 MB thingy
+		mod_loop:
+			cmp cl, 18
+			jg inc_cylinder
+			jmp load_sector_int
+
+			inc_cylinder:
+				inc dh
+				sub cl, 18
+				jmp mod_loop
+
+		load_sector_int:
+		; Load sector BIOS interrupt
 		int 0x13
 
 		; Update sector position to load
