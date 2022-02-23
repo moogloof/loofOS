@@ -1,13 +1,14 @@
 section .text
 global enable_paging
 enable_paging:
-	mov eax, 0xf00000
-	mov cr3, eax
-
 	; Enable 4 MiB pages
 	mov eax, cr4
 	or eax, 0x10
 	mov cr4, eax
+
+	; Set address of kernel page directory
+	mov eax, 0xf00000
+	mov cr3, eax
 
 	; Set paging bit of cr0 register
 	mov eax, cr0

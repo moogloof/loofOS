@@ -2,6 +2,7 @@
 #define MM_PAGING_H
 
 #include <stdint.h>
+#include <core/isr.h>
 
 // Section of physical memory set aside for users
 // Size of the page frames
@@ -34,6 +35,9 @@ typedef struct {
 
 // Initialize 32 bit paging
 void init_paging();
+
+// Page fault handler
+__attribute__((interrupt)) void pagefault_handler(interrupt_frame*);
 
 // Enable paging
 void enable_paging();

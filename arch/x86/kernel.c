@@ -38,6 +38,9 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	load_idt();
 	kernel_print("Loaded IDT.\r\n");
 
+	// Setup paging
+	init_paging();
+
 	// Unmask interrupts
 	enable_interrupts();
 	kernel_print("Interrupts enabled.\r\n");
@@ -49,9 +52,6 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	time_struct cur_time = read_time();
 	// Display time
 	kernel_print("It's %d:%d, on %d/%d/%d\r\n", (int)cur_time.hours, (int)cur_time.minutes, (int)cur_time.month, (int)cur_time.day_month, (int)cur_time.year);
-
-	// Setup paging
-	init_paging();
 
 	while (1) {
 	}

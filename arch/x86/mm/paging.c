@@ -1,5 +1,8 @@
 #include <stdint.h>
 #include <mm/paging.h>
+#include <core/isr.h>
+#include <core/idt.h>
+#include <core/panic.h>
 #include <sys/kernel_print.h>
 
 // Create a bitmap for each page in 4 GiB ram
@@ -9,7 +12,7 @@ static uint8_t pagelist_bitmap[(PAGELIST_END / PAGE_SIZE_4K) / 8];
 
 // Page directory for the kernel
 // 4MiB
-pde_4mib* kernel_memory = (pde_4mib*)KERNEL_PAGE_DIRECTORY;
+volatile pde_4mib* kernel_memory = (pde_4mib*)KERNEL_PAGE_DIRECTORY;
 
 // Initialize 32 bit paging
 void init_paging() {
@@ -28,6 +31,14 @@ void init_paging() {
 		kernel_memory[i] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i};
 	}
 
+	// Setup page faults
+	set_id(14, pagefault_handler, 0x08, IDT_PROT_TRAP, 0, 1);
+
 	// Enable paging
-//	enable_paging();
+	enable_paging();
+}
+
+// Page fault handler
+__attribute__((interrupt)) void pagefault_handler(interrupt_frame* frame) {
+	kernel_panic("Page fault. Oh noes.");
 }
