@@ -2,7 +2,7 @@ LD=ld.lld
 CC=clang
 AS=nasm
 LDFLAGS=--oformat binary --format=elf -O0 --nmagic -nostdlib --gc-sections --gdb-index --script=kernel_linker.ld
-CFLAGS=-Wall -O0 -ffreestanding -I./ -m32 -nostdlib -mgeneral-regs-only --target=i386-unknown-linux-gnu -g
+CFLAGS=-Wall -O0 -ffreestanding -I./ -m32 -nostdlib -mgeneral-regs-only -march=i386 --target=i386-unknown-linux-gnu -g
 ASFLAGS=-O0 -f bin
 BUILD_DIR=../../build
 OBJ_DIR=../../obj
