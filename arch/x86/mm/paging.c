@@ -26,7 +26,7 @@ void init_paging() {
 	}
 
 	// Set pages for kernel to cover entire RAM
-	for (int i = 0; i < 500; i++) {
+	for (int i = 0; i < 1024; i++) {
 		kernel_memory[i] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i};
 	}
 
