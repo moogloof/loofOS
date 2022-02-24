@@ -14,6 +14,12 @@ struct idt_desc {
 	uint16_t offset2;
 } __attribute__((packed)) idt[IDT_LIMIT]; // IDT buffer
 
+// The IDTR structure
+struct {
+	uint16_t size;
+	uint32_t offset;
+} __attribute__((packed)) idtr = {.size = sizeof(idt) - 1, .offset = (uint32_t)(&idt)};
+
 // Add interrupt descriptor to the IDT
 void set_id(uint8_t idt_pos, void (*offset)(interrupt_frame*), uint16_t selector, uint8_t type, uint8_t dpl, uint8_t present) {
 	// Set the ID at position in the IDT
@@ -29,12 +35,6 @@ void set_id(uint8_t idt_pos, void (*offset)(interrupt_frame*), uint16_t selector
 
 // Load the interrupt descriptor table
 void load_idt() {
-	// The IDTR structure
-	struct {
-		uint16_t size;
-		uint32_t offset;
-	} __attribute__((packed)) idtr = {.size = sizeof(idt) - 1, .offset = (uint32_t)(&idt)};
-
 	// Load the idtr
 	__asm__("lidt %0" : : "m"(idtr));
 }
