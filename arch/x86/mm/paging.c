@@ -3,7 +3,6 @@
 #include <core/isr.h>
 #include <core/idt.h>
 #include <core/panic.h>
-#include <sys/kernel_print.h>
 
 // Create a bitmap for each page in 4 GiB ram
 // 0 == available
@@ -27,7 +26,7 @@ void init_paging() {
 	}
 
 	// Set pages for kernel to cover entire RAM
-	for (int i = 0; i < 1024; i++) {
+	for (int i = 0; i < 500; i++) {
 		kernel_memory[i] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i};
 	}
 
@@ -39,6 +38,6 @@ void init_paging() {
 }
 
 // Page fault handler
-__attribute__((interrupt)) void pagefault_handler(interrupt_frame* frame) {
-	kernel_panic("Page fault. Oh noes.");
+void pagefault_handler(uint32_t eid) {
+	kernel_panic("Page fault.");
 }

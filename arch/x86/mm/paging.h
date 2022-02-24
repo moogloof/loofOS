@@ -36,8 +36,11 @@ typedef struct {
 // Initialize 32 bit paging
 void init_paging();
 
+// Page fault handler wrapper
+__attribute__((interrupt)) void pagefault_handler_wrapper(interrupt_frame*);
+
 // Page fault handler
-__attribute__((interrupt)) void pagefault_handler(interrupt_frame*);
+void pagefault_handler(uint32_t);
 
 // Enable paging
 void enable_paging();
