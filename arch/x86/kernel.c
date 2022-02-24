@@ -40,6 +40,7 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 
 	// Setup paging
 	init_paging();
+	kernel_print("Initialized paging.\r\n");
 
 	// Unmask interrupts
 	enable_interrupts();
