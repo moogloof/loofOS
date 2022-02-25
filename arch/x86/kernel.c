@@ -44,7 +44,7 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Setup paging
 	init_paging();
 	kernel_print("Initialized paging.\r\n\r\n");
-	kernel_print(" KDIR %x USTART %x UEND %x\r\n\r\n", KERNEL_PAGE_DIRECTORY, PAGELIST_START, PAGELIST_END - 1);
+	kernel_print(" KDIR %x USTART %x UEND %x UTOT %x\r\n\r\n", KERNEL_PAGE_DIRECTORY, PAGELIST_START, PAGELIST_END - 1, PAGELIST_END - PAGELIST_START);
 
 	// Unmask interrupts
 	enable_interrupts();
