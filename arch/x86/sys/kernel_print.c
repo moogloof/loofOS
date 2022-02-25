@@ -83,10 +83,6 @@ void kernel_print(const char* format, ...) {
 					// Get integer arg
 					sub_integer = va_arg(arglist, uint32_t);
 
-					// Output hex header
-					outb('0');
-					outb('x');
-
 					// Output in hex
 					for (int hex_place = 7; hex_place >= 0; hex_place--) {
 						// Output digit
