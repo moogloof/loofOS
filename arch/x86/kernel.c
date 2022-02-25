@@ -17,6 +17,9 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 
 	// Start screen stuff
 	kernel_print("Setup VGA text mode display.\r\n");
+	set_color(0, 5);
+	kernel_print("loofOS v1.0\r\n\r\n");
+	set_color(0, 0xf);
 
 	// Load the interrupt descriptor table
 	// Initialize the timer (IRQ0)
@@ -40,7 +43,8 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 
 	// Setup paging
 	init_paging();
-	kernel_print("Initialized paging.\r\n");
+	kernel_print("Initialized paging.\r\n\r\n");
+	kernel_print(" KDIR %x USTART %x UEND %x\r\n\r\n", KERNEL_PAGE_DIRECTORY, PAGELIST_START, PAGELIST_END - 1);
 
 	// Unmask interrupts
 	enable_interrupts();
@@ -48,7 +52,7 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 
 	// Initialize the RTC
 	init_rtc();
-	kernel_print("Initialized RTC.\r\n");
+	kernel_print("Initialized RTC.\r\n\r\n");
 	// Get time
 	time_struct cur_time = read_time();
 	// Display time
