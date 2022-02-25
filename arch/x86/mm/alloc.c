@@ -68,7 +68,7 @@ void* kernel_allocate(int size) {
 				for (int j = i + 1; j < i + (size_level / BLOCK_SIZE); j++) {
 					bitmap_set(j, 2);
 				}
-				return (void*)(i * BLOCK_SIZE);
+				return (void*)(i * BLOCK_SIZE + HEAP_START);
 			}
 		}
 	}
