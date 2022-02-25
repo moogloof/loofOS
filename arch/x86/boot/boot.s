@@ -200,25 +200,34 @@ load_kernel:
 		mov bx, 0x0 ; ES:BX sector destination
 
 		; Modulo the loaded sector by 18
-		; 18 sectors per cylinder in a 1.44 MB thingy
+		; 18 sectors per head in a 1.44 MB thingy
+		; 80 heads per cylinder
+		; 2 cylinders
 		mod_loop:
 			cmp cl, 18
 			jg inc_cylinder
-			jmp load_sector_int
+			jmp mod_loop2
 
 			inc_cylinder:
 				inc dh
 				sub cl, 18
-				jmp mod_loop
+		mod_loop2:
+			cmp ch, 79
+			jg inc_head
+			jmp load_sector_int
+
+			inc_head:
+				inc ch
+				sub dh, 80
 
 		load_sector_int:
 		; Load sector BIOS interrupt
 		int 0x13
 
 		; Update sector position to load
-		inc byte [kernel_load_offset]
+		inc word [kernel_load_offset]
 		; Update sectors to load
-		dec byte [kernel_size]
+		dec word [kernel_size]
 
 		; Relocate kernel sector to 0x100000 + pos
 		push ds
@@ -237,7 +246,7 @@ load_kernel:
 		pop es
 		pop ds
 		; Check if there are sectors left to load
-		cmp byte [kernel_size], 0
+		cmp word [kernel_size], 0
 		jne load_kernel_loop
 ; Set the VGA 80x25 video text mode
 vga_mode_set:
@@ -326,9 +335,9 @@ interrupt_disable_msg: db "Disabling interrupts...", 0x0d, 0x0a, 0
 pmode_enable_msg: db "Enabling protected mode...", 0x0d, 0x0a, 0
 kernel_jump_msg: db "Jumping to the kernel...", 0x0d, 0x0a, 0
 ; Size of the kernel to load
-kernel_size: db 0xff
+kernel_size: dw 0xb40
 ; Position of kernel load offset
-kernel_load_offset: db 0
+kernel_load_offset: dw 0
 
 ; GDTR
 gdtr:
@@ -374,7 +383,7 @@ kernel_jmp:
 	mov es, ax
 	mov ss, ax
 	; Set new stack
-	mov esp, 0x20000000
+	mov esp, 0x10000000
 	sub esp, 0x4
 	mov ebp, esp
 
