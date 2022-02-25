@@ -24,8 +24,10 @@ int bitmap_get(int i) {
 
 // Initialize the kernel heap
 void init_kernel_heap() {
-	// First part of heap used for the heap bitmap
-	kernel_allocate(heap_bitmap_size);
+	// First part of heap reserved for the heap bitmap
+	for (int i = 0; i < heap_bitmap_size / (BLOCK_SIZE * 4); i++) {
+		bitmap_set(i, 3);
+	}
 }
 
 // Allocate a kernel object
