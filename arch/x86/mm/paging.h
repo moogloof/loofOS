@@ -9,7 +9,7 @@
 #define PAGE_SIZE_4K 0x1000
 #define PAGE_SIZE_4M 0x400000
 // Start of the page frames
-#define PAGELIST_START 0x20000000
+#define PAGELIST_START 0x40000000
 // End of the page frames
 #define PAGELIST_END (PAGE_SIZE_4K * 0x100000)
 
