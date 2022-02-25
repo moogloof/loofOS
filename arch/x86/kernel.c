@@ -7,6 +7,7 @@
 #include <core/isr.h>
 #include <core/idt.h>
 #include <mm/paging.h>
+#include <mm/alloc.h>
 
 __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Reset the vga and display stuff
@@ -45,6 +46,9 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	init_paging();
 	kernel_print("Initialized paging.\r\n\r\n");
 	kernel_print(" KDIR %x USTART %x UEND %x UTOT %x\r\n\r\n", KERNEL_PAGE_DIRECTORY, PAGELIST_START, PAGELIST_END - 1, PAGELIST_END - PAGELIST_START);
+	// Setup the kernel heap
+	init_kernel_heap();
+	kernel_print("Initialized kernel heap.\r\n\r\n");
 
 	// Unmask interrupts
 	enable_interrupts();
