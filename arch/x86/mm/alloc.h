@@ -2,7 +2,7 @@
 #define MM_ALLOC_H
 
 // Size of smallest block
-#define BLOCK_SIZE 32
+#define BLOCK_SIZE 16
 // Start of the kernel heap
 #define HEAP_START 0x10000000
 // End of the kernel heap
