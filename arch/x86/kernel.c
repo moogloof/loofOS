@@ -50,6 +50,13 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	init_kernel_heap();
 	kernel_print("Initialized kernel heap.\r\n\r\n");
 
+	// Allocate test values
+	int* test1 = (int*)kernel_allocate(sizeof(int));
+	int* test2 = (int*)kernel_allocate(sizeof(int));
+	*test1 = 0x11223344;
+	*test2 = 0xabcdef12;
+	kernel_print(" TEST %x %x\r\n\r\n", test1, test2);
+
 	// Unmask interrupts
 	enable_interrupts();
 	kernel_print("Interrupts enabled.\r\n");
