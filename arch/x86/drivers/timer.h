@@ -14,7 +14,7 @@
 
 // Frequency for the timer
 #define TIMER_FREQ 1193182
-#define TIMER_INT_FREQ 2000
+#define TIMER_INT_FREQ 1000
 
 // Initialize the timer interrupt
 void init_timer();
