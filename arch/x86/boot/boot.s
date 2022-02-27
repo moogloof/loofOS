@@ -270,7 +270,7 @@ protected_mode:
 	mov cr0, eax
 
 	; Jump to set CS
-	jmp (gdt_code - gdt_start):kernel_jmp
+	jmp (gdt_code_kernel - gdt_start):kernel_jmp
 
 ; Test if A20 line is enabled
 a20_test:
@@ -351,20 +351,36 @@ gdt_start:
 	gdt_null:
 		dd 0
 		dd 0
-	; Code descriptor
-	gdt_code:
+	; Kernel code descriptor
+	gdt_code_kernel:
 		dw 0xffff
 		dw 0
 		db 0
 		db 1001_1010b
 		db 1100_1111b
 		db 0
-	; Data descriptor
-	gdt_data:
+	; Kernel data descriptor
+	gdt_data_kernel:
 		dw 0xffff
 		dw 0
 		db 0
 		db 1001_0010b
+		db 1100_1111b
+		db 0
+	; User code descriptor
+	gdt_code_user:
+		dw 0xffff
+		dw 0
+		db 0
+		db 1111_1010b
+		db 1100_1111b
+		db 0
+	; User data descriptor
+	gdt_data_user:
+		dw 0xffff
+		dw 0
+		db 0
+		db 1111_0010b
 		db 1100_1111b
 		db 0
 	; TSS section
@@ -378,7 +394,7 @@ gdt_end:
 kernel_jmp:
 	; Setup for protected mode
 	; Update segment registers
-	mov ax, (gdt_data - gdt_start)
+	mov ax, (gdt_data_kernel - gdt_start)
 	mov ds, ax
 	mov es, ax
 	mov ss, ax
