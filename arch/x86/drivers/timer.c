@@ -4,6 +4,10 @@
 #include <drivers/vga_text.h>
 #include <core/idt.h>
 #include <core/isr.h>
+#include <proc/process.h>
+
+// Whether context switching is enabled
+uint8_t context_switching = 0;
 
 // Initialize the timer interrupt
 void init_timer() {
@@ -25,6 +29,11 @@ void init_timer() {
 
 // Timer handler
 void timer_handler(seg_register_set seg_regs, gen_register_set gen_regs, interrupt_frame frame) {
+	if (context_switching) {
+		// Switch context
+		switch_process(&seg_regs, &gen_regs, &frame);
+	}
+
 	// Send EOI
 	outportb(PIC_COMMAND1, PIC_EOI);
 }

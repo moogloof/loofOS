@@ -9,6 +9,8 @@
 #include <mm/paging.h>
 #include <mm/alloc.h>
 
+extern uint8_t context_switching;
+
 __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Reset the vga and display stuff
 	reset_display();
@@ -68,6 +70,11 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	time_struct cur_time = read_time();
 	// Display time
 	kernel_print("It's %d:%d, on %d/%d/%d\r\n", (int)cur_time.hours, (int)cur_time.minutes, (int)cur_time.month, (int)cur_time.day_month, (int)cur_time.year);
+
+	// Start context switching and go into usermode
+	kernel_print("Enabling context switching and entering user mode.\r\n");
+
+	context_switching = 1;
 
 	while (1) {
 	}
