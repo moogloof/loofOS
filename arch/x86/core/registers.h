@@ -7,7 +7,6 @@ typedef struct {
 	uint32_t edi; // String operation registers
 	uint32_t esi;
 	uint32_t ebp; // Base pointer
-	uint32_t esp; // Stack pointer
 	uint32_t ebx; // General registers
 	uint32_t edx;
 	uint32_t ecx;
