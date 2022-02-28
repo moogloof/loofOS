@@ -8,8 +8,12 @@
 #include <core/idt.h>
 #include <mm/paging.h>
 #include <mm/alloc.h>
+#include <proc/process.h>
 
 extern uint8_t context_switching;
+extern volatile uint16_t* text_buffer;
+void foo();
+void bar();
 
 __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Reset the vga and display stuff
@@ -74,8 +78,23 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Start context switching and go into usermode
 	kernel_print("Enabling context switching and entering user mode.\r\n");
 
+	create_process(bar);
+	create_process(foo);
+
 	context_switching = 1;
 
 	while (1) {
+	}
+}
+
+void foo() {
+	while (1) {
+		text_buffer[1] = 0x0f58;
+	}
+}
+
+void bar() {
+	while (1) {
+		text_buffer[0] = 0x0441;
 	}
 }
