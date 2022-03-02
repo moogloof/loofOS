@@ -87,18 +87,18 @@ void create_process(uint32_t eip) {
 	// Set address of process
 	new_process->frame.eip = eip;
 	// Set code segment
-	new_process->frame.cs = 0x8;
+	new_process->frame.cs = 0x18 | 3;
 	// Set eflags
 	// IMPORTANT: Make sure to set the interrupt enable flag
 	new_process->frame.eflags = 1 << 9;
 	new_process->frame.esp = kernel_allocate(4096) + 4092;
-	new_process->frame.ss = 0x10;
+	new_process->frame.ss = 0x20 | 3;
 
 	// Set data segments
-	new_process->seg_regs.ds = 0x10;
-	new_process->seg_regs.es = 0x10;
-	new_process->seg_regs.fs = 0x10;
-	new_process->seg_regs.gs = 0x10;
+	new_process->seg_regs.ds = 0x20 | 3;
+	new_process->seg_regs.es = 0x20 | 3;
+	new_process->seg_regs.fs = 0x20 | 3;
+	new_process->seg_regs.gs = 0x20 | 3;
 
 	new_process->gen_regs.edi = 0;
 	new_process->gen_regs.esi = 0;

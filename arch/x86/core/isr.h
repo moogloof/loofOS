@@ -17,6 +17,7 @@
 #define PIC_DATA2 0xa1
 
 // The interrupt frame struct
+// IMPORTANT: This is only valid if the interrupt happens while the CPU is in ring 3.
 typedef struct {
 	uint32_t eip;
 	uint32_t cs;
