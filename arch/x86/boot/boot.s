@@ -385,9 +385,43 @@ gdt_start:
 		db 0
 	; TSS section
 	gdt_tss:
-		dd 0
-		dd 0
+		dw 0x6c
+		dw tss_block
+		db 0
+		db 0x89
+		db 0100_0000b
+		db 0
 gdt_end:
+
+tss_block:
+	dd 0 ; Link
+	dd 0x8000000 ; ESP0
+	dd 0x10 ; SS0
+	dd 0 ; ESP1
+	dd 0 ; SS1
+	dd 0 ; ESP2
+	dd 0 ; SS2
+	dd 0 ; CR3
+	dd 0 ; EIP
+	dd 0 ; EFLAGS
+	dd 0 ; EAX
+	dd 0 ; ECX
+	dd 0 ; EDX
+	dd 0 ; EBX
+	dd 0 ; ESP
+	dd 0 ; EBP
+	dd 0 ; ESI
+	dd 0 ; EDI
+	dd 0 ; ES
+	dd 0 ; CS
+	dd 0 ; SS
+	dd 0 ; DS
+	dd 0 ; FS
+	dd 0 ; GS
+	dd 0 ; LDTR
+	dw 0
+	dw 0 ; IOPB
+	dd 0 ; SSP
 
 [bits 32]
 ; Jump to the kernel
@@ -402,5 +436,8 @@ kernel_jmp:
 	mov esp, 0x10000000
 	sub esp, 0x4
 	mov ebp, esp
+	; Load TSS
+	mov ax, (gdt_tss - gdt_start)
+	ltr ax
 
 	jmp 0x100000
