@@ -22,12 +22,12 @@ qemu-system-x86_64 -drive file=build/x86_64/loof.img,index=0,media=disk,format=r
 ### Checklist
 (Will expand in the future)
 - Stupid Bootloader (DONE ARM, DONE x86)
-- Processes
-- Scheduler
-- Paging
+- Processes (DONE x86)
+- Scheduler (DONE x86)
+- Paging (In Progress x86)
 - Drivers
-	- Serial Output (DONE ARM)
-	- Keyboard
+	- Serial Output (DONE ARM, DONE x86)
+	- Keyboard (DONE x86)
 	- Hard-disk
 	- Terminal
 - Filesystem
