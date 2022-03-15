@@ -1,5 +1,6 @@
 #include <proc/process.h>
 #include <mm/alloc.h>
+#include <mm/paging.h>
 
 // Flag whether entering usermode for the first time or not
 static uint8_t entering_user = 1;
@@ -11,7 +12,7 @@ static process_desc* current_process = 0;
 static process_desc* previous_process = 0;
 
 // Switch context
-void switch_process(seg_register_set* seg_regs, gen_register_set* gen_regs, interrupt_frame* frame) {
+void switch_process(uint32_t* page_dir, seg_register_set* seg_regs, gen_register_set* gen_regs, interrupt_frame* frame) {
 	// No process is no switch
 	if (!current_process) {
 		return;
@@ -78,28 +79,36 @@ void switch_process(seg_register_set* seg_regs, gen_register_set* gen_regs, inte
 	frame->eflags = current_process->frame.eflags;
 	frame->esp = current_process->frame.esp;
 	frame->ss = current_process->frame.ss;
+	// Page directory
+	*page_dir = current_process->page_directory;
 }
 
 // Create a process
-void create_process(uint32_t eip) {
+void create_process(uint32_t eip, uint8_t ring) {
 	process_desc* new_process = kernel_allocate(sizeof(process_desc));
+	uint32_t code_segment = ((ring == 0) ? 0x8 : 0x18) | ring;
+	uint32_t data_segment = ((ring == 0) ? 0x10 : 0x20) | ring;
 
+	// Set process ring
+	new_process->ring = ring;
 	// Set address of process
 	new_process->frame.eip = eip;
 	// Set code segment
-	new_process->frame.cs = 0x18 | 3;
+	new_process->frame.cs = code_segment;
 	// Set eflags
 	// IMPORTANT: Make sure to set the interrupt enable flag
 	new_process->frame.eflags = 1 << 9;
+	// Setup stack
 	new_process->frame.esp = kernel_allocate(4096) + 4092;
-	new_process->frame.ss = 0x20 | 3;
+	new_process->frame.ss = data_segment;
 
 	// Set data segments
-	new_process->seg_regs.ds = 0x20 | 3;
-	new_process->seg_regs.es = 0x20 | 3;
-	new_process->seg_regs.fs = 0x20 | 3;
-	new_process->seg_regs.gs = 0x20 | 3;
+	new_process->seg_regs.ds = data_segment;
+	new_process->seg_regs.es = data_segment;
+	new_process->seg_regs.fs = data_segment;
+	new_process->seg_regs.gs = data_segment;
 
+	// Set general registers
 	new_process->gen_regs.edi = 0;
 	new_process->gen_regs.esi = 0;
 	new_process->gen_regs.ebp = new_process->frame.esp;
@@ -108,8 +117,17 @@ void create_process(uint32_t eip) {
 	new_process->gen_regs.ecx = 0;
 	new_process->gen_regs.eax = 0;
 
+	// Set the page directory
+	if (ring == 0) {
+		new_process->page_directory = KERNEL_PAGE_DIRECTORY;
+	} else {
+		// TODO
+	}
+
+	// Set state of process as running
 	new_process->state = 0;
 
+	// Insert process into process queue
 	if (previous_process) {
 		previous_process->next = new_process;
 	}

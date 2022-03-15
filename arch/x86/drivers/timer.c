@@ -28,10 +28,10 @@ void init_timer() {
 }
 
 // Timer handler
-void timer_handler(seg_register_set seg_regs, gen_register_set gen_regs, interrupt_frame frame) {
+void timer_handler(uint32_t page_dir, seg_register_set seg_regs, gen_register_set gen_regs, interrupt_frame frame) {
 	if (context_switching) {
 		// Switch context
-		switch_process(&seg_regs, &gen_regs, &frame);
+		switch_process(&page_dir, &seg_regs, &gen_regs, &frame);
 	}
 
 	// Send EOI

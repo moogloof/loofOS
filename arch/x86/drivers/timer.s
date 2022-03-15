@@ -16,8 +16,16 @@ timer_handler_wrapper:
 	push es
 	push ds
 
+	; Push page directory
+	mov eax, cr3
+	push eax
+
 	; Call the handler
 	call timer_handler
+
+	; Pop page directory
+	pop eax
+	mov cr3, eax
 
 	; Pop all the stuff
 	pop ds
