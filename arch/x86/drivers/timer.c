@@ -29,6 +29,9 @@ void init_timer() {
 
 // Timer handler
 void timer_handler(uint32_t page_dir, seg_register_set seg_regs, gen_register_set gen_regs, interrupt_frame frame) {
+	// Disable while handling
+	disable_interrupts();
+
 	if (context_switching) {
 		// Switch context
 		switch_process(&page_dir, &seg_regs, &gen_regs, &frame);
@@ -36,4 +39,7 @@ void timer_handler(uint32_t page_dir, seg_register_set seg_regs, gen_register_se
 
 	// Send EOI
 	outportb(PIC_COMMAND1, PIC_EOI);
+
+	// Enable once done handling
+	enable_interrupts();
 }
