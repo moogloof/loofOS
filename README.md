@@ -16,7 +16,7 @@ qemu-system-aarch64 -M raspi2 -kernel PATH/TO/KERNEL
 #### For x86
 ```sh
 # Run with qemu emulator also
-qemu-system-x86_64 -drive file=build/x86_64/loof.img,index=0,media=disk,format=raw
+qemu-system-i386 -cdrom build/x86/loof.iso
 ```
 
 ### Checklist
