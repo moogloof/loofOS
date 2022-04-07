@@ -73,9 +73,9 @@ void pagefault_handler(uint32_t);
 void enable_paging();
 
 // Allocate a page
-void allocate_page();
+void allocate_page(pde_4kib*, uint32_t);
 
 // Free a page
-void free_page();
+void free_page(pde_4kib*, uint32_t);
 
 #endif

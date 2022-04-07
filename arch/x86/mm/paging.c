@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <mm/paging.h>
+#include <mm/alloc.h>
 #include <core/isr.h>
 #include <core/idt.h>
 #include <core/panic.h>
@@ -40,4 +41,64 @@ void init_paging() {
 // Page fault handler
 void pagefault_handler(uint32_t eid) {
 	kernel_panic("Page fault.");
+}
+
+// Allocate a page
+void allocate_page(pde_4kib* page_dir, uint32_t addr) {
+	// Get page directory entry
+	int dir_index = addr >> 22;
+	// Get page table entry
+	int table_index = (addr << 10) >> 22;
+	// Page table
+	pte_4kib* page_table;
+	// Address of new page
+	uint32_t new_page = 0;
+
+	// Check if the table exists, if not, make one
+	if (page_dir[dir_index].present) {
+		page_table = page_dir[dir_index].addr << 12;
+	} else {
+		page_table = kernel_allocate(sizeof(pte_4kib) * 1024);
+		page_dir[dir_index] = (pde_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .ignored = 0, .ps = 0, .ignored2 = 0, .addr = (uint32_t)page_table >> 12};
+	}
+
+	// Search for an available page
+	for (int i = 0; i < PAGELIST_END / PAGE_SIZE_4K; i++) {
+		if (!((pagelist_bitmap[i / 8] >> (i % 8)) & 1)) {
+			// Get the new page
+			new_page = i;
+			// Set the new page as used
+			pagelist_bitmap[i / 8] |= 1 << (i % 8);
+			break;
+		}
+	}
+
+	// Allocate a page if none exists
+	if (!page_table[table_index].present) {
+		page_table[table_index] = (pte_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .pat = 0, .g = 0, .ignored = 0, .addr = new_page};
+	}
+}
+
+// Free a page
+void free_page(pde_4kib* page_dir, uint32_t addr) {
+	// Get page directory entry
+	int dir_index = addr >> 22;
+	// Get page table entry
+	int table_index = (addr << 10) >> 22;
+	// Page table
+	pte_4kib* page_table;
+
+	// Checck if the table exists
+	if (page_dir[dir_index].present) {
+		page_table = page_dir[dir_index].addr << 12;
+
+		// Check if the page exists
+		if (page_table[table_index].present) {
+			// Set the page as available
+			int i = page_table[table_index].addr;
+			pagelist_bitmap[i / 8] &= ~(1 << (i % 8));
+			// Erase the page from the table
+			page_table[table_index] = {0};
+		}
+	}
 }
