@@ -98,7 +98,7 @@ void free_page(pde_4kib* page_dir, uint32_t addr) {
 			int i = page_table[table_index].addr;
 			pagelist_bitmap[i / 8] &= ~(1 << (i % 8));
 			// Erase the page from the table
-			page_table[table_index] = {0};
+			page_table[table_index] = (pte_4kib){0};
 		}
 	}
 }

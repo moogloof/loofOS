@@ -121,7 +121,7 @@ void create_process(uint32_t eip, uint8_t ring) {
 	if (ring == 0) {
 		new_process->page_directory = KERNEL_PAGE_DIRECTORY;
 	} else {
-		// TODO
+		new_process->page_directory = kernel_allocate(sizeof(pde_4kib) * 1024);
 	}
 
 	// Set state of process as running
