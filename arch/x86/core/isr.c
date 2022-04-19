@@ -32,16 +32,6 @@ void init_pic() {
 	outportb(PIC_DATA2, 0);
 }
 
-// Enable interrupts
-void enable_interrupts() {
-	__asm__("sti");
-}
-
-// Disable interrupts
-void disable_interrupts() {
-	__asm__("cli");
-}
-
 // Enable and add exceptions
 void init_exceptions() {
 	// Set the divide-by-zero exception
