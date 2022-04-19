@@ -10,6 +10,8 @@
 #define PAGE_SIZE_4M 0x400000
 // Number of 4K pages
 #define PAGE_LENGTH_4K 0x100000
+// Number of 4M pages
+#define PAGE_LENGTH_4M 1024
 // Start of the page frames
 #define PAGELIST_START 0x40000000
 // End of the page frames
