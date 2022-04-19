@@ -8,7 +8,7 @@
 // Create a bitmap for each page in 4 GiB ram
 // 0 == available
 // 1 == used
-static uint8_t pagelist_bitmap[(PAGELIST_END / PAGE_SIZE_4K) / 8];
+static uint8_t pagelist_bitmap[PAGE_LENGTH_4K / 8];
 
 // Page directory for the kernel
 // 4MiB
@@ -17,12 +17,12 @@ volatile pde_4mib* kernel_memory = (pde_4mib*)KERNEL_PAGE_DIRECTORY;
 // Initialize 32 bit paging
 void init_paging() {
 	// Make everything available first
-	for (int i = 0; i < PAGELIST_END / PAGE_SIZE_4K / 8; i++) {
+	for (int i = 0; i < PAGE_LENGTH_4K / 8; i++) {
 		pagelist_bitmap[i] = 0;
 	}
 
 	// Reserve until pagelist start for kernel and hardware
-	for (int i = 0; i < PAGELIST_START / PAGE_SIZE_4K / 8; i++) {
+	for (int i = 0; i < PAGE_LENGTH_4K / 8; i++) {
 		pagelist_bitmap[i] = 0xff;
 	}
 
@@ -63,7 +63,7 @@ void allocate_page(pde_4kib* page_dir, uint32_t addr) {
 	}
 
 	// Search for an available page
-	for (int i = 0; i < PAGELIST_END / PAGE_SIZE_4K; i++) {
+	for (int i = 0; i < PAGE_LENGTH_4K; i++) {
 		if (!((pagelist_bitmap[i / 8] >> (i % 8)) & 1)) {
 			// Get the new page
 			new_page = i;
