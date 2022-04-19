@@ -24,6 +24,6 @@ void init_timer();
 __attribute__((interrupt)) void timer_handler_wrapper(interrupt_frame*);
 
 // Timer handler
-void timer_handler(uint32_t, seg_register_set, gen_register_set, interrupt_frame);
+uint32_t timer_handler(seg_register_set, gen_register_set, interrupt_frame);
 
 #endif

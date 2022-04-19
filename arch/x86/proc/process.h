@@ -16,7 +16,7 @@ typedef struct process_desc {
 } __attribute__((packed)) process_desc;
 
 // Switch context
-void switch_process(uint32_t*, seg_register_set*, gen_register_set*, interrupt_frame*);
+uint32_t switch_process(seg_register_set*, gen_register_set*, interrupt_frame*);
 
 // Create a process
 void create_process(uint32_t, uint8_t);

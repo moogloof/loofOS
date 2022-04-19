@@ -12,10 +12,10 @@ static process_desc* current_process = 0;
 static process_desc* previous_process = 0;
 
 // Switch context
-void switch_process(uint32_t* page_dir, seg_register_set* seg_regs, gen_register_set* gen_regs, interrupt_frame* frame) {
+uint32_t switch_process(seg_register_set* seg_regs, gen_register_set* gen_regs, interrupt_frame* frame) {
 	// No process is no switch
 	if (!current_process) {
-		return;
+		return KERNEL_PAGE_DIRECTORY;
 	}
 
 	if (!entering_user) {
@@ -80,7 +80,7 @@ void switch_process(uint32_t* page_dir, seg_register_set* seg_regs, gen_register
 	frame->esp = current_process->frame.esp;
 	frame->ss = current_process->frame.ss;
 	// Page directory
-	*page_dir = current_process->page_directory;
+	return current_process->page_directory;
 }
 
 // Create a process
@@ -122,6 +122,7 @@ void create_process(uint32_t eip, uint8_t ring) {
 		new_process->page_directory = KERNEL_PAGE_DIRECTORY;
 	} else {
 		new_process->page_directory = kernel_allocate(sizeof(pde_4kib) * 1024);
+//		allocate_page(new_process->page_directory, 0);
 	}
 
 	// Set state of process as running
