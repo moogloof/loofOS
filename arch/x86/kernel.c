@@ -75,7 +75,7 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Start context switching and go into usermode
 	kernel_print("Enabling context switching and entering user mode.\r\n");
 
-	create_process(0, 3);
+	create_process(0x40000000, 3);
 
 	context_switching = 1;
 
