@@ -22,7 +22,7 @@ void init_paging() {
 	}
 
 	// Reserve until pagelist start for kernel and hardware
-	for (int i = 0; i < PAGE_LENGTH_4K / 8; i++) {
+	for (int i = 0; i < PAGE_LENGTH_4K / 4 / 8; i++) {
 		pagelist_bitmap[i] = 0xff;
 	}
 
