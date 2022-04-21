@@ -8,7 +8,7 @@
 // Create a bitmap for each page in 4 GiB ram
 // 0 == available
 // 1 == used
-static uint8_t pagelist_bitmap[PAGE_LENGTH_4K / 8];
+static uint8_t* pagelist_bitmap;
 
 // Page directory for the kernel
 // 4MiB
@@ -16,6 +16,9 @@ volatile pde_4mib* kernel_memory = (pde_4mib*)KERNEL_PAGE_DIRECTORY;
 
 // Initialize 32 bit paging
 void init_paging() {
+	// Allocate a pagelist_bitmap
+	pagelist_bitmap = kernel_allocate(PAGE_LENGTH_4K / 8);
+
 	// Make everything available first
 	for (int i = 0; i < PAGE_LENGTH_4K / 8; i++) {
 		pagelist_bitmap[i] = 0;
