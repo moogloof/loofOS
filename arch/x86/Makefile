@@ -21,7 +21,7 @@ all: $(BUILD_DIR)/x86/loof.img
 $(BUILD_DIR)/x86/loof.img: $(BUILD_DIR)/x86/kernel $(BUILD_DIR)/x86/boot
 	dd if=/dev/zero of=$@ bs=1024 count=1440
 	dd seek=0 if=$(BUILD_DIR)/x86/boot of=$@ bs=512 conv=notrunc
-	dd seek=3 if=$(BUILD_DIR)/x86/kernel of=$@ bs=512 conv=notrunc
+	dd seek=5 if=$(BUILD_DIR)/x86/kernel of=$@ bs=512 conv=notrunc
 	# Formatting
 	mkdir $(BUILD_DIR)/x86/iso
 	cp $@ $(BUILD_DIR)/x86/iso/

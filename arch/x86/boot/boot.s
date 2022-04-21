@@ -194,7 +194,7 @@ load_kernel:
 		mov ah, 0x2
 		mov al, 1
 		mov ch, 0 ; Cylinder
-		mov cl, 4 ; Sector
+		mov cl, 6 ; Sector
 		add cl, byte [kernel_load_offset]
 		mov dh, 0 ; Head
 		mov bx, 0x0 ; ES:BX sector destination
