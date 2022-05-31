@@ -5,6 +5,8 @@
 #include <core/idt.h>
 #include <core/isr.h>
 #include <proc/process.h>
+#include <mm/paging.h>
+#include <common.h>
 
 // Whether context switching is enabled
 uint8_t context_switching = 0;
@@ -29,10 +31,8 @@ void init_timer() {
 
 // Timer handler
 uint32_t timer_handler(seg_register_set seg_regs, gen_register_set gen_regs, interrupt_frame frame) {
-	// Disable while handling
-	disable_interrupts();
 	// Switched cr3
-	uint32_t new_cr3 = 0xf00000;
+	uint32_t new_cr3 = KERNEL_PAGE_DIRECTORY - KERNEL_BASE;
 
 	if (context_switching) {
 		// Switch context
@@ -41,9 +41,6 @@ uint32_t timer_handler(seg_register_set seg_regs, gen_register_set gen_regs, int
 
 	// Send EOI
 	outportb(PIC_COMMAND1, PIC_EOI);
-
-	// Enable once done handling
-	enable_interrupts();
 
 	return new_cr3;
 }

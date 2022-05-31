@@ -2,12 +2,13 @@
 #define RTC_DRIVER_H
 
 #include <stdint.h>
+#include <common.h>
 
 // Define ports of RTC
 // Index register port
-#define RTC_INDEX 0x70
+#define RTC_INDEX (KERNEL_BASE + 0x70)
 // Register data port
-#define RTC_DATA 0x71
+#define RTC_DATA (KERNEL_BASE + 0x71)
 
 // Define registers of RTC
 // Current second

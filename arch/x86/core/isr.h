@@ -2,19 +2,20 @@
 #define _ISR_H
 
 #include <stdint.h>
+#include <common.h>
 
 // Define EOI code
 #define PIC_EOI 0x20
 
 // Define command and data ports
 // Master PIC command port
-#define PIC_COMMAND1 0x20
+#define PIC_COMMAND1 (KERNEL_BASE + 0x20)
 // Master PIC data port
-#define PIC_DATA1 0x21
+#define PIC_DATA1 (KERNEL_BASE + 0x21)
 // Slave PIC command port
-#define PIC_COMMAND2 0xa0
+#define PIC_COMMAND2 (KERNEL_BASE + 0xa0)
 // Slave PIC data port
-#define PIC_DATA2 0xa1
+#define PIC_DATA2 (KERNEL_BASE + 0xa1)
 
 // The interrupt frame struct
 // IMPORTANT: This is only valid if the interrupt happens while the CPU is in ring 3.

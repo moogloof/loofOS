@@ -2,14 +2,15 @@
 #define PS2_CONTROLLER_DRIVER_H
 
 #include <stdint.h>
+#include <common.h>
 
 // PS/2 Controller IO ports
 // Data port
-#define PS2_DATA 0x60
+#define PS2_DATA (KERNEL_BASE + 0x60)
 // Status port
-#define PS2_STATUS 0x64
+#define PS2_STATUS (KERNEL_BASE + 0x64)
 // Command port
-#define PS2_COMMAND 0x64
+#define PS2_COMMAND (KERNEL_BASE + 0x64)
 
 // Initialize the PS/2 Controller
 void init_ps2_controller();

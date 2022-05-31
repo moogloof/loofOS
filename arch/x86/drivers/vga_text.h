@@ -1,11 +1,13 @@
 #ifndef VGA_TEXT_DRIVER_H
 #define VGA_TEXT_DRIVER_H
 
+#include <common.h>
+
 // VGA text ports
 // VGA text index port
-#define VGA_TEXT_INDEX 0x3d4
+#define VGA_TEXT_INDEX (KERNEL_BASE + 0x3d4)
 // VGA text data port
-#define VGA_TEXT_DATA 0x3d5
+#define VGA_TEXT_DATA (KERNEL_BASE + 0x3d5)
 
 // Display a character on screen
 void display_char(char, int, int);

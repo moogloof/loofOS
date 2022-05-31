@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <core/isr.h>
+#include <common.h>
 
 // Section of physical memory set aside for users
 // Size of the page frames
@@ -13,12 +14,12 @@
 // Number of 4M pages
 #define PAGE_LENGTH_4M 1024
 // Start of the page frames
-#define PAGELIST_START 0x40000000
+#define PAGELIST_START 0x00000000
 // End of the page frames
 #define PAGELIST_END (PAGE_SIZE_4K * PAGE_LENGTH_4K)
 
 // Page directory address for kernel
-#define KERNEL_PAGE_DIRECTORY 0xf00000
+#define KERNEL_PAGE_DIRECTORY (KERNEL_BASE + 0xf00000)
 
 // Page directory entry for 4 MiB
 typedef struct {

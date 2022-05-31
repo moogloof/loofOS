@@ -1,9 +1,10 @@
 #include <stdint.h>
+#include <common.h>
 #include <drivers/vga_text.h>
 #include <core/port.h>
 
 // The VGA text buffer is at 0xb8000
-volatile uint16_t* text_buffer = (uint16_t*)0xb8000;
+volatile uint16_t* text_buffer = (uint16_t*)(0xb8000 + KERNEL_BASE);
 // The color of the writing
 uint8_t color = 0x0f;
 

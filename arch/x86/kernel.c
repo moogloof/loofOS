@@ -45,10 +45,6 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	load_idt();
 	kernel_print("Loaded IDT.\r\n");
 
-	// Setup paging
-	init_paging();
-	kernel_print("Initialized paging.\r\n\r\n");
-	kernel_print(" KDIR %x USTART %x UEND %x UTOT %x\r\n\r\n", KERNEL_PAGE_DIRECTORY, PAGELIST_START, PAGELIST_END - 1, PAGELIST_END - PAGELIST_START);
 	// Setup the kernel heap
 	init_kernel_heap();
 	kernel_print("Initialized kernel heap.\r\n\r\n");
@@ -59,6 +55,11 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	*test1 = 0x11223344;
 	*test2 = 0xabcdef12;
 	kernel_print(" TEST %x %x\r\n\r\n", test1, test2);
+
+	// Setup paging
+	init_paging();
+	kernel_print("Initialized paging.\r\n\r\n");
+	kernel_print(" KDIR %x USTART %x UEND %x UTOT %x\r\n\r\n", KERNEL_PAGE_DIRECTORY, PAGELIST_START, PAGELIST_END - 1, PAGELIST_END - PAGELIST_START);
 
 	// Unmask interrupts
 	enable_interrupts();
@@ -75,7 +76,7 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Start context switching and go into usermode
 	kernel_print("Enabling context switching and entering user mode.\r\n");
 
-	create_process(0x40000000, 3);
+//	create_process(0x40000000, 3);
 
 	context_switching = 1;
 

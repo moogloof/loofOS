@@ -10,7 +10,7 @@
 static uint8_t* heap_bitmap = HEAP_START;
 
 // Size of heap bitmap
-static int heap_bitmap_size = (HEAP_END - HEAP_START) / (BLOCK_SIZE * 4);
+static int heap_bitmap_size = HEAP_LENGTH / (BLOCK_SIZE * 4);
 
 // Bitmap set helper
 void bitmap_set(int i, int val) {
@@ -36,7 +36,7 @@ void* kernel_allocate(int size) {
 	int size_level = BLOCK_SIZE;
 
 	// No invalid sizes
-	if (size > (HEAP_END - HEAP_START)) {
+	if (size > HEAP_LENGTH) {
 		kernel_panic("Could not allocate. Object too big.");
 	}
 
@@ -83,7 +83,7 @@ void kernel_free(void* addr) {
 	int bitmap_addr = ((int)addr - HEAP_START) / BLOCK_SIZE;
 
 	// Make sure the address is within the heap
-	if ((int)addr < HEAP_START || (int)addr > HEAP_END - 1) {
+	if ((uint32_t)addr < HEAP_START || (uint32_t)addr > HEAP_END - 1) {
 		kernel_panic("Could not free memory. Outside of heap.");
 	} else if (bitmap_get(bitmap_addr) == 3) {
 		// Make sure the allocated address is not reserved

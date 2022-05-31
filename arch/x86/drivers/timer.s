@@ -1,6 +1,9 @@
 section .text
 global timer_handler_wrapper
 timer_handler_wrapper:
+	; Disable interrupts while handling
+	cli
+
 	; Push for gen_register_set struct
 	push eax
 	push ecx
@@ -34,6 +37,9 @@ timer_handler_wrapper:
 	pop edx
 	pop ecx
 	pop eax
+
+	; Enable interrupts after done
+	sti
 
 	; IRET
 	iret

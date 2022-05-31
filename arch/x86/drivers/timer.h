@@ -4,14 +4,15 @@
 #include <stdint.h>
 #include <core/isr.h>
 #include <core/registers.h>
+#include <common.h>
 
 // Peripheral ports for timer
 // PIT channels
-#define TIMER_CHANNEL0 0x40
-#define TIMER_CHANNEL1 0x41
-#define TIMER_CHANNEL2 0x42
+#define TIMER_CHANNEL0 (KERNEL_BASE + 0x40)
+#define TIMER_CHANNEL1 (KERNEL_BASE + 0x41)
+#define TIMER_CHANNEL2 (KERNEL_BASE + 0x42)
 // PIT mode
-#define TIMER_MODE 0x43
+#define TIMER_MODE (KERNEL_BASE + 0x43)
 
 // Frequency for the timer
 #define TIMER_FREQ 1193182
