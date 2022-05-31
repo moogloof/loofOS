@@ -395,7 +395,7 @@ gdt_end:
 
 tss_block:
 	dd 0 ; Link
-	dd 0x8000000 ; ESP0
+	dd 0xc8000000 ; ESP0
 	dd 0x10 ; SS0
 	dd 0 ; ESP1
 	dd 0 ; SS1
@@ -435,9 +435,46 @@ kernel_jmp:
 	; Set new stack
 	mov esp, 0x10000000
 	sub esp, 0x4
+	add esp, 0xc0000000
 	mov ebp, esp
 	; Load TSS
 	mov ax, (gdt_tss - gdt_start)
 	ltr ax
+; Map kernel to high memory before jumping
+map_high_mem:
+	; Make temporary kernel page directory
+	; Index
+	mov edx, 256
+	; Address of kernel page dir
+	mov edi, 0xf00000
+	; Set page dir entry
+	mov eax, 0000_0000_0000_0000_0000_0000_1000_0011b
+	; Set boot page dir entry so this doesn't crash
+	mov [edi], eax
 
-	jmp 0x100000
+	add edi, 0xc00
+	map_high_loop:
+		; Check whether done
+		cmp edx, 0
+		je map_high_mem_exit
+
+		; Copy to high mem
+		mov [edi], eax
+		add eax, 0x400000
+		add edi, 4
+
+		dec edx
+
+		jmp map_high_loop
+	map_high_mem_exit:
+		; Setup temp paging
+		mov eax, cr4
+		or eax, 0x10
+		mov cr4, eax
+		mov eax, 0xf00000
+		mov cr3, eax
+		mov eax, cr0
+		or eax, 0x80000001
+		mov cr0, eax
+
+	jmp 0xc0100000
