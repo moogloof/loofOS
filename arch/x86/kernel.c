@@ -25,6 +25,17 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	kernel_print("loofOS v1.0\r\n\r\n");
 	set_color(0, 0xf);
 
+	// Setup the kernel heap
+	init_kernel_heap();
+	kernel_print("Initialized kernel heap.\r\n\r\n");
+
+	// Allocate test values
+	int* test1 = (int*)kernel_allocate(sizeof(int));
+	int* test2 = (int*)kernel_allocate(sizeof(int));
+	*test1 = 0x11223344;
+	*test2 = 0xabcdef12;
+	kernel_print(" TEST %x %x\r\n\r\n", test1, test2);
+
 	// Load the interrupt descriptor table
 	// Initialize the timer (IRQ0)
 	init_timer();
@@ -44,17 +55,6 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Load the IDT
 	load_idt();
 	kernel_print("Loaded IDT.\r\n");
-
-	// Setup the kernel heap
-	init_kernel_heap();
-	kernel_print("Initialized kernel heap.\r\n\r\n");
-
-	// Allocate test values
-	int* test1 = (int*)kernel_allocate(sizeof(int));
-	int* test2 = (int*)kernel_allocate(sizeof(int));
-	*test1 = 0x11223344;
-	*test2 = 0xabcdef12;
-	kernel_print(" TEST %x %x\r\n\r\n", test1, test2);
 
 	// Setup paging
 	init_paging();

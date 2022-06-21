@@ -15,6 +15,9 @@
 // Define IRQ vector offsets
 #define IRQ_OFFSET 0x20
 
+// Initialize IDT structures
+void init_idt();
+
 // Add interrupt descriptor to the IDT
 void set_id(uint8_t, void (*)(interrupt_frame*), uint16_t, uint8_t, uint8_t, uint8_t);
 

@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <core/idt.h>
 #include <core/isr.h>
+#include <mm/alloc.h>
 
 // The interrupt descriptor structure
 struct idt_desc {
@@ -12,13 +13,20 @@ struct idt_desc {
 	uint8_t dpl:2;
 	uint8_t present:1;
 	uint16_t offset2;
-} __attribute__((packed)) idt[IDT_LIMIT]; // IDT buffer
+} __attribute__((packed)) *idt; // IDT buffer
 
 // The IDTR structure
-struct {
+struct idtr_desc {
 	uint16_t size;
 	uint32_t offset;
-} __attribute__((packed)) idtr = {.size = sizeof(idt) - 1, .offset = (uint32_t)(&idt)};
+} __attribute__((packed)) idtr;
+
+// Initialize IDT structures
+void init_idt() {
+	int idt_len = sizeof(struct idt_desc) * IDT_LIMIT;
+	idt = kernel_allocate(idt_len);
+	idtr = (struct idtr_desc){.size = idt_len - 1, .offset = (int32_t)(idt)};
+}
 
 // Add interrupt descriptor to the IDT
 void set_id(uint8_t idt_pos, void (*offset)(interrupt_frame*), uint16_t selector, uint8_t type, uint8_t dpl, uint8_t present) {
