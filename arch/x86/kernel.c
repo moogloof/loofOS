@@ -37,6 +37,7 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	kernel_print(" TEST %x %x\r\n\r\n", test1, test2);
 
 	// Load the interrupt descriptor table
+	init_idt();
 	// Initialize the timer (IRQ0)
 	init_timer();
 	kernel_print("Initialized timer.\r\n");
