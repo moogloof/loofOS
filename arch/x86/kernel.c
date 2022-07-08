@@ -36,6 +36,9 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	*test2 = 0xabcdef12;
 	kernel_print(" TEST %x %x\r\n\r\n", test1, test2);
 
+	// Load the GDT
+	init_gdt();
+
 	// Load the interrupt descriptor table
 	init_idt();
 	// Initialize the timer (IRQ0)
