@@ -1,4 +1,5 @@
 #include <proc/process.h>
+#include <common.h>
 #include <mm/alloc.h>
 #include <mm/paging.h>
 
@@ -80,7 +81,7 @@ uint32_t switch_process(seg_register_set* seg_regs, gen_register_set* gen_regs, 
 	frame->esp = current_process->frame.esp;
 	frame->ss = current_process->frame.ss;
 	// Page directory
-	return current_process->page_directory;
+	return current_process->page_directory - KERNEL_BASE;
 }
 
 // Create a process
