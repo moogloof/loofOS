@@ -125,8 +125,21 @@ void create_process(uint32_t eip, uint8_t ring) {
 		new_process->page_directory = kernel_allocate(sizeof(pde_4kib) * 1024);
 		// Copy kernel space to user space
 		for (int i = 0; i < PAGE_LENGTH_4M / 4; i++) {
-			((pde_4mib*)new_process->page_directory)[i + 768] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i};
+			((pde_4mib*)new_process->page_directory)[i + 768] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 1, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i};
 		}
+		// Allow access to the stack in the kernel heap
+		// Calculate base address of stack
+		uint32_t base_esp_addr = new_process->frame.esp - 4092;
+		// Create new PTE for specifying 4KiB block stack
+		void* new_pte = (uint32_t)kernel_allocate(sizeof(pte_4kib) * 1024);
+		// Set PDE
+		((pde_4kib*)new_process->page_directory)[base_esp_addr >> 22] = (pde_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .ignored = 0, .ps = 0, .ignored2 = 0, .addr = (uint32_t)new_pte >> 12};
+		// Set all PTEs to invalid except allowed stack
+		for (int i = 0; i < 1024; i++) {
+			((pte_4kib*)new_pte)[i] = (pte_4kib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .pat = 0, .g = 1, .ignored = 0, .addr = ((base_esp_addr >> 22) << 10) + i};
+		}
+		// Set the PTE for the allowed stack
+		((pte_4kib*)new_pte)[(base_esp_addr << 10) >> 22] = (pte_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .pat = 0, .g = 1, .ignored = 0, .addr = base_esp_addr >> 12};
 	}
 
 	// Set state of process as running

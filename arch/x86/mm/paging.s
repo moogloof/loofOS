@@ -4,6 +4,7 @@ enable_paging:
 	; Enable 4 MiB pages
 	mov eax, cr4
 	or eax, 0x10
+	or eax, 0x90
 	mov cr4, eax
 
 	; Set address of kernel page directory
