@@ -125,7 +125,7 @@ void create_process(uint32_t eip, uint8_t ring) {
 		new_process->page_directory = kernel_allocate(sizeof(pde_4kib) * 1024);
 		// Copy kernel space to user space
 		for (int i = 0; i < PAGE_LENGTH_4M / 4; i++) {
-			((pde_4mib*)new_process->page_directory)[i + 768] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 1, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i};
+			((pde_4mib*)new_process->page_directory)[i + 768] = ((pde_4mib*)KERNEL_PAGE_DIRECTORY)[i + 768];
 		}
 		// Allow access to the stack in the kernel heap
 		// Calculate base address of stack
