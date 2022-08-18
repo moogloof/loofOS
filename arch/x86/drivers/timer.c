@@ -30,17 +30,12 @@ void init_timer() {
 }
 
 // Timer handler
-uint32_t timer_handler(seg_register_set seg_regs, gen_register_set gen_regs, interrupt_frame frame) {
-	// Switched cr3
-	uint32_t new_cr3 = KERNEL_PAGE_DIRECTORY - KERNEL_BASE;
-
+void timer_handler(seg_register_set seg_regs, gen_register_set gen_regs, interrupt_frame frame) {
 	if (context_switching) {
 		// Switch context
-		new_cr3 = switch_process(&seg_regs, &gen_regs, &frame);
+		switch_process(seg_regs, gen_regs, frame);
 	}
 
 	// Send EOI
 	outportb(PIC_COMMAND1, PIC_EOI);
-
-	return new_cr3;
 }

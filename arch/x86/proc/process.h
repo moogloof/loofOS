@@ -1,6 +1,7 @@
 #ifndef PROC_PROCESS_H
 #define PROC_PROCESS_H
 
+#include <stdint.h>
 #include <core/isr.h>
 #include <core/registers.h>
 
@@ -16,7 +17,10 @@ typedef struct process_desc {
 } __attribute__((packed)) process_desc;
 
 // Switch context
-uint32_t switch_process(seg_register_set*, gen_register_set*, interrupt_frame*);
+void switch_process(seg_register_set, gen_register_set, interrupt_frame);
+
+// Switch process context
+void switch_context(seg_register_set, gen_register_set, interrupt_frame, uint32_t);
 
 // Create a process
 void create_process(uint32_t, uint8_t);

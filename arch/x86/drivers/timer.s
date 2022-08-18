@@ -22,9 +22,6 @@ timer_handler_wrapper:
 	; Call the handler
 	call timer_handler
 
-	; Pop page directory
-	mov cr3, eax
-
 	; Pop all the stuff
 	pop ds
 	pop es
