@@ -14,6 +14,7 @@ static int heap_bitmap_size = HEAP_LENGTH / (BLOCK_SIZE * 4);
 
 // Bitmap set helper
 void bitmap_set(int i, int val) {
+	heap_bitmap[i / 4] &= ~(3 << (2 * (i % 4)));
 	heap_bitmap[i / 4] |= (val & 3) << (2 * (i % 4));
 }
 
@@ -24,6 +25,10 @@ int bitmap_get(int i) {
 
 // Initialize the kernel heap
 void init_kernel_heap() {
+	// Clear the bitmap first
+	for (int i = 0; i < heap_bitmap_size; i++) {
+		bitmap_set(i, 0);
+	}
 	// First part of heap reserved for the heap bitmap
 	for (int i = 0; i < heap_bitmap_size / BLOCK_SIZE; i++) {
 		bitmap_set(i, 3);
