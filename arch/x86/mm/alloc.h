@@ -8,7 +8,7 @@
 // Start of the kernel heap
 #define HEAP_START (KERNEL_BASE + 0x10000000)
 // End of the kernel heap
-#define HEAP_END (KERNEL_BASE + 0x40000000)
+#define HEAP_END (KERNEL_BASE + 0x3ffffff0)
 // Length of the kernel heap
 #define HEAP_LENGTH (HEAP_END - HEAP_START)
 
