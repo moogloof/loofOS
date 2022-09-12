@@ -47,7 +47,7 @@ void switch_process(seg_register_set seg_regs, gen_register_set gen_regs, interr
 		entering_user = 0;
 	}
 
-	switch_context(current_process->seg_regs, current_process->gen_regs, current_process->frame, current_process->page_directory);
+	switch_context(current_process->seg_regs, current_process->gen_regs, current_process->frame, current_process->page_directory - KERNEL_BASE);
 }
 
 // Create a process
@@ -96,16 +96,19 @@ void create_process(uint32_t eip, uint8_t ring) {
 		// Allow access to the stack in the kernel heap
 		// Calculate base address of stack
 		uint32_t base_esp_addr = new_process->frame.esp - 4092;
+		((pde_4mib*)new_process->page_directory)[base_esp_addr >> 22].us = 1;
+		/*
 		// Create new PTE for specifying 4KiB block stack
 		void* new_pte = (uint32_t)kernel_allocate(sizeof(pte_4kib) * 1024);
 		// Set PDE
-		((pde_4kib*)new_process->page_directory)[base_esp_addr >> 22] = (pde_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .ignored = 0, .ps = 0, .ignored2 = 0, .addr = (uint32_t)new_pte >> 12};
+		((pde_4kib*)new_process->page_directory)[base_esp_addr >> 22] = (pde_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .ignored = 0, .ps = 0, .ignored2 = 0, .addr = ((uint32_t)new_pte >> 12) - KERNEL_BASE};
 		// Set all PTEs to invalid except allowed stack
 		for (int i = 0; i < 1024; i++) {
-			((pte_4kib*)new_pte)[i] = (pte_4kib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .pat = 0, .g = 1, .ignored = 0, .addr = ((base_esp_addr >> 22) << 10) + i};
+			((pte_4kib*)new_pte)[i] = (pte_4kib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .pat = 0, .g = 1, .ignored = 0, .addr = (((base_esp_addr - KERNEL_BASE) >> 22) << 10) + i};
 		}
 		// Set the PTE for the allowed stack
-		((pte_4kib*)new_pte)[(base_esp_addr << 10) >> 22] = (pte_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .pat = 0, .g = 1, .ignored = 0, .addr = base_esp_addr >> 12};
+		((pte_4kib*)new_pte)[(base_esp_addr << 10) >> 22] = (pte_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .pat = 0, .g = 1, .ignored = 0, .addr = (base_esp_addr - KERNEL_BASE) >> 12};
+		*/
 	}
 
 	// Set state of process as running
