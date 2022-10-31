@@ -29,17 +29,18 @@ void init_paging() {
 		pagelist_bitmap[i] = 0xff;
 	}
 
-	// Set pages for kernel to cover entire RAM
+	// Zero out the page directory for the time being
 	for (int i = 0; i < PAGE_LENGTH_4M; i++) {
-		kernel_memory[i] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i};
+		kernel_memory[i] = (pde_4mib){.present = 0, .rw = 0, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 0, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = 0};
 	}
 
-	// Swap low and high memory
-	for (int i = 0; i < PAGE_LENGTH_4M / 4; i++) {
-		kernel_memory[i] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i + 768};
+	// Shift actually useable physical memory back to fill the hole of the kernel
+	for (int i = 0; i < (TOTAL_MEMORY / PAGE_SIZE_4M) - (PAGE_LENGTH_4M / 4); i++) {
+		kernel_memory[i] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i + (PAGE_LENGTH_4M / 4)};
 	}
+	// Swap low and high memory for the kernel addr
 	for (int i = 0; i < PAGE_LENGTH_4M / 4; i++) {
-		kernel_memory[i + 768] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 1, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i};
+		kernel_memory[i + (3*PAGE_LENGTH_4M / 4)] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 1, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i};
 	}
 
 	// Setup page faults

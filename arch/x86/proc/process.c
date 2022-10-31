@@ -89,8 +89,6 @@ void create_process(uint32_t eip, uint8_t ring) {
 		new_process->page_directory = KERNEL_PAGE_DIRECTORY;
 	} else {
 		new_process->page_directory = KERNEL_PAGE_DIRECTORY;
-		// TODO Support for the following
-/*
 		new_process->page_directory = kernel_allocate(sizeof(pde_4kib) * 1024);
 		// Copy kernel space to user space
 		for (int i = 0; i < PAGE_LENGTH_4M / 4; i++) {
@@ -100,6 +98,7 @@ void create_process(uint32_t eip, uint8_t ring) {
 		// Calculate base address of stack
 		uint32_t base_esp_addr = new_process->frame.esp - 4092;
 		((pde_4mib*)new_process->page_directory)[base_esp_addr >> 22].us = 1;
+/*
 		// Create new PTE for specifying 4KiB block stack
 		void* new_pte = (uint32_t)kernel_allocate(sizeof(pte_4kib) * 1024);
 		// Set PDE
@@ -110,10 +109,10 @@ void create_process(uint32_t eip, uint8_t ring) {
 		}
 		// Set the PTE for the allowed stack
 		((pte_4kib*)new_pte)[(base_esp_addr << 10) >> 22] = (pte_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .pat = 0, .g = 1, .ignored = 0, .addr = (base_esp_addr - KERNEL_BASE) >> 12};
-
-		((pde_4mib*)new_process->page_directory)[256] = ((pde_4mib*)KERNEL_PAGE_DIRECTORY)[256];
-		((pde_4mib*)new_process->page_directory)[256].us = 1;
 */
+
+		((pde_4mib*)new_process->page_directory)[0] = ((pde_4mib*)KERNEL_PAGE_DIRECTORY)[0];
+		((pde_4mib*)new_process->page_directory)[0].us = 1;
 	}
 
 	// Set state of process as running

@@ -82,9 +82,8 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	kernel_print("Enabling context switching and entering user mode.\r\n");
 
 	char* codep = 0x00000000;
-	*(codep) = 0xe9;
-	*(codep + 1) = 0xfd;
-	*(codep + 2) = 0xff;
+	*(codep) = 0xeb;
+	*(codep + 1) = 0xfe;
 
 	create_process(0x00000000, 3);
 
