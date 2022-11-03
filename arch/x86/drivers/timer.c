@@ -17,7 +17,7 @@ void init_timer() {
 	uint16_t divider = TIMER_FREQ / TIMER_INT_FREQ;
 
 	// Add IRQ0
-	set_id(IRQ_OFFSET, timer_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(IRQ_OFFSET, &timer_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
 
 	// Set mode register
 	outportb(TIMER_MODE, 0b00110100);

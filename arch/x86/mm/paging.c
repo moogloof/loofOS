@@ -44,7 +44,7 @@ void init_paging() {
 	}
 
 	// Setup page faults
-	set_id(14, pagefault_handler_wrapper, 0x08, IDT_PROT_TRAP, 0, 1);
+	set_id(14, &pagefault_handler_wrapper, 0x08, IDT_PROT_TRAP, 0, 1);
 
 	// Enable paging
 	enable_paging();

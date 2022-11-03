@@ -92,7 +92,7 @@ void init_ps2_keyboard() {
 	kernel_print("Keyboard Scancode Set: %d\r\n", scancode_set);
 
 	// Set keyboard interrupt handler
-	set_id(IRQ_OFFSET + 1, keyboard_handler, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(IRQ_OFFSET + 1, &keyboard_handler, 0x08, IDT_PROT_INTR, 0, 1);
 }
 
 // PS/2 Keyboard handler

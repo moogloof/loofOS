@@ -35,15 +35,15 @@ void init_pic() {
 // Enable and add exceptions
 void init_exceptions() {
 	// Set the divide-by-zero exception
-	set_id(0, divbyzero_handler, 0x08, IDT_PROT_TRAP, 0, 1);
-	set_id(1, debug_handler, 0x08, IDT_PROT_TRAP, 0, 1);
-	set_id(2, nonmask_handler, 0x08, IDT_PROT_INTR, 0, 1);
-	set_id(3, breakpoint_handler, 0x08, IDT_PROT_TRAP, 0, 1);
-	set_id(4, overflow_handler, 0x08, IDT_PROT_TRAP, 0, 1);
-	set_id(5, boundrange_handler, 0x08, IDT_PROT_TRAP, 0, 1);
-	set_id(6, invalop_handler, 0x08, IDT_PROT_TRAP, 0, 1);
-	set_id(7, nodevice_handler, 0x08, IDT_PROT_TRAP, 0, 1);
-	set_id(8, doublefault_handler, 0x08, IDT_PROT_TRAP, 0, 1);
+	set_id(0, &divbyzero_handler, 0x08, IDT_PROT_TRAP, 0, 1);
+	set_id(1, &debug_handler, 0x08, IDT_PROT_TRAP, 0, 1);
+	set_id(2, &nonmask_handler, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(3, &breakpoint_handler, 0x08, IDT_PROT_TRAP, 0, 1);
+	set_id(4, &overflow_handler, 0x08, IDT_PROT_TRAP, 0, 1);
+	set_id(5, &boundrange_handler, 0x08, IDT_PROT_TRAP, 0, 1);
+	set_id(6, &invalop_handler, 0x08, IDT_PROT_TRAP, 0, 1);
+	set_id(7, &nodevice_handler, 0x08, IDT_PROT_TRAP, 0, 1);
+	set_id(8, &doublefault_handler, 0x08, IDT_PROT_TRAP, 0, 1);
 }
 
 // Exception handlers
