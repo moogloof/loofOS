@@ -66,7 +66,7 @@ void create_process(uint32_t eip, uint8_t ring) {
 	// IMPORTANT: Make sure to set the interrupt enable flag
 	new_process->frame.eflags = 1 << 9;
 	// Setup stack
-	new_process->frame.esp = kernel_allocate(4096) + 4092;
+	new_process->frame.esp = KERNEL_BASE - 4;
 	new_process->frame.ss = data_segment;
 
 	// Set data segments
@@ -88,31 +88,17 @@ void create_process(uint32_t eip, uint8_t ring) {
 	if (ring == 0) {
 		new_process->page_directory = KERNEL_PAGE_DIRECTORY;
 	} else {
-		new_process->page_directory = KERNEL_PAGE_DIRECTORY;
 		new_process->page_directory = kernel_allocate(sizeof(pde_4kib) * 1024);
 		// Copy kernel space to user space
 		for (int i = 0; i < PAGE_LENGTH_4M / 4; i++) {
-			((pde_4mib*)new_process->page_directory)[i + 768] = ((pde_4mib*)KERNEL_PAGE_DIRECTORY)[i + 768];
+			((pde_4mib*)new_process->page_directory)[i + (3*PAGE_LENGTH_4M / 4)] = ((pde_4mib*)KERNEL_PAGE_DIRECTORY)[i + (3*PAGE_LENGTH_4M / 4)];
 		}
-		// Allow access to the stack in the kernel heap
+		// Allocate stack page
 		// Calculate base address of stack
-		uint32_t base_esp_addr = new_process->frame.esp - 4092;
-		((pde_4mib*)new_process->page_directory)[base_esp_addr >> 22].us = 1;
-/*
-		// Create new PTE for specifying 4KiB block stack
-		void* new_pte = (uint32_t)kernel_allocate(sizeof(pte_4kib) * 1024);
-		// Set PDE
-		((pde_4kib*)new_process->page_directory)[base_esp_addr >> 22] = (pde_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .ignored = 0, .ps = 0, .ignored2 = 0, .addr = ((uint32_t)new_pte >> 12) - KERNEL_BASE};
-		// Set all PTEs to invalid except allowed stack
-		for (int i = 0; i < 1024; i++) {
-			((pte_4kib*)new_pte)[i] = (pte_4kib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .pat = 0, .g = 1, .ignored = 0, .addr = (((base_esp_addr - KERNEL_BASE) >> 22) << 10) + i};
+		uint32_t base_esp_addr = KERNEL_BASE - (PAGE_SIZE_4K * PROCESS_STACK_PAGES);
+		for (int i = 0; i < PROCESS_STACK_PAGES; i++) {
+			allocate_page((pde_4kib*)new_process->page_directory, base_esp_addr + i*PAGE_SIZE_4K);
 		}
-		// Set the PTE for the allowed stack
-		((pte_4kib*)new_pte)[(base_esp_addr << 10) >> 22] = (pte_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .pat = 0, .g = 1, .ignored = 0, .addr = (base_esp_addr - KERNEL_BASE) >> 12};
-*/
-
-		((pde_4mib*)new_process->page_directory)[0] = ((pde_4mib*)KERNEL_PAGE_DIRECTORY)[0];
-		((pde_4mib*)new_process->page_directory)[0].us = 1;
 	}
 
 	// Set state of process as running
