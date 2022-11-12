@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <common.h>
 #include <mm/paging.h>
 #include <mm/alloc.h>
 #include <core/isr.h>
@@ -71,7 +72,7 @@ void allocate_page(pde_4kib* page_dir, uint32_t addr) {
 		page_table = page_dir[dir_index].addr << 12;
 	} else {
 		page_table = kernel_allocate(sizeof(pte_4kib) * 1024);
-		page_dir[dir_index] = (pde_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .ignored = 0, .ps = 0, .ignored2 = 0, .addr = (uint32_t)page_table >> 12};
+		page_dir[dir_index] = (pde_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .ignored = 0, .ps = 0, .ignored2 = 0, .addr = ((uint32_t)page_table - KERNEL_BASE) >> 12};
 	}
 
 	// Search for an available page
