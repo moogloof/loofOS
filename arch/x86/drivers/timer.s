@@ -42,5 +42,4 @@ timer_handler_wrapper:
 	iret
 
 ; Extern stuff
-extern dump_registers
 extern timer_handler

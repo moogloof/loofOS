@@ -72,7 +72,7 @@ void init_paging();
 __attribute__((interrupt)) void pagefault_handler_wrapper(interrupt_frame*);
 
 // Page fault handler
-void pagefault_handler(uint32_t);
+void pagefault_handler(seg_register_set, gen_register_set, uint32_t, interrupt_frame);
 
 // Enable paging
 void enable_paging();

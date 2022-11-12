@@ -42,7 +42,7 @@ void* kernel_allocate(int size) {
 
 	// No invalid sizes
 	if (size > HEAP_LENGTH) {
-		kernel_panic("Could not allocate. Object too big.");
+		return 0;
 	}
 
 	// Calculate size level as power of 2
@@ -79,7 +79,7 @@ void* kernel_allocate(int size) {
 	}
 
 	// No memory so we panic
-	kernel_panic("Could not allocate. Heap is full.");
+	return 0;
 }
 
 // Free kernel object
@@ -89,10 +89,10 @@ void kernel_free(void* addr) {
 
 	// Make sure the address is within the heap
 	if ((uint32_t)addr < HEAP_START || (uint32_t)addr > HEAP_END - 1) {
-		kernel_panic("Could not free memory. Outside of heap.");
+		return;
 	} else if (bitmap_get(bitmap_addr) == 3) {
 		// Make sure the allocated address is not reserved
-		kernel_panic("Could not free reserved memory.");
+		return;
 	}
 
 	// Set it free

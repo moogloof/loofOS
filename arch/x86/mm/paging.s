@@ -22,10 +22,3 @@ short_jump:
 long_jump:
 
 	ret
-
-global pagefault_handler_wrapper
-pagefault_handler_wrapper:
-	call pagefault_handler
-	iret
-
-extern pagefault_handler

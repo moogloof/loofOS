@@ -7,13 +7,13 @@
 #include <core/idt.h>
 
 // Scancode set detected
-static uint8_t scancode_set = 0;
+static uint8_t scancode_set;
 
 // Modifiers for pressed key
 static struct {
 	uint8_t shift:1;
 	uint8_t ctrl:1;
-} __attribute__((packed)) key_modifier = {0};
+} __attribute__((packed)) key_modifier;
 
 // Scancodes for key processing
 // Scancode set 1
@@ -60,6 +60,11 @@ static const char scancodes2_shift[] = {
 
 // Initialize the PS/2 Keyboard device
 void init_ps2_keyboard() {
+	// Zero out all necessary vars
+	key_modifier.shift = 0;
+	key_modifier.ctrl = 0;
+	scancode_set = 0;
+
 	// TODO: Better handling of ACK byte
 	// Enable keyboard scanning
 	write_ps2_dataport(0xf4);

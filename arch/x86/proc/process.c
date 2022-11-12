@@ -7,10 +7,17 @@
 static uint8_t entering_user = 1;
 
 // Current process in context
-static process_desc* current_process = 0;
+static process_desc* current_process;
 
 // Previous process in context
-static process_desc* previous_process = 0;
+static process_desc* previous_process;
+
+// Init processes
+void init_processes() {
+	// Zero out vars
+	current_process = 0;
+	previous_process = 0;
+}
 
 // Switch context
 void switch_process(seg_register_set seg_regs, gen_register_set gen_regs, interrupt_frame frame) {
@@ -99,6 +106,8 @@ void create_process(uint32_t eip, uint8_t ring) {
 		for (int i = 0; i < PROCESS_STACK_PAGES; i++) {
 			allocate_page((pde_4kib*)new_process->page_directory, base_esp_addr + i*PAGE_SIZE_4K);
 		}
+
+		allocate_page((pde_4kib*)new_process->page_directory, 0);
 	}
 
 	// Set state of process as running

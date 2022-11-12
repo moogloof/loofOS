@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <common.h>
+#include <core/registers.h>
 
 // Define EOI code
 #define PIC_EOI 0x20
@@ -41,22 +42,31 @@ void init_exceptions();
 
 // Exception handlers
 // Divide-by-zero error
-__attribute__((interrupt)) void divbyzero_handler(interrupt_frame*);
+__attribute__((interrupt)) void divbyzero_handler_wrapper(interrupt_frame*);
+void divbyzero_handler(seg_register_set, gen_register_set, interrupt_frame);
 // Debug
-__attribute__((interrupt)) void debug_handler(interrupt_frame*);
+__attribute__((interrupt)) void debug_handler_wrapper(interrupt_frame*);
+void debug_handler(seg_register_set, gen_register_set, interrupt_frame);
 // Non-maskable interrupt
-__attribute__((interrupt)) void nonmask_handler(interrupt_frame*);
+__attribute__((interrupt)) void nonmask_handler_wrapper(interrupt_frame*);
+void nonmask_handler(seg_register_set, gen_register_set, interrupt_frame);
 // Breakpoint
-__attribute__((interrupt)) void breakpoint_handler(interrupt_frame*);
+__attribute__((interrupt)) void breakpoint_handler_wrapper(interrupt_frame*);
+void breakpoint_handler(seg_register_set, gen_register_set, interrupt_frame);
 // Overflow
-__attribute__((interrupt)) void overflow_handler(interrupt_frame*);
+__attribute__((interrupt)) void overflow_handler_wrapper(interrupt_frame*);
+void overflow_handler(seg_register_set, gen_register_set, interrupt_frame);
 // Bound range exceeded
-__attribute__((interrupt)) void boundrange_handler(interrupt_frame*);
+__attribute__((interrupt)) void boundrange_handler_wrapper(interrupt_frame*);
+void boundrange_handler(seg_register_set, gen_register_set, interrupt_frame);
 // Invalid opcode
-__attribute__((interrupt)) void invalop_handler(interrupt_frame*);
+__attribute__((interrupt)) void invalop_handler_wrapper(interrupt_frame*);
+void invalop_handler(seg_register_set, gen_register_set, interrupt_frame);
 // Device not available
-__attribute__((interrupt)) void nodevice_handler(interrupt_frame*);
+__attribute__((interrupt)) void nodevice_handler_wrapper(interrupt_frame*);
+void nodevice_handler(seg_register_set, gen_register_set, interrupt_frame);
 // Double fault
-__attribute__((interrupt)) void doublefault_handler(interrupt_frame*);
+__attribute__((interrupt)) void doublefault_handler_wrapper(interrupt_frame*);
+void doublefault_handler(seg_register_set, gen_register_set, uint32_t, interrupt_frame);
 
 #endif

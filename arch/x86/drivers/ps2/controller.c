@@ -3,12 +3,16 @@
 #include <drivers/ps2/controller.h>
 
 // Flag for second PS/2 port
-static uint8_t port2_exists = 0;
+static uint8_t port2_exists;
 // Flag for initialization success
-static uint8_t init_success = 0;
+static uint8_t init_success;
 
 // Initialize the PS/2 Controller
 void init_ps2_controller() {
+	// Zero out vars
+	port2_exists = 0;
+	init_success = 0;
+
 	// Temporarily disable PS/2 Devices
 	// Disable first port
 	outportb(PS2_COMMAND, 0xad);

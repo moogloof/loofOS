@@ -51,8 +51,8 @@ void init_paging() {
 }
 
 // Page fault handler
-void pagefault_handler(uint32_t eid) {
-	kernel_panic("Page fault.");
+void pagefault_handler(seg_register_set seg_regs, gen_register_set gen_regs, uint32_t eid, interrupt_frame frame) {
+	kernel_panic("Page fault.", seg_regs, gen_regs, frame, eid);
 }
 
 // Allocate a page

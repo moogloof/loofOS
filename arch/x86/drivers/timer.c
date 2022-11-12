@@ -9,10 +9,13 @@
 #include <common.h>
 
 // Whether context switching is enabled
-uint8_t context_switching = 0;
+uint8_t context_switching;
 
 // Initialize the timer interrupt
 void init_timer() {
+	// Zero out vars
+	context_switching = 0;
+
 	// Divider for the interrputs
 	uint16_t divider = TIMER_FREQ / TIMER_INT_FREQ;
 
