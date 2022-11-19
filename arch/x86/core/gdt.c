@@ -90,12 +90,15 @@ void init_gdt() {
 	tss = kernel_allocate(sizeof(struct tss_block));
 	tss->ss0 = 0x10;
 	tss->esp0 = 0xc8000000;
+	tss->iopb = sizeof(sizeof(struct tss_block));
 	// Set the TSS gdt segment (the access byte is of a different form)
-	gdt[5] = (struct seg_desc){.limit1 = sizeof(struct tss_block), .base1 = (uint32_t)tss & 0xffffff, .a = 1, .rw = 0, .dc = 0, .e = 1, .s = 0, .dpl = 0, .p = 1, .limit2 = 0, .zero = 0, .l = 0, .db = 1, .g = 0, .base2 = (uint32_t)tss >> 24};
+	gdt[5] = (struct seg_desc){.limit1 = sizeof(struct tss_block) - 1, .base1 = (uint32_t)tss & 0xffffff, .a = 1, .rw = 0, .dc = 0, .e = 1, .s = 0, .dpl = 0, .p = 1, .limit2 = 0, .zero = 0, .l = 0, .db = 1, .g = 0, .base2 = (uint32_t)tss >> 24};
 }
 
 // Load the global descriptor table
 void load_gdt() {
 	// Load the gdtr
 	__asm__("lgdt %0" : : "m"(gdtr));
+	// Load the TSS
+	__asm__("ltr %0" : : "r"((uint16_t)0x28));
 }

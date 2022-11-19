@@ -89,6 +89,17 @@ void kernel_print(const char* format, ...) {
 						outb(hex_chars[(sub_integer >> (hex_place * 4)) & 0xf]);
 					}
 					break;
+				case 'b':
+					// Substitute an unsigned integer in binary
+					// Get integer arg
+					sub_integer = va_arg(arglist, uint32_t);
+
+					// Output in binary
+					for (int bin_place = 31; bin_place >= 0; bin_place--) {
+						// Output digit
+						outb(((sub_integer >> bin_place) & 1) ? '1' : '0');
+					}
+					break;
 				case '%':
 					// Substitute with %
 					outb('%');

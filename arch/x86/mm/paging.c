@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <common.h>
 #include <mm/paging.h>
 #include <mm/alloc.h>
 #include <core/isr.h>
@@ -29,29 +30,30 @@ void init_paging() {
 		pagelist_bitmap[i] = 0xff;
 	}
 
-	// Set pages for kernel to cover entire RAM
+	// Zero out the page directory for the time being
 	for (int i = 0; i < PAGE_LENGTH_4M; i++) {
-		kernel_memory[i] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i};
+		kernel_memory[i] = (pde_4mib){.present = 0, .rw = 0, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 0, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = 0};
 	}
 
-	// Swap low and high memory
-	for (int i = 0; i < PAGE_LENGTH_4M / 4; i++) {
-		kernel_memory[i] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i + 768};
+	// Shift actually useable physical memory back to fill the hole of the kernel
+	for (int i = 0; i < (TOTAL_MEMORY / PAGE_SIZE_4M) - (PAGE_LENGTH_4M / 4); i++) {
+		kernel_memory[i] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i + (PAGE_LENGTH_4M / 4)};
 	}
+	// Swap low and high memory for the kernel addr
 	for (int i = 0; i < PAGE_LENGTH_4M / 4; i++) {
-		kernel_memory[i + 768] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 1, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i};
+		kernel_memory[i + (3*PAGE_LENGTH_4M / 4)] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 1, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i};
 	}
 
 	// Setup page faults
-	set_id(14, pagefault_handler_wrapper, 0x08, IDT_PROT_TRAP, 0, 1);
+	set_id(14, &pagefault_handler_wrapper, 0x08, IDT_PROT_TRAP, 0, 1);
 
 	// Enable paging
 	enable_paging();
 }
 
 // Page fault handler
-void pagefault_handler(uint32_t eid) {
-	kernel_panic("Page fault.");
+void pagefault_handler(seg_register_set seg_regs, gen_register_set gen_regs, uint32_t eid, interrupt_frame frame) {
+	kernel_panic("Page fault.", seg_regs, gen_regs, frame, eid);
 }
 
 // Allocate a page
@@ -70,7 +72,7 @@ void allocate_page(pde_4kib* page_dir, uint32_t addr) {
 		page_table = page_dir[dir_index].addr << 12;
 	} else {
 		page_table = kernel_allocate(sizeof(pte_4kib) * 1024);
-		page_dir[dir_index] = (pde_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .ignored = 0, .ps = 0, .ignored2 = 0, .addr = (uint32_t)page_table >> 12};
+		page_dir[dir_index] = (pde_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .ignored = 0, .ps = 0, .ignored2 = 0, .addr = ((uint32_t)page_table - KERNEL_BASE) >> 12};
 	}
 
 	// Search for an available page

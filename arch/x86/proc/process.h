@@ -5,6 +5,9 @@
 #include <core/isr.h>
 #include <core/registers.h>
 
+// Define number of pages to allocate for a process stack
+#define PROCESS_STACK_PAGES 20
+
 // Process descriptor type
 typedef struct process_desc {
 	interrupt_frame frame; // All register sets

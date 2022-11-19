@@ -9,15 +9,18 @@
 #include <common.h>
 
 // Whether context switching is enabled
-uint8_t context_switching = 0;
+uint8_t context_switching;
 
 // Initialize the timer interrupt
 void init_timer() {
+	// Zero out vars
+	context_switching = 0;
+
 	// Divider for the interrputs
 	uint16_t divider = TIMER_FREQ / TIMER_INT_FREQ;
 
 	// Add IRQ0
-	set_id(IRQ_OFFSET, timer_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(IRQ_OFFSET, &timer_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
 
 	// Set mode register
 	outportb(TIMER_MODE, 0b00110100);

@@ -66,6 +66,9 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	kernel_print("Initialized paging.\r\n\r\n");
 	kernel_print(" KDIR %x USTART %x UEND %x UTOT %x\r\n\r\n", KERNEL_PAGE_DIRECTORY, PAGELIST_START, PAGELIST_END - 1, PAGELIST_END - PAGELIST_START);
 
+	// Initialize processes
+	init_processes();
+
 	// Unmask interrupts
 	enable_interrupts();
 	kernel_print("Interrupts enabled.\r\n");
@@ -80,11 +83,6 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 
 	// Start context switching and go into usermode
 	kernel_print("Enabling context switching and entering user mode.\r\n");
-
-	char* codep = 0x00000000;
-	*(codep) = 0xe9;
-	*(codep + 1) = 0xfd;
-	*(codep + 2) = 0xff;
 
 	create_process(0x00000000, 3);
 
