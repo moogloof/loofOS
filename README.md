@@ -24,15 +24,15 @@ qemu-system-i386 -cdrom build/x86/loof.iso -m 4G
 - Stupid Bootloader (DONE ARM, DONE x86)
 - Processes (DONE x86)
 - Scheduler (DONE x86)
-- Paging (In Progress x86)
+- Paging (DONE x86)
 - Drivers
 	- Serial Output (DONE ARM, DONE x86)
 	- Keyboard (DONE x86)
-	- Hard-disk
-	- Terminal
-- Filesystem
-- Shell
-- libc
+	- Hard-disk (In Progress x86)
+	- Terminal (In Progress x86)
+- Filesystem (In Progress x86)
+- Shell (In Progress x86)
+- Syscalls (In Progress x86)
 
 ### Contributing
 #### For ARM
