@@ -7,6 +7,7 @@ ASFLAGS=-O0 -f bin
 BUILD_DIR=../../build
 OBJ_DIR=../../obj
 LIBC_DIR=libc
+FSFLAGS=-input-charset iso8859-1 -no-emul-boot -boot-load-size 4 -boot-info-table
 
 # Standard library specific build info
 LIBC_SRCS=$(shell find $(LIBC_DIR) -name "*.c" -or -name "*.s")
@@ -19,13 +20,10 @@ x86_OBJS=$(x86_SRCS:%=$(OBJ_DIR)/%.o)
 all: $(BUILD_DIR)/x86/loof.img
 
 $(BUILD_DIR)/x86/loof.img: $(BUILD_DIR)/x86/kernel $(BUILD_DIR)/x86/boot
-	dd if=/dev/zero of=$@ bs=1024 count=1440
-	dd seek=0 if=$(BUILD_DIR)/x86/boot of=$@ bs=512 conv=notrunc
-	dd seek=5 if=$(BUILD_DIR)/x86/kernel of=$@ bs=512 conv=notrunc
 	# Formatting
 	mkdir $(BUILD_DIR)/x86/iso
-	cp $@ $(BUILD_DIR)/x86/iso/
-	mkisofs -quiet -V 'loofOS' -input-charset iso8859-1 -o $(BUILD_DIR)/x86/loof.iso -b loof.img $(BUILD_DIR)/x86/iso
+	cp $^ $(BUILD_DIR)/x86/iso/
+	mkisofs -V 'loofOS' $(FSFLAGS) -o $(BUILD_DIR)/x86/loof.iso -b boot $(BUILD_DIR)/x86/iso
 	# Cleanup
 	rm -rf $(BUILD_DIR)/x86/iso
 
