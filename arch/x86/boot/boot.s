@@ -1,6 +1,6 @@
 ; ----BOOT1----
 [bits 16]
-[org 0x7c00]
+;[org 0x7c00]
 
 section .text.boot
 
@@ -268,8 +268,7 @@ protected_mode:
 	mov cr0, eax
 
 	; Jump to set CS
-	jmp halt
-	;jmp (gdt_code_kernel - gdt_start):stage2_jmp
+	jmp (gdt_code_kernel - gdt_start):stage2_boot
 
 ; Test if A20 line is enabled
 a20_test:
@@ -375,3 +374,6 @@ gdt_start:
 		db 1100_1111b
 		db 0
 gdt_end:
+
+; All externs
+extern stage2_boot

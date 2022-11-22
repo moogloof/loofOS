@@ -1,7 +1,7 @@
 LD=ld.lld
 CC=clang
 AS=nasm
-LDFLAGS=--oformat binary --format=elf -O0 --nmagic -nostdlib --gc-sections --gdb-index --script=kernel_linker.ld
+LDFLAGS=--format=elf -O0 --nmagic -nostdlib --gc-sections --gdb-index
 CFLAGS=-Wall -O0 -ffreestanding -I./ -m32 -nostdlib -mgeneral-regs-only -march=i386 --target=i386-unknown-linux-gnu -g
 ASFLAGS=-O0 -f bin
 BUILD_DIR=../../build
@@ -14,8 +14,12 @@ LIBC_SRCS=$(shell find $(LIBC_DIR) -name "*.c" -or -name "*.s")
 LIBC_OBJS=$(LIBC_SRCS:%=$(OBJ_DIR)/%.o)
 
 # x86 specific build info
-x86_SRCS=$(shell find . -name "*.c" -or -name "*.s" ! -name "*boot.s")
+x86_KERNEL_DIRS=./core ./drivers ./mm ./proc ./sys
+x86_BOOT_DIRS=./boot
+x86_SRCS=$(shell find $(x86_KERNEL_DIRS) -name "*.c" -or -name "*.s")
+x86_SRCS_BOOT=$(shell find $(x86_BOOT_DIRS) -name "*.*")
 x86_OBJS=$(x86_SRCS:%=$(OBJ_DIR)/%.o)
+x86_OBJS_BOOT=$(x86_SRCS_BOOT:%=$(OBJ_DIR)/%.o)
 
 all: $(BUILD_DIR)/x86/loof.img
 
@@ -27,14 +31,15 @@ $(BUILD_DIR)/x86/loof.img: $(BUILD_DIR)/x86/kernel $(BUILD_DIR)/x86/boot
 	# Cleanup
 	rm -rf $(BUILD_DIR)/x86/iso
 
-$(BUILD_DIR)/x86/boot:
+$(BUILD_DIR)/x86/boot: $(x86_OBJS_BOOT)
 	mkdir -p $(dir $@)
-	$(AS) -o $@ boot/boot.s $(ASFLAGS)
+	$(LD) --oformat binary $(LDFLAGS) --script=boot_linker.ld -o $@ $^
+	$(LD) --oformat elf_i386 $(LDFLAGS) --script=boot_linker.ld -o $@.o $^
 
 $(BUILD_DIR)/x86/kernel: $(x86_OBJS)
 	mkdir -p $(dir $@)
-	$(LD) $(LDFLAGS) -o $@ $^
-	$(LD) --oformat elf_i386 --format=elf -O0 --nmagic -nostdlib --gc-sections --gdb-index --script=kernel_linker.ld -o $@.o $^
+	$(LD) --oformat binary $(LDFLAGS) --script=kernel_linker.ld -o $@ $^
+	$(LD) --oformat elf_i386 $(LDFLAGS) --script=kernel_linker.ld -o $@.o $^
 #	x86_64-elf-objcopy -O binary --adjust-vma 0x100000 $@ $@
 
 # Build C files
