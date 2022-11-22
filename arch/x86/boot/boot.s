@@ -52,14 +52,41 @@ next:
 	;mov ah, 0
 	;int 0x13
 
+	; Get the sector size
+	mov ah, 0x48
+	mov dl, [drive_number]
+	lea si, [drive_parameters]
+	int 0x13
+	; Check whether info read succeeded
+	jnc read_info_success
+	; If info read failed, then halt
+	lea si, [read_info_fail_msg]
+	call print_string
+	jmp halt
+
+; Info read succeeded
+read_info_success:
 	; Load second stage bootloader using extended read
 	; Loading second bootloader message
 	lea si, [next_stage_msg]
 	call print_string
 	; Set number of sectors to read
 	mov ax, [boot_length]
-	shr ax, 11
-	inc ax
+	; Use the number of bytes in a sector
+	; The algorithm assumes that the number of bytes in a sector is a power of 2
+	; Set cx to sector size
+	mov cx, [drive_bytes_per_sector]
+	; Loop
+	sector_size_loop:
+		; Check if size is reduced
+		cmp cx, 1
+		je sector_size_done
+		shr ax, 1
+		shr cx, 1
+		jmp sector_size_loop
+	; Loop finished
+	sector_size_done:
+		inc ax
 	mov [dap_read_length], ax
 	; Set segment:offset for loading
 	mov ax, 0
@@ -125,7 +152,7 @@ print_string:
 drive_number: db 0
 ; Messages
 hello: db "LoofOS booting...", 0x0d, 0x0a, 0
-reset_drive_msg: db "Resetting drive...", 0x0d, 0x0a, 0
+read_info_fail_msg: db "Reading drive info failed. Halting.", 0x0d, 0x0a, 0
 next_stage_msg: db "Loading next stage boot...", 0x0d, 0x0a, 0
 stage2_load_fail_msg: db "Failed to load stage2 boot. Halting.", 0x0d, 0x0a, 0
 a20_disable_msg: db "Disabling A20 line...", 0x0d, 0x0a, 0
@@ -142,6 +169,18 @@ dap_block:
 	dap_lba_low: dd 0
 	dap_lba_high: dw 0
 	dw 0
+
+; The result buffer of the drive parameters
+drive_parameters:
+	drive_parameters_size: dw 0x1e
+	dw 0
+	dd 0
+	dd 0
+	dd 0
+	dd 0
+	dd 0
+	drive_bytes_per_sector: dw 0
+	dd 0
 
 times 510-($-$$) db 0
 dw 0xaa55
