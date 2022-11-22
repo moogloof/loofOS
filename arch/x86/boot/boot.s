@@ -40,37 +40,118 @@ next:
 	call print_string
 
 	; Loading stage 2 boot
+	; Bruh why did we do this anyway
 	; Reset drive
 	; The drive ID is already loaded at the DL register
 	; But load again anyway
 	; Resetting drive message
-	lea si, [reset_drive_msg]
-	call print_string
+	;lea si, [reset_drive_msg]
+	;call print_string
 	; Reset drive
-	mov dl, [drive_number]
-	mov ah, 0
-	int 0x13
+	;mov dl, [drive_number]
+	;mov ah, 0
+	;int 0x13
 
-	; Load second stage bootloader
+	; Load second stage bootloader using extended read
 	; Loading second bootloader message
 	lea si, [next_stage_msg]
 	call print_string
-	; Set ES:BX for loading
-	mov ax, 0x7e0
-	mov es, ax
-	mov bx, 0
-	; Load 2 sectors of next stage bootloader
+	; Set number of sectors to read
 	mov ax, [boot_length]
-	shr ax, 9
-	mov ah, 0x2
-	mov ch, 0
-	mov cl, [boot_location]
-	inc cl
-	mov dh, 0
+	shr ax, 11
+	inc ax
+	mov [dap_read_length], ax
+	; Set segment:offset for loading
+	mov ax, 0
+	mov [dap_segment], ax
+	mov ax, 0x7c00
+	mov [dap_offset], ax
+	; Set the low and high parts of the LBA for the drive
+	mov ax, [boot_location]
+	mov [dap_lba_low], ax
+	; Set the drive number
 	mov dl, [drive_number]
+	; Do read
+	lea si, [dap_block]
+	mov ah, 0x42
 	int 0x13
+	; Check if read worked
+	jnc stage2_load_success
+	; If read not worked, then halt
+	lea si, [stage2_load_fail_msg]
+	jmp halt
 
-	; Do some other stuff before moving to second bootloader
+; Read worked
+stage2_load_success:
+	; Jump to second bootloader
+	jmp next_boot
+
+; Halting
+halt:
+	hlt
+	jmp halt
+
+; Print string
+print_string:
+	; Push registers to stack
+	pusha
+	pushf
+
+	; Set background, foreground, and mode
+	mov bh, 0
+	mov bl, 0
+	mov ah, 0x0e
+
+	print_string_loop:
+		; Load byte at the address in the SI register to AL register and increment SI
+		lodsb
+
+		; Check whether there is a terminating byte
+		cmp al, 0
+		je exit_print
+
+		; Call teletype bios interrupt
+		int 0x10
+
+		jmp print_string_loop
+
+	exit_print:
+		; Pop previously saved registers from stack and return
+		popf
+		popa
+		ret
+
+; The drive number for boot
+drive_number: db 0
+; Messages
+hello: db "LoofOS booting...", 0x0d, 0x0a, 0
+reset_drive_msg: db "Resetting drive...", 0x0d, 0x0a, 0
+next_stage_msg: db "Loading next stage boot...", 0x0d, 0x0a, 0
+stage2_load_fail_msg: db "Failed to load stage2 boot. Halting.", 0x0d, 0x0a, 0
+a20_disable_msg: db "Disabling A20 line...", 0x0d, 0x0a, 0
+a20_fail_msg: db "A20 line disabling failed.", 0x0d, 0x0a, 0
+a20_success_msg: db "A20 line disabled.", 0x0d, 0x0a, 0
+
+; The read sectors from drive with extended read block
+dap_block:
+	dap_block_size: db 0x10
+	db 0
+	dap_read_length: dw 0
+	dap_offset: dw 0
+	dap_segment: dw 0
+	dap_lba_low: dd 0
+	dap_lba_high: dw 0
+	dw 0
+
+times 510-($-$$) db 0
+dw 0xaa55
+
+; ----BOOT1.5----
+next_boot:
+	; Success load message
+	lea si, [load_success_msg]
+	call print_string
+
 	; A20 disable
 	; Send A20 disable message
 	lea si, [a20_disable_msg]
@@ -123,43 +204,33 @@ a20_success:
 	lea si, [a20_success_msg]
 	call print_string
 
-	; Jump to second bootloader
-	jmp next_boot
+; Load the gdt
+load_gdt:
+	lea si, [gdt_load_msg]
+	call print_string
+	cli
+	lgdt [gdtr]
+	sti
 
-; Halting
-halt:
-	hlt
+; Enter protected mode and then stage2 boot
+protected_mode:
+	; Disable interrupts
+	lea si, [interrupt_disable_msg]
+	call print_string
+	lea si, [pmode_enable_msg]
+	call print_string
+	lea si, [stage2_jump_msg]
+	call print_string
+	cli
+
+	; Enable protected mode by setting protected mode enable bit
+	mov eax, cr0
+	or eax, 1
+	mov cr0, eax
+
+	; Jump to set CS
 	jmp halt
-
-; Print string
-print_string:
-	; Push registers to stack
-	pusha
-	pushf
-
-	; Set background, foreground, and mode
-	mov bh, 0
-	mov bl, 0
-	mov ah, 0x0e
-
-	print_string_loop:
-		; Load byte at the address in the SI register to AL register and increment SI
-		lodsb
-
-		; Check whether there is a terminating byte
-		cmp al, 0
-		je exit_print
-
-		; Call teletype bios interrupt
-		int 0x10
-
-		jmp print_string_loop
-
-	exit_print:
-		; Pop previously saved registers from stack and return
-		popf
-		popa
-		ret
+	;jmp (gdt_code_kernel - gdt_start):stage2_jmp
 
 ; Test if A20 line is enabled
 a20_test:
@@ -212,52 +283,6 @@ a20_test:
 		pop ds
 		popf
 		ret
-
-; The drive number for boot
-drive_number: db 0
-; Messages
-hello: db "LoofOS booting...", 0x0d, 0x0a, 0
-reset_drive_msg: db "Resetting drive...", 0x0d, 0x0a, 0
-next_stage_msg: db "Loading next stage boot...", 0x0d, 0x0a, 0
-a20_disable_msg: db "Disabling A20 line...", 0x0d, 0x0a, 0
-a20_fail_msg: db "A20 line disabling failed.", 0x0d, 0x0a, 0
-a20_success_msg: db "A20 line disabled.", 0x0d, 0x0a, 0
-
-times 510-($-$$) db 0
-dw 0xaa55
-
-; ----BOOT2----
-next_boot:
-	; Success load message
-	lea si, [load_success_msg]
-	call print_string
-
-; Load the gdt
-load_gdt:
-	lea si, [gdt_load_msg]
-	call print_string
-	cli
-	lgdt [gdtr]
-	sti
-
-; Enter protected mode and then stage2 boot
-protected_mode:
-	; Disable interrupts
-	lea si, [interrupt_disable_msg]
-	call print_string
-	lea si, [pmode_enable_msg]
-	call print_string
-	lea si, [stage2_jump_msg]
-	call print_string
-	cli
-
-	; Enable protected mode by setting protected mode enable bit
-	mov eax, cr0
-	or eax, 1
-	mov cr0, eax
-
-	; Jump to set CS
-	jmp (gdt_code_kernel - gdt_start):stage2_jmp
 
 ; Messages
 load_success_msg: db "Next stage boot successfully loaded.", 0x0d, 0x0a, 0
