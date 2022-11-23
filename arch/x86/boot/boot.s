@@ -294,10 +294,12 @@ vbe_set_display:
 		mov al, [mode_info_block + 25]
 		cmp al, 24
 		jne vbe_try_again
-		; Get the highest resolution
+		; Get the highest resolution below 1920
 		mov ax, [mode_info_block + 18]
 		cmp ax, [selected_width]
 		jbe vbe_try_again
+		cmp ax, 1920
+		ja vbe_try_again
 		mov [selected_width], ax
 		mov ax, [mode_info_block + 20]
 		mov [selected_height], ax
