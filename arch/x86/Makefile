@@ -17,7 +17,7 @@ LIBC_OBJS=$(LIBC_SRCS:%=$(OBJ_DIR)/%.o)
 x86_KERNEL_DIRS=./core ./drivers ./mm ./proc ./sys
 x86_BOOT_DIRS=./boot
 x86_SRCS=$(shell find $(x86_KERNEL_DIRS) -name "*.c" -or -name "*.s")
-x86_SRCS_BOOT=$(shell find $(x86_BOOT_DIRS) -name "*.*")
+x86_SRCS_BOOT=$(shell find $(x86_BOOT_DIRS) -name "*.c" -or -name "*.s")
 x86_OBJS=$(x86_SRCS:%=$(OBJ_DIR)/%.o)
 x86_OBJS_BOOT=$(x86_SRCS_BOOT:%=$(OBJ_DIR)/%.o)
 

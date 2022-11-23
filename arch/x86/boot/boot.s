@@ -251,21 +251,94 @@ load_gdt:
 	lgdt [gdtr]
 	sti
 
+; Set VBE modes
+vbe_set_display:
+	; Get VBE Controller Info
+	mov ax, 0x4f00
+	lea di, [vbe_info_block]
+	; Write signature
+	mov cl, 'V'
+	mov [vbe_info_block], cl
+	mov cl, 'B'
+	mov [vbe_info_block + 1], cl
+	mov cl, 'E'
+	mov [vbe_info_block + 2], cl
+	mov cl, '2'
+	mov [vbe_info_block + 3], cl
+	; Write version
+	mov cx, 0x300
+	mov [vbe_info_block + 4], cx
+	int 0x10
+
+	; Browse the available modes
+	; We specifically want a 640x480 24 bit mode
+	; ^ Ignore above, we want whatever we can get
+	; Initially, the selected width and height are 0s
+	mov ax, 0
+	mov [selected_width], ax
+	mov [selected_height], ax
+	mov [selected_vbe_mode], ax
+	; Initial mode
+	mov si, [vbe_info_block + 14]
+	vbe_search_mode:
+		; Presets for vbe function calls
+		mov cx, [si]
+		mov ax, 0x4f01
+		lea di, [mode_info_block]
+		; Check if it's the end of the modes
+		cmp cx, 0xffff
+		je vbe_choose_mode
+		; Get the info block for the mode
+		int 0x10
+		; Check if depth matches
+		mov al, [mode_info_block + 25]
+		cmp al, 24
+		jne vbe_try_again
+		; Get the highest resolution
+		mov ax, [mode_info_block + 18]
+		cmp ax, [selected_width]
+		jbe vbe_try_again
+		mov [selected_width], ax
+		mov ax, [mode_info_block + 20]
+		mov [selected_height], ax
+		mov [selected_vbe_mode], cx
+		; If matched, then return with the thing
+		; ^ Ignore above, try again
+		;jmp vbe_choose_mode
+	vbe_try_again:
+		; Increment and retry
+		add si, 2
+		jmp vbe_search_mode
+
+	vbe_failed:
+		; TODO still jump but with different graphics
+		jmp halt
+
+	vbe_choose_mode:
+		; Choose the selected mode
+		mov ax, 0x4f02
+		mov bx, [selected_vbe_mode]
+		mov di, 0x600
+		int 0x10
+
+		jmp halt
+
 ; Enter protected mode and then stage2 boot
 protected_mode:
-	; Disable interrupts
-	lea si, [interrupt_disable_msg]
-	call print_string
-	lea si, [pmode_enable_msg]
-	call print_string
-	lea si, [stage2_jump_msg]
-	call print_string
 	cli
 
 	; Enable protected mode by setting protected mode enable bit
 	mov eax, cr0
 	or eax, 1
 	mov cr0, eax
+
+	; Set all segment registers
+	mov ax, 0x10
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+	mov ss, ax
 
 	; Jump to set CS
 	jmp (gdt_code_kernel - gdt_start):stage2_boot
@@ -377,3 +450,8 @@ gdt_end:
 
 ; All externs
 extern stage2_boot
+extern vbe_info_block
+extern mode_info_block
+extern selected_width
+extern selected_height
+extern selected_vbe_mode
