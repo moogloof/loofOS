@@ -271,8 +271,7 @@ vbe_set_display:
 	int 0x10
 
 	; Browse the available modes
-	; We specifically want a 640x480 24 bit mode
-	; ^ Ignore above, we want whatever we can get
+	; We specifically want a 720x480 24 bit mode
 	; Initially, the selected width and height are 0s
 	mov ax, 0
 	mov [selected_width], ax
@@ -294,19 +293,26 @@ vbe_set_display:
 		mov al, [mode_info_block + 25]
 		cmp al, 24
 		jne vbe_try_again
-		; Get the highest resolution below 1920
+		; Get the biggest resolution
+		; Check the x resolution
 		mov ax, [mode_info_block + 18]
 		cmp ax, [selected_width]
 		jbe vbe_try_again
+		; Cap the resolution
 		cmp ax, 1920
 		ja vbe_try_again
+		; Check if the mode supports linear frame buffer
+		mov ax, [mode_info_block]
+		shr ax, 7
+		and ax, 1
+		cmp ax, 1
+		jne vbe_try_again
+		; Set the current selected mode
+		mov [selected_vbe_mode], cx
+		mov ax, [mode_info_block + 18]
 		mov [selected_width], ax
 		mov ax, [mode_info_block + 20]
 		mov [selected_height], ax
-		mov [selected_vbe_mode], cx
-		; If matched, then return with the thing
-		; ^ Ignore above, try again
-		;jmp vbe_choose_mode
 	vbe_try_again:
 		; Increment and retry
 		add si, 2
@@ -317,13 +323,22 @@ vbe_set_display:
 		jmp halt
 
 	vbe_choose_mode:
+		; Check if mode found
+		mov ax, [selected_vbe_mode]
+		cmp ax, 0
+		je vbe_failed
+
+		; Save the info
+		mov ax, 0x4f01
+		mov cx, [selected_vbe_mode]
+		lea di, [saved_mode_info_block]
+		int 0x10
+
 		; Choose the selected mode
 		mov ax, 0x4f02
 		mov bx, [selected_vbe_mode]
 		mov di, 0x600
 		int 0x10
-
-		jmp halt
 
 ; Enter protected mode and then stage2 boot
 protected_mode:
@@ -454,6 +469,7 @@ gdt_end:
 extern stage2_boot
 extern vbe_info_block
 extern mode_info_block
+extern saved_mode_info_block
 extern selected_width
 extern selected_height
 extern selected_vbe_mode
