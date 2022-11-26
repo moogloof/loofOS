@@ -1,5 +1,5 @@
 /* XPM */
-char** logo_image = "                                                                                                    "
+char* logo_image = "                                                                                                    "
 "                                                                                                    "
 "                                                                                                    "
 "                                                                                                    "
