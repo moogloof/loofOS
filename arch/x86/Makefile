@@ -16,7 +16,7 @@ LIBC_OBJS=$(LIBC_SRCS:%=$(OBJ_DIR)/%.o)
 # x86 specific build info
 x86_BOOT_DIR=./boot
 x86_SRCS=$(shell find . \( -name "*.c" -or -name "*.s" \) -not \( -path "$(x86_BOOT_DIR)*" -prune \))
-x86_SRCS_BOOT=$(shell find $(x86_BOOT_DIR) -name "*.c" -or -name "*.s")
+x86_SRCS_BOOT=$(shell find $(x86_BOOT_DIR) ./drivers -name "*.c" -or -name "*.s")
 x86_OBJS=$(x86_SRCS:%=$(OBJ_DIR)/%.o)
 x86_OBJS_BOOT=$(x86_SRCS_BOOT:%=$(OBJ_DIR)/%.o)
 
