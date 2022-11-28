@@ -5,10 +5,27 @@ global inportb
 inportb:
 	push ebp
 	mov ebp, esp
+	push edx
 
 	mov edx, [ebp + 8]
 	in al, dx
 
+	pop edx
+	pop ebp
+	ret
+
+; Input port word function
+; Read word from port
+global inportw
+inportw:
+	push ebp
+	mov ebp, esp
+	push edx
+
+	mov edx, [ebp + 8]
+	in ax, dx
+
+	pop edx
 	pop ebp
 	ret
 
@@ -18,10 +35,14 @@ global outportb
 outportb:
 	push ebp
 	mov ebp, esp
+	push eax
+	push edx
 
 	mov al, BYTE [ebp + 12]
 	mov edx, [ebp + 8]
 	out dx, al
 
+	pop edx
+	pop eax
 	pop ebp
 	ret
