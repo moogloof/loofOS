@@ -46,3 +46,21 @@ outportb:
 	pop eax
 	pop ebp
 	ret
+
+; Output port word function
+; Write word to port
+global outportw
+outportw:
+	push ebp
+	mov ebp, esp
+	push eax
+	push edx
+
+	mov ax, WORD [ebp + 12]
+	mov edx, [ebp + 8]
+	out dx, ax
+
+	pop edx
+	pop eax
+	pop ebp
+	ret

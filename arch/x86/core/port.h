@@ -12,4 +12,7 @@ uint16_t inportw(uint16_t*);
 // Output port byte function
 void outportb(uint8_t*, uint8_t);
 
+// Output port word function
+void outportw(uint16_t*, uint16_t);
+
 #endif
