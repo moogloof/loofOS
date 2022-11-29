@@ -14,10 +14,10 @@ x86:
 	$(MAKE) -C $(ARCH_DIR)/x86
 
 x86_boot:
-	rm $(BUILD_DIR)/x86/boot
+	rm -f $(BUILD_DIR)/x86/boot
 	$(MAKE) -C $(ARCH_DIR)/x86
 x86_kernel:
-	rm $(BUILD_DIR)/x86/kernel
+	rm -f $(BUILD_DIR)/x86/kernel
 	$(MAKE) -C $(ARCH_DIR)/x86
 
 arm:
