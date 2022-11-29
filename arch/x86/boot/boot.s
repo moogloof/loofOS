@@ -11,7 +11,8 @@ _start:
 times 8-($-$$) db 0
 ; El Torito block
 ; The primary volume descriptor LBA
-primary_volume_descriptor: dd 0
+global primary_volume_descriptor_position
+primary_volume_descriptor_position: dd 0
 ; The location of the boot file LBA
 boot_location: dd 0
 ; The length of the boot file in bytes
@@ -155,9 +156,6 @@ hello: db "LoofOS booting...", 0x0d, 0x0a, 0
 read_info_fail_msg: db "Reading drive info failed. Halting.", 0x0d, 0x0a, 0
 next_stage_msg: db "Loading next stage boot...", 0x0d, 0x0a, 0
 stage2_load_fail_msg: db "Failed to load stage2 boot. Halting.", 0x0d, 0x0a, 0
-a20_disable_msg: db "Disabling A20 line...", 0x0d, 0x0a, 0
-a20_fail_msg: db "A20 line disabling failed.", 0x0d, 0x0a, 0
-a20_success_msg: db "A20 line disabled.", 0x0d, 0x0a, 0
 
 ; The read sectors from drive with extended read block
 dap_block:
@@ -182,7 +180,11 @@ drive_parameters:
 	drive_bytes_per_sector: dw 0
 	dd 0
 
-times 510-($-$$) db 0
+times 440-($-$$) db 0
+; Some mbr stuff
+dd 0
+dw 0
+times 16 dd 0
 dw 0xaa55
 
 ; ----BOOT1.5----
@@ -413,6 +415,9 @@ a20_test:
 		ret
 
 ; Messages
+a20_disable_msg: db "Disabling A20 line...", 0x0d, 0x0a, 0
+a20_fail_msg: db "A20 line disabling failed.", 0x0d, 0x0a, 0
+a20_success_msg: db "A20 line disabled.", 0x0d, 0x0a, 0
 load_success_msg: db "Next stage boot successfully loaded.", 0x0d, 0x0a, 0
 gdt_load_msg: db "Loading the GDT...", 0x0d, 0x0a, 0
 interrupt_disable_msg: db "Disabling interrupts...", 0x0d, 0x0a, 0
