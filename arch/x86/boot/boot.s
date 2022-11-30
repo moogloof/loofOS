@@ -360,6 +360,7 @@ protected_mode:
 	mov ss, ax
 
 	; Jump to set CS
+	push 0
 	jmp (gdt_code_kernel - gdt_start):stage2_boot
 
 ; Test if A20 line is enabled
