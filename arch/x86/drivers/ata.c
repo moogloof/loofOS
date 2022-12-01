@@ -1,8 +1,8 @@
 #include <stdint.h>
-#include <drivers/ata.h>
-#include <core/port.h>
-#include <core/isr.h>
-#include <core/idt.h>
+#include <boot/ata.h>
+#include <boot/port.h>
+#include <boot/isr.h>
+#include <boot/idt.h>
 
 // ATA command done
 static uint8_t ata_done_flag;
@@ -69,6 +69,7 @@ void init_ata() {
 // ATA interrupts
 __attribute__((interrupt)) void ata_handler(interrupt_frame*) {
 	ata_done_flag = 1;
+	outportb(PIC_COMMAND2, PIC_EOI);
 }
 
 // Wait while ATA is doing stuff
@@ -117,24 +118,32 @@ uint8_t read_sectors(uint32_t lba, uint32_t lbs, uint16_t* dest) {
 		uint8_t atapi_packet[12];
 		// The amount of words that is transferred in one moment
 		uint32_t words_to_fetch = 0;
+		// The current write destination for multireads
+		uint16_t* dest_track = dest;
 
 		// Select master
 		outportb(ATA_DRIVE, 0);
 
+		// Wait until ready
+		while (!((inportb(ATA_STATUS) >> 6) & 1));
+
 		// No DMA
 		outportb(ATA_FEATURES, 0);
+
+		// Misc st uff
+		outportb(ATA_SECTOR_COUNT, 0);
+		outportb(ATA_SECTOR_NUMBER, 0);
 
 		// Stuff
 		outportb(ATA_CYLINDER_LOW, (lbs * 2048) & 0xff);
 		outportb(ATA_CYLINDER_HIGH, (lbs * 2048) >> 8);
 
+		// Send packets
 		// Send packet command
 		outportb(ATA_COMMAND, 0xa0);
 
-		// Wait
-		ata_wait();
+		while (!((inportb(ATA_STATUS) >> 3) & 1));
 
-		// Send packets
 		// READ 12
 		// Command byte
 		atapi_packet[0] = 0xa8;
@@ -159,22 +168,33 @@ uint8_t read_sectors(uint32_t lba, uint32_t lbs, uint16_t* dest) {
 			outportw(ATA_DATA, ((uint16_t*)atapi_packet)[i]);
 		}
 
-		// Loop for getting data
-		do {
-			// Wait
-			ata_wait();
+		// Wait for DRQ
+		while (!((inportb(ATA_STATUS) >> 3) & 1));
 
+		// Loop for getting data
+		while (1) {
 			// Once done waiting, get
-			words_to_fetch = ((uint32_t)inportw(ATA_CYLINDER_HIGH) << 8) | (uint32_t)inportw(ATA_CYLINDER_LOW);
+			words_to_fetch = ((uint32_t)inportb(ATA_CYLINDER_HIGH) << 8) | (uint32_t)inportb(ATA_CYLINDER_LOW);
 			words_to_fetch /= 2;
 
 			// Loop get
 			for (uint32_t i = 0; i < words_to_fetch; i++) {
-				dest[i] = inportw(ATA_DATA);
+				dest_track[i] = inportw(ATA_DATA);
 			}
+
+			dest_track += words_to_fetch;
 
 			// Get status
 			ata_status = inportb(ATA_STATUS);
-		} while ((ata_status >> 3) || (ata_status >> 7));
+
+			if ((ata_status >> 3) || (ata_status >> 7)) {
+				break;
+			}
+
+			// Wait
+			ata_wait();
+		}
+
+		return 1;
 	}
 }

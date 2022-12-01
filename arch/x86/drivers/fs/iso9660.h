@@ -32,7 +32,7 @@ typedef struct {
 	char standard_id[5];
 	uint8_t version;
 	uint8_t data[2041];
-} generic_volume_record;
+} __attribute__((packed)) generic_volume_record;
 
 // The boot record
 typedef struct {
@@ -42,7 +42,7 @@ typedef struct {
 	char boot_system_id[32];
 	char boot_id[32];
 	uint8_t reserved[1977];
-} boot_record;
+} __attribute__((packed)) boot_record;
 
 // The volume record terminator
 typedef struct {
@@ -50,7 +50,7 @@ typedef struct {
 	char standard_id[5]; // Always CD001
 	uint8_t version;
 	uint8_t reserved[2041];
-} volume_descriptor_terminator;
+} __attribute__((packed)) volume_descriptor_terminator;
 
 // The primary volume record
 typedef struct {
@@ -91,7 +91,7 @@ typedef struct {
 	uint8_t file_structure_version;
 	uint8_t unused4;
 	uint8_t reserved[1165];
-} primary_volume_descriptor;
+} __attribute__((packed)) primary_volume_descriptor;
 
 // The file flags for directory entry
 typedef struct {
@@ -120,6 +120,6 @@ typedef struct {
 	uint16_t volume_sequence_number_big;
 	uint8_t identifier_length;
 	char identifier[];
-} directory_record;
+} __attribute__((packed)) directory_record;
 
 #endif
