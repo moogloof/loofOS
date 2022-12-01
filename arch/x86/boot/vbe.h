@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-struct vbe_cib {
+typedef struct {
 	char vbe_signature[4]; // The VBE signature, it must be VBE2
 	uint16_t version; // The version, make it 0x300
 	uint16_t* oem_string_ptr; // Who cares
@@ -11,9 +11,9 @@ struct vbe_cib {
 	uint16_t* video_mode_ptr; // List of video modes
 	uint16_t total_memory; // The total amount of memory in 64KB blocks
 	uint8_t reserved[492]; // Other stuff
-};
+} __attribute__((packed)) vbe_cib;
 
-struct vbe_mib {
+typedef struct {
 	uint16_t mode_attributes; // The attributes of the mode
 	uint8_t windowa_attributes;
 	uint8_t windowb_attributes;
@@ -59,6 +59,6 @@ struct vbe_mib {
 	uint8_t lin_rsvd_field_position;
 	uint32_t max_pixel_clock;
 	uint8_t reserved4[189];
-};
+} __attribute__((packed)) vbe_mib;
 
 #endif

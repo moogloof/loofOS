@@ -12,7 +12,7 @@ char kernel_path[6] = "KERNEL";
 
 // Get the saved mode info
 extern struct vbe_cib __attribute__((packed)) vbe_info_block;
-extern struct vbe_mib __attribute__((packed)) saved_mode_info_block;
+extern vbe_mib saved_mode_info_block;
 extern char* logo_image;
 extern uint32_t primary_volume_descriptor_position;
 
@@ -96,12 +96,12 @@ void stage2_boot() {
 		init_paging();
 		// Then put some info in the 0x600 address to be used by kernel
 		uint8_t* kernel_eggs = (uint8_t*)0x600;
-		for (int i = 0; i < sizeof(struct vbe_cib); i++) {
-			kernel_eggs[i] = (uint8_t*)(&vbe_info_block) + i;
+		for (int i = 0; i < sizeof(vbe_cib); i++) {
+			kernel_eggs[i] = ((uint8_t*)(&vbe_info_block))[i];
 		}
 		kernel_eggs += 0x400;
-		for (int i = 0; i < sizeof(struct vbe_mib); i++) {
-			kernel_eggs[i] = (uint8_t*)(&saved_mode_info_block) + i;
+		for (int i = 0; i < sizeof(vbe_mib); i++) {
+			kernel_eggs[i] = ((uint8_t*)(&saved_mode_info_block))[i];
 		}
 		// Then jump
 		jump_to_kernel();
