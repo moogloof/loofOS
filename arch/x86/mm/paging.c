@@ -67,8 +67,18 @@ void allocate_page(pde_4kib* page_dir, uint32_t addr) {
 	// Address of new page
 	uint32_t new_page = 0;
 
+	// Deny allocation into kernel space
+	if (addr > (3*PAGE_LENGTH_4M / 4) * PAGE_SIZE_4M) {
+		return;
+	}
+
 	// Check if the table exists, if not, make one
 	if (page_dir[dir_index].present) {
+		// If there is already a 4MiB page entry, then there is no point in allocating a table
+		if (page_dir[dir_index].ps) {
+			return;
+		}
+
 		page_table = page_dir[dir_index].addr << 12;
 	} else {
 		page_table = kernel_allocate(sizeof(pte_4kib) * 1024);
@@ -101,7 +111,7 @@ void free_page(pde_4kib* page_dir, uint32_t addr) {
 	// Page table
 	pte_4kib* page_table;
 
-	// Checck if the table exists
+	// Check if the table exists
 	if (page_dir[dir_index].present) {
 		page_table = page_dir[dir_index].addr << 12;
 
@@ -113,5 +123,21 @@ void free_page(pde_4kib* page_dir, uint32_t addr) {
 			// Erase the page from the table
 			page_table[table_index] = (pte_4kib){0};
 		}
+	}
+}
+
+// Map two pages, virtual -> physical
+// The length is in bytes
+// TODO: Map more than just 4mib pages
+void map_page(pde_4mib* page_dir, uint32_t virt_addr, uint32_t phys_addr, int len, int isuser) {
+	// Get page directory entry
+	int dir_index = virt_addr >> 22;
+	// Get the amount of 4MiB pages
+	int pde_4mib_count = len / PAGE_SIZE_4M;
+	pde_4mib_count += (pde_4mib_count % PAGE_SIZE_4M > 0) ? 1 : 0;
+
+	// Map the 4mib pages
+	for (int i = 0; i < pde_4mib_count; i++) {
+		page_dir[dir_index + i] = (pde_4mib){.present = 1, .rw = 1, .us = isuser, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = (phys_addr >> 22) + i};
 	}
 }

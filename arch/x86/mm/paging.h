@@ -83,4 +83,7 @@ void allocate_page(pde_4kib*, uint32_t);
 // Free a page
 void free_page(pde_4kib*, uint32_t);
 
+// Map two pages, virtual -> physical
+void map_page(pde_4mib*, uint32_t, uint32_t, int, int);
+
 #endif
