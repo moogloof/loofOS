@@ -1,3 +1,4 @@
+![loofOS early early v0.1 example](demonstration.png)
 # loofOS
 A novice OS. I'm still learning OS theory and computer architecture. A complete OS for one architecture will probably take me 1-2 years.
 
