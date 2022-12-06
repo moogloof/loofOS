@@ -1,10 +1,9 @@
 #include <sys/kernel_print.h>
-#include <sys/kernel_console.h>
 #include <drivers/timer.h>
 #include <drivers/rtc.h>
 #include <drivers/ps2/controller.h>
 #include <drivers/ps2/keyboard.h>
-#include <drivers/vbe.h>
+#include <drivers/vga_text.h>
 #include <core/isr.h>
 #include <core/idt.h>
 #include <mm/paging.h>
@@ -15,16 +14,24 @@ extern uint8_t context_switching;
 
 __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Console placeholder
-	set_outb(&console_write);
+	reset_display();
+	set_outb(&output_char);
+
+	kernel_print("Setup VGA text mode display.\r\n");
+	set_color(0, 5);
+	kernel_print("loofOS v1.0\r\n\r\n");
+	set_color(0, 0xf);
 
 	// Setup the kernel heap
 	init_kernel_heap();
+	kernel_print("Initialized kernel heap.\r\n\r\n");
 
 	// Allocate test values
 	int* test1 = (int*)kernel_allocate(sizeof(int));
 	int* test2 = (int*)kernel_allocate(sizeof(int));
 	*test1 = 0x11223344;
 	*test2 = 0xabcdef12;
+	kernel_print(" TEST %x %x\r\n\r\n", test1, test2);
 
 	// Load the GDT
 	init_gdt();
@@ -34,32 +41,35 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	init_idt();
 	// Initialize the timer (IRQ0)
 	init_timer();
+	kernel_print("Initialized timer.\r\n");
 	// Initialize the PS/2 controller
 	init_ps2_controller();
+	kernel_print("Initialized PS/2 controller.\r\n");
 	// Initialize the PS/2 keyboard
 	init_ps2_keyboard();
-	// Initialize the ATA
-	init_ata();
+	kernel_print("Initialized PS/2 keyboard.\r\n");
 	// Initialize PIC
 	init_pic();
+	kernel_print("Initialized PIC.\r\n");
 	// Initialize exception handlers
 	init_exceptions();
+	kernel_print("Initialized exception handlers.\r\n");
 	// Load the IDT
 	load_idt();
+	kernel_print("Loaded IDT.\r\n");
 
 	// Setup paging
 	init_paging();
+	kernel_print("Initialized paging.\r\n\r\n");
+	kernel_print(" KDIR %x USTART %x UEND %x UTOT %x\r\n\r\n", KERNEL_PAGE_DIRECTORY, PAGELIST_START, PAGELIST_END - 1, PAGELIST_END - PAGELIST_START);
 
 	// Initialize processes
 	init_processes();
-
-	init_vbe();
 
 	// Unmask interrupts
 	enable_interrupts();
 
 	// Reset the vbe and display stuff
-	init_kernel_console();
 	kernel_print("Interrupts enabled.\r\n");
 
 	// Initialize the RTC

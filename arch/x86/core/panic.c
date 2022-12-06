@@ -6,6 +6,8 @@
 
 // Do kernel panic function
 void kernel_panic(const char* msg, seg_register_set seg_regs, gen_register_set gen_regs, interrupt_frame frame, uint32_t ecode) {
+	reset_display();
+	set_color(0, 4);
 	// Display kernel panic message
 	kernel_print(msg);
 	kernel_print("\r\n\r\n");

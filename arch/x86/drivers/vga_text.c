@@ -81,6 +81,7 @@ void disable_cursor() {
 void set_cursor_pos(int row, int col) {
 	// Calculate the cursor pos
 	int pos = row*80 + col;
+	pos %= 25*80;
 
 	// Set the low cursor location
 	// Select the 0Fh cursor low pos register
