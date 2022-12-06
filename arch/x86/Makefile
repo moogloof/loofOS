@@ -24,7 +24,8 @@ all: $(BUILD_DIR)/x86/loof.iso
 
 $(BUILD_DIR)/x86/loof.iso: $(BUILD_DIR)/x86/kernel $(BUILD_DIR)/x86/boot
 	# Formatting
-	mkdir -p $(BUILD_DIR)/x86/iso/system
+	mkdir -p $(BUILD_DIR)/x86/iso
+	cp -R ../../system $(BUILD_DIR)/x86/iso
 	cp $^ $(BUILD_DIR)/x86/iso/system
 	# TODO: -G option for general boot do it DO IT
 	mkisofs -V "loofOS" $(FSFLAGS) -o $@ -b system/boot $(BUILD_DIR)/x86/iso
