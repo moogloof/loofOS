@@ -10,6 +10,7 @@
 void init_ps2_keyboard();
 
 // PS/2 Keyboard handler
-__attribute__((interrupt)) void keyboard_handler(interrupt_frame*);
+void keyboard_handler();
+__attribute__((interrupt)) void keyboard_handler_wrapper(interrupt_frame*);
 
 #endif

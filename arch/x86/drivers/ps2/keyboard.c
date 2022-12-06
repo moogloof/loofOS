@@ -5,6 +5,7 @@
 #include <sys/kernel_print.h>
 #include <core/isr.h>
 #include <core/idt.h>
+#include <sys/shell.h>
 
 // Scancode set detected
 static uint8_t scancode_set;
@@ -97,11 +98,11 @@ void init_ps2_keyboard() {
 //	kernel_print("Keyboard Scancode Set: %d\r\n", scancode_set);
 
 	// Set keyboard interrupt handler
-	set_id(IRQ_OFFSET + 1, &keyboard_handler, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(IRQ_OFFSET + 1, &keyboard_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
 }
 
 // PS/2 Keyboard handler
-__attribute__((interrupt)) void keyboard_handler(interrupt_frame* frame) {
+void keyboard_handler() {
 	// Scancode
 	uint8_t scancode1 = poll_ps2_dataport();
 
@@ -121,9 +122,9 @@ __attribute__((interrupt)) void keyboard_handler(interrupt_frame* frame) {
 
 				// Handle pressed key
 				if (key_modifier.shift) {
-					output_char(scancodes1_shift[scancode1]);
+					handle_input(scancodes1_shift[scancode1]);
 				} else {
-					output_char(scancodes1[scancode1]);
+					handle_input(scancodes1[scancode1]);
 				}
 			} else {
 				// Check if released key is shift
@@ -147,9 +148,9 @@ __attribute__((interrupt)) void keyboard_handler(interrupt_frame* frame) {
 
 				// Handle pressed key
 				if (key_modifier.shift) {
-					output_char(scancodes2_shift[scancode1]);
+					handle_input(scancodes2_shift[scancode1]);
 				} else {
-					output_char(scancodes2[scancode1]);
+					handle_input(scancodes2[scancode1]);
 				}
 			} else if (scancode1 == 0xf0) {
 				// Get released key

@@ -94,6 +94,7 @@ void create_process(uint32_t eip, uint8_t ring) {
 	// Set the page directory
 	if (ring == 0) {
 		new_process->page_directory = KERNEL_PAGE_DIRECTORY;
+		new_process->frame.esp = kernel_allocate(1024) + 4092;
 	} else {
 		new_process->page_directory = kernel_allocate(sizeof(pde_4kib) * 1024);
 		// Copy kernel space to user space

@@ -48,6 +48,4 @@ switch_context:
 	pop ecx
 	pop eax
 
-	; Change
-	sti
 	iret

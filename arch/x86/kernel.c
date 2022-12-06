@@ -1,4 +1,5 @@
 #include <sys/kernel_print.h>
+#include <sys/shell.h>
 #include <drivers/timer.h>
 #include <drivers/rtc.h>
 #include <drivers/ps2/controller.h>
@@ -83,9 +84,11 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Start context switching and go into usermode
 	kernel_print("Enabling context switching and entering user mode.\r\n");
 
-	create_process(0x00000000, 3);
+	//create_process(shell_app, 0);
 
-	context_switching = 1;
+	//context_switching = 1;
+
+	shell_app();
 
 	while (1) {
 	}

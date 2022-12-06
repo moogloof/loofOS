@@ -130,6 +130,11 @@ void output_char(char c) {
 			// Create carriage return
 			set_cursor_pos(cur_pos/80, 0);
 			break;
+		case 8: case 127:
+			// Backspace
+			display_char(' ', (cur_pos - 1) / 80, (cur_pos - 1) % 80);
+			set_cursor_pos((cur_pos - 1)/80, (cur_pos - 1) % 80);
+			break;
 		default:
 			// Just display
 			display_char(c, cur_pos / 80, cur_pos % 80);

@@ -1,6 +1,6 @@
 section .text
-global timer_handler_wrapper
-timer_handler_wrapper:
+global keyboard_handler_wrapper
+keyboard_handler_wrapper:
 	; Push for gen_register_set struct
 	push eax
 	push ecx
@@ -16,8 +16,7 @@ timer_handler_wrapper:
 	push es
 	push ds
 
-	; Call the handler
-	call timer_handler
+	call keyboard_handler
 
 	; Pop all the stuff
 	pop ds
@@ -35,5 +34,4 @@ timer_handler_wrapper:
 	; IRET
 	iret
 
-; Extern stuff
-extern timer_handler
+extern keyboard_handler

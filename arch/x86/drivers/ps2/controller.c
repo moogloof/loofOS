@@ -110,11 +110,16 @@ void init_ps2_controller() {
 }
 
 uint8_t poll_ps2_dataport() {
+	int i = 0;
 	// Wait for output buffer flag to be set
-	while (!(inportb(PS2_STATUS) & 1));
+	for (; !(inportb(PS2_STATUS) & 1) && i < 100; i++);
 
 	// Read from data port
-	return inportb(PS2_DATA);
+	if (i < 100) {
+		return inportb(PS2_DATA);
+	} else {
+		return 0xff;
+	}
 }
 
 void write_ps2_dataport(uint8_t data) {
