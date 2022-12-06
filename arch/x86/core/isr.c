@@ -36,15 +36,20 @@ void init_pic() {
 // Enable and add exceptions
 void init_exceptions() {
 	// Set the divide-by-zero exception
-	set_id(0, &divbyzero_handler_wrapper, 0x08, IDT_PROT_TRAP, 0, 1);
-	set_id(1, &debug_handler_wrapper, 0x08, IDT_PROT_TRAP, 0, 1);
+	set_id(0, &divbyzero_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(1, &debug_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
 	set_id(2, &nonmask_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
-	set_id(3, &breakpoint_handler_wrapper, 0x08, IDT_PROT_TRAP, 0, 1);
-	set_id(4, &overflow_handler_wrapper, 0x08, IDT_PROT_TRAP, 0, 1);
-	set_id(5, &boundrange_handler_wrapper, 0x08, IDT_PROT_TRAP, 0, 1);
-	set_id(6, &invalop_handler_wrapper, 0x08, IDT_PROT_TRAP, 0, 1);
-	set_id(7, &nodevice_handler_wrapper, 0x08, IDT_PROT_TRAP, 0, 1);
-	set_id(8, &doublefault_handler_wrapper, 0x08, IDT_PROT_TRAP, 0, 1);
+	set_id(3, &breakpoint_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(4, &overflow_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(5, &boundrange_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(6, &invalop_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(7, &nodevice_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(8, &doublefault_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(10, &invaltss_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(11, &nosegment_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(12, &stackseg_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(13, &genprotection_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
+	set_id(39, &divbyzero_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
 }
 
 // Exception handlers
@@ -91,4 +96,24 @@ void nodevice_handler(seg_register_set seg_regs, gen_register_set gen_regs, inte
 // Double fault
 void doublefault_handler(seg_register_set seg_regs, gen_register_set gen_regs, uint32_t ecode, interrupt_frame frame) {
 	kernel_panic("Double fault exception.", seg_regs, gen_regs, frame, ecode);
+}
+
+// Invalid TSS fault
+void invaltss_handler(seg_register_set seg_regs, gen_register_set gen_regs, uint32_t ecode, interrupt_frame frame) {
+	kernel_panic("Invalid TSS exception.", seg_regs, gen_regs, frame, ecode);
+}
+
+// Segment not present fault
+void nosegment_handler(seg_register_set seg_regs, gen_register_set gen_regs, uint32_t ecode, interrupt_frame frame) {
+	kernel_panic("Segment not present exception.", seg_regs, gen_regs, frame, ecode);
+}
+
+// Stack segment fault
+void stackseg_handler(seg_register_set seg_regs, gen_register_set gen_regs, uint32_t ecode, interrupt_frame frame) {
+	kernel_panic("Stack segment exception.", seg_regs, gen_regs, frame, ecode);
+}
+
+// General protection fault
+void genprotection_handler(seg_register_set seg_regs, gen_register_set gen_regs, uint32_t ecode, interrupt_frame frame) {
+	kernel_panic("General protection exception.", seg_regs, gen_regs, frame, ecode);
 }

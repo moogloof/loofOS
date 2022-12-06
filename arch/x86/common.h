@@ -10,4 +10,7 @@
 // For memcpy
 void* memcpy(void*, const void*, uint32_t);
 
+// Small utility function for checking strings
+int verify_string(char*, char*, int);
+
 #endif

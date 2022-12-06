@@ -68,5 +68,17 @@ void nodevice_handler(seg_register_set, gen_register_set, interrupt_frame);
 // Double fault
 __attribute__((interrupt)) void doublefault_handler_wrapper(interrupt_frame*);
 void doublefault_handler(seg_register_set, gen_register_set, uint32_t, interrupt_frame);
+// Invalid TSS fault
+__attribute__((interrupt)) void invaltss_handler_wrapper(interrupt_frame*);
+void invaltss_handler(seg_register_set, gen_register_set, uint32_t, interrupt_frame);
+// Segment not present fault
+__attribute__((interrupt)) void nosegment_handler_wrapper(interrupt_frame*);
+void nosegment_handler(seg_register_set, gen_register_set, uint32_t, interrupt_frame);
+// Stack segment fault
+__attribute__((interrupt)) void stackseg_handler_wrapper(interrupt_frame*);
+void stackseg_handler(seg_register_set, gen_register_set, uint32_t, interrupt_frame);
+// General protection fault
+__attribute__((interrupt)) void genprotection_handler_wrapper(interrupt_frame*);
+void genprotection_handler(seg_register_set, gen_register_set, uint32_t, interrupt_frame);
 
 #endif

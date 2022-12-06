@@ -6,13 +6,7 @@
 
 // Do kernel panic function
 void kernel_panic(const char* msg, seg_register_set seg_regs, gen_register_set gen_regs, interrupt_frame frame, uint32_t ecode) {
-	// Disable interrupts
-	disable_interrupts();
-
 	// Display kernel panic message
-	reset_display();
-	set_color(0, 4);
-	set_cursor_pos(0, 0);
 	kernel_print(msg);
 	kernel_print("\r\n\r\n");
 	// Display error code

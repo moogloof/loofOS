@@ -122,4 +122,13 @@ typedef struct {
 	char identifier[];
 } __attribute__((packed)) directory_record;
 
+// File read info
+typedef struct {
+	uint32_t byte_length;
+	uint8_t* file_buffer;
+} file_info;
+
+// Obtain a file to read
+file_info* iso_read_file(char*);
+
 #endif

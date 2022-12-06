@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <sys/kernel_print.h>
+#include <drivers/vbe.h>
 
 // Output char function
 static void (*outb)(char);
@@ -125,4 +126,7 @@ void kernel_print(const char* format, ...) {
 
 	// Cleanup variable argument list
 	va_end(arglist);
+
+	// Update
+	update_framebuffer();
 }

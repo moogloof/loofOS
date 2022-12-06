@@ -1,7 +1,4 @@
 %macro START_ISR 0
-	; Disable interrupts while handling
-	cli
-
 	; Push for gen_register_set struct
 	push eax
 	push ecx
@@ -32,8 +29,26 @@
 	pop ecx
 	pop eax
 
-	; Enable inetrrupts after done
-	sti
+	; IRET
+	iret
+%endmacro
+
+%macro END_ISR_ECODE 0
+	; Pop all the stuff
+	pop ds
+	pop es
+	pop fs
+	pop gs
+	pop edi
+	pop esi
+	pop ebp
+	pop ebx
+	pop edx
+	pop ecx
+	pop eax
+
+	; Get rid of ecode
+	add esp, 4
 
 	; IRET
 	iret
@@ -95,6 +110,30 @@ START_ISR
 	call doublefault_handler
 END_ISR
 
+global invaltss_handler_wrapper
+invaltss_handler_wrapper:
+START_ISR
+	call invaltss_handler
+END_ISR_ECODE
+
+global nosegment_handler_wrapper
+nosegment_handler_wrapper:
+START_ISR
+	call nosegment_handler
+END_ISR_ECODE
+
+global stackseg_handler_wrapper
+stackseg_handler_wrapper:
+START_ISR
+	call stackseg_handler
+END_ISR_ECODE
+
+global genprotection_handler_wrapper
+genprotection_handler_wrapper:
+START_ISR
+	call genprotection_handler
+END_ISR_ECODE
+
 extern divbyzero_handler
 extern debug_handler
 extern nonmask_handler
@@ -104,12 +143,16 @@ extern boundrange_handler
 extern invalop_handler
 extern nodevice_handler
 extern doublefault_handler
+extern invaltss_handler
+extern nosegment_handler
+extern stackseg_handler
+extern genprotection_handler
 
 ; Page fault
 global pagefault_handler_wrapper
 pagefault_handler_wrapper:
 START_ISR
 	call pagefault_handler
-END_ISR
+END_ISR_ECODE
 
 extern pagefault_handler

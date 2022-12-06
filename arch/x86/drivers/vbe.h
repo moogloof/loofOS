@@ -74,4 +74,10 @@ void init_vbe();
 // Obtain the secondary framebuffer
 uint8_t* obtain_framebuffer();
 
+// Update the primary framebuffer
+void update_framebuffer();
+
+// Get info about window
+vbe_mib* get_window_info();
+
 #endif

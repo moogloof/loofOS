@@ -70,6 +70,7 @@ void init_ata() {
 __attribute__((interrupt)) void ata_handler(interrupt_frame*) {
 	ata_done_flag = 1;
 	outportb(PIC_COMMAND2, PIC_EOI);
+	outportb(PIC_COMMAND1, PIC_EOI);
 }
 
 // Wait while ATA is doing stuff
@@ -169,7 +170,7 @@ uint8_t read_sectors(uint32_t lba, uint32_t lbs, uint16_t* dest) {
 		}
 
 		// Wait for DRQ
-		while (!((inportb(ATA_STATUS) >> 3) & 1));
+		ata_wait();
 
 		// Loop for getting data
 		while (1) {

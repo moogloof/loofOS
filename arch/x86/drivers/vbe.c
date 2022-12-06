@@ -26,11 +26,21 @@ void init_vbe() {
 
 	// Clear the screen
 	for (int i = 0; i < saved_mode_info_block->bytes_per_line * saved_mode_info_block->yresolution; i++) {
-		vbe_framebuffer[i] = 0xff;
+		vbe_framebuffer[i] = 0;
 	}
 }
 
 // Obtain the secondary framebuffer
 uint8_t* obtain_framebuffer() {
 	return vbe_framebuffer_double;
+}
+
+// Update the primary framebuffer
+void update_framebuffer() {
+	memcpy(vbe_framebuffer, vbe_framebuffer_double, saved_mode_info_block->bytes_per_line * saved_mode_info_block->yresolution);
+}
+
+// Get info about winddow
+vbe_mib* get_window_info() {
+	return saved_mode_info_block;
 }
