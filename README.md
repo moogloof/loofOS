@@ -2,6 +2,8 @@
 # loofOS
 A novice OS. I'm still learning OS theory and computer architecture. A complete OS for one architecture will probably take me 1-2 years.
 
+**CURRENT WORK:** I am remaking my monolithic kernel into a microkernel in the `gen-boot` branch.
+
 **NOTE:** Currently I have paused work on the ARM arch kernel, as qemu for some reason decided to leave out emulation for the timer. Without the timer, I will not be able to test out context switching, multitasking, nor will I be able to write the scheduler. So until I find a solution that doesn't involve overwriting the kernel of my only ARM system that I need for development, I will be dropping all work on that end.
 
 ### Building
@@ -22,7 +24,7 @@ qemu-system-i386 -cdrom build/x86/loof.iso -m 4G
 
 ### Checklist
 (Will expand in the future)
-- Stupid Bootloader (DONE ARM, DONE x86)
+- Bootloader (DONE ARM, DONE x86)
 - Processes (DONE x86)
 - Scheduler (DONE x86)
 - Paging (DONE x86)
@@ -32,7 +34,7 @@ qemu-system-i386 -cdrom build/x86/loof.iso -m 4G
 	- Hard-disk (In Progress x86)
 	- Terminal (In Progress x86)
 - Filesystem (In Progress x86)
-- Shell (In Progress x86)
+- Shell (DONE x86)
 - Syscalls (In Progress x86)
 
 ### Contributing
