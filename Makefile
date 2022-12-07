@@ -1,24 +1,18 @@
-CC=gcc
-AS=as
-CFLAGS=-Wall -O0 -ffreestanding -nostdlib -nostartfiles
-ASFLAGS=-Iinclude -O0
 BUILD_DIR=build
 OBJ_DIR=obj
-ARCH_DIR=arch
+KERNEL_DIR=kernel
+BOOT_DIR=boot
 
 all:
 	@echo "Specify an arch:\n- arm\n- x86"
 
 x86:
-	rm -rf $(BUILD_DIR)
-	$(MAKE) -C $(ARCH_DIR)/x86
-
-x86_boot:
-	rm -f $(BUILD_DIR)/x86/boot
-	$(MAKE) -C $(ARCH_DIR)/x86
-x86_kernel:
-	rm -f $(BUILD_DIR)/x86/kernel
-	$(MAKE) -C $(ARCH_DIR)/x86
+	mkdir -p $(BUILD_DIR)/$@
+	mkdir -p $(OBJ_DIR)/$@
+	# Make the boot
+	$(MAKE) -C $(BOOT_DIR)/$@
+	# Make the kernel
+	$(MAKE) -C $(KERNEL_DIR)/$@
 
 arm:
 	$(MAKE) -C $(ARCH_DIR)/arm

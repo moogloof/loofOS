@@ -1,6 +1,6 @@
-LD=ld.lld
-CC=clang
-AS=nasm
+LD=x86_64-elf-ld
+CC=x86_64-elf-gcc
+AS=x86_64-elf-as
 LDFLAGS=--format=elf -O0 --nmagic -nostdlib --gc-sections --gdb-index
 CFLAGS=-Wall -O0 -ffreestanding -I./ -m32 -nostdlib -mgeneral-regs-only -march=i386 --target=i386-unknown-linux-gnu -g
 ASFLAGS=-O0 -f bin
