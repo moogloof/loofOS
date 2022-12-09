@@ -7,20 +7,6 @@ section .text.boot
 _start:
 	; Set CS
 	jmp 0:next
-; Pad to 0x8 offset
-times 8-($-$$) db 0
-; El Torito block
-; The primary volume descriptor LBA
-primary_volume_descriptor_position: dd 0
-; The location of the boot file LBA
-boot_location: dd 0
-; The length of the boot file in bytes
-boot_length: dd 0
-; A little checksum
-torito_checksum: dd 0
-; Some reserved stuff
-times 40 db 0
-
 next:
 	; Setup segment registers for bootloader
 	mov ax, 0
@@ -38,19 +24,6 @@ next:
 	; Send message boot
 	lea si, [hello]
 	call print_string
-
-	; Loading stage 2 boot
-	; Bruh why did we do this anyway
-	; Reset drive
-	; The drive ID is already loaded at the DL register
-	; But load again anyway
-	; Resetting drive message
-	;lea si, [reset_drive_msg]
-	;call print_string
-	; Reset drive
-	;mov dl, [drive_number]
-	;mov ah, 0
-	;int 0x13
 
 	; Get the sector size
 	mov ah, 0x48
@@ -71,7 +44,7 @@ read_info_success:
 	lea si, [next_stage_msg]
 	call print_string
 	; Set number of sectors to read
-	mov ax, [boot_length]
+	mov ax, 15
 	; Use the number of bytes in a sector
 	; The algorithm assumes that the number of bytes in a sector is a power of 2
 	; Set cx to sector size
@@ -79,7 +52,7 @@ read_info_success:
 	; Loop
 	sector_size_loop:
 		; Check if size is reduced
-		cmp cx, 1
+		cmp cx, 512
 		je sector_size_done
 		shr ax, 1
 		shr cx, 1
@@ -91,10 +64,10 @@ read_info_success:
 	; Set segment:offset for loading
 	mov ax, 0
 	mov [dap_segment], ax
-	mov ax, 0x7c00
+	mov ax, 0x7e00
 	mov [dap_offset], ax
 	; Set the low and high parts of the LBA for the drive
-	mov ax, [boot_location]
+	mov ax, 1
 	mov [dap_lba_low], ax
 	; Set the drive number
 	mov dl, [drive_number]
@@ -182,5 +155,27 @@ drive_parameters:
 	drive_bytes_per_sector: dw 0
 	dd 0
 
-times 510-($-$$) db 0
+times 440-($-$$) db 0
+; Some mbr stuff
+dd 0
+dw 0
+; The first partition
+db 0x80
+dw 0
+db 0
+db 7
+dw 0
+db 0
+dd 0
+dd 0x20000
+; The second
+db 0x80
+dw 0
+db 0
+db 0x96
+dw 0
+db 0
+dd 0x20000
+dd 0xffffffff
+times 8 dd 0
 dw 0xaa55
