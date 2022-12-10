@@ -4,6 +4,7 @@
 
 section .text.boot
 
+global _start
 _start:
 	; Set CS
 	jmp 0:next
@@ -44,7 +45,7 @@ read_info_success:
 	lea si, [next_stage_msg]
 	call print_string
 	; Set number of sectors to read
-	mov ax, 15
+	mov ax, 63
 	; Use the number of bytes in a sector
 	; The algorithm assumes that the number of bytes in a sector is a power of 2
 	; Set cx to sector size
@@ -86,7 +87,7 @@ stage2_load_success:
 	lea si, [stage2_load_success_msg]
 	call print_string
 	; Jump to second bootloader
-	jmp halt
+	jmp stage2
 
 ; Halting
 halt:
@@ -167,7 +168,7 @@ db 7
 dw 0
 db 0
 dd 0
-dd 0x20000
+dd 0x100
 ; The second
 db 0x80
 dw 0
@@ -175,7 +176,9 @@ db 0
 db 0x96
 dw 0
 db 0
-dd 0x20000
+dd 0x100
 dd 0xffffffff
 times 8 dd 0
 dw 0xaa55
+
+extern stage2

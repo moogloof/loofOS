@@ -4,6 +4,7 @@
 
 section .text.boot
 
+global _start
 _start:
 	; Set CS
 	jmp 0:next
@@ -113,7 +114,7 @@ stage2_load_success:
 	lea si, [stage2_load_success_msg]
 	call print_string
 	; Jump to second bootloader
-	jmp halt
+	jmp stage2
 
 ; Halting
 halt:
@@ -184,3 +185,5 @@ drive_parameters:
 
 times 510-($-$$) db 0
 dw 0xaa55
+
+extern stage2
