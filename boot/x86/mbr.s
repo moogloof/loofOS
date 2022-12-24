@@ -87,7 +87,7 @@ stage2_load_success:
 	lea si, [stage2_load_success_msg]
 	call print_string
 	; Jump to second bootloader
-	jmp stage2
+	jmp stage2_setup
 
 ; Halting
 halt:
@@ -180,5 +180,156 @@ dd 0x100
 dd 0xffffffff
 times 8 dd 0
 dw 0xaa55
+
+stage2_setup:
+	; A20 disable
+	; Send A20 disable message
+	lea si, [a20_disable_msg]
+	call print_string
+	; Disable A20
+	; Check A20
+	call a20_test
+	cmp ax, 0
+	je a20_0
+	jmp a20_success
+	; If disabled, try to enable
+	; Int 15h method
+a20_0:
+	mov ax, 0x2403
+	int 0x15
+	call a20_test
+
+	; Check A20
+	call a20_test
+	cmp ax, 0
+	je a20_1
+	jmp a20_success
+a20_1:
+	mov ax, 0x2402
+	int 0x15
+	call a20_test
+
+	; Check A20
+	call a20_test
+	cmp ax, 0
+	je a20_2
+	jmp a20_success
+a20_2:
+	mov ax, 0x2401
+	int 0x15
+	call a20_test
+
+	; Check A20
+	call a20_test
+	cmp ax, 0
+	je a20_fail
+	jmp a20_success
+; The A20 failed to enable
+a20_fail:
+	lea si, [a20_fail_msg]
+	call print_string
+	jmp halt
+; The A20 succeeded to enable
+a20_success:
+	lea si, [a20_success_msg]
+	call print_string
+
+; Load the gdt
+load_gdt:
+	lea si, [gdt_load_msg]
+	call print_string
+	cli
+	lgdt [gdtr]
+	sti
+; Jump to the stage2 main
+jmp stage2
+
+; Test if A20 line is enabled
+a20_test:
+	; Push used registers
+	pushf
+	push ds
+	push es
+	push di
+	push si
+
+	; Setup addresses
+	; Lower
+	mov ax, 0
+	mov es, ax
+	mov di, 0x7dfe
+	; Upper
+	mov ax, 0xffff
+	mov ds, ax
+	mov si, 0xfe0e
+
+	; Save data at addresses
+	mov ax, word [es:di]
+	push ax
+	mov ax, word [ds:si]
+	push ax
+
+	; Change two addresses
+	mov word [es:di], 0
+	mov word [ds:si], 0x4e69
+
+	; Test
+	cmp word [es:di], 0x4e69
+
+	; Cleanup memory
+	pop ax
+	mov word [ds:si], ax
+	pop ax
+	mov word [es:di], ax
+
+	; If equal, branch to handler
+	mov ax, 0
+	je a20_test_exit
+	mov ax, 1
+
+	; Cleanup and return
+	a20_test_exit:
+		pop si
+		pop di
+		pop es
+		pop ds
+		popf
+		ret
+
+; Messages
+a20_disable_msg: db "Disabling A20 line...", 0x0d, 0x0a, 0
+a20_fail_msg: db "A20 line disabling failed.", 0x0d, 0x0a, 0
+a20_success_msg: db "A20 line disabled.", 0x0d, 0x0a, 0
+gdt_load_msg: db "Loading the GDT...", 0x0d, 0x0a, 0
+
+; GDTR
+gdtr:
+	dw gdt_end - gdt_start - 1
+	dd gdt_start
+
+; GDT
+; Flat memory model
+gdt_start:
+	; Null descriptor.
+	gdt_null:
+		dd 0
+		dd 0
+	; Kernel code descriptor
+	gdt_code_kernel:
+		dw 0xffff
+		dw 0
+		db 0
+		db 1001_1010b
+		db 1100_1111b
+		db 0
+	; Kernel data descriptor
+	gdt_data_kernel:
+		dw 0xffff
+		dw 0
+		db 0
+		db 1001_0010b
+		db 1100_1111b
+		db 0
+gdt_end:
 
 extern stage2
