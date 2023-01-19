@@ -125,6 +125,7 @@ print_string:
 		ret
 
 ; The drive number for boot
+global drive_number
 drive_number: db 0
 ; Messages
 hello: db "LoofOS booting...", 0x0d, 0x0a, 0
@@ -134,13 +135,19 @@ stage2_load_fail_msg: db "Failed to load stage2 boot. Halting.", 0x0d, 0x0a, 0
 stage2_load_success_msg: db "Loaded stage2 boot. Jumping.", 0x0d, 0x0a, 0
 
 ; The read sectors from drive with extended read block
+global dap_block
 dap_block:
 	dap_block_size: db 0x10
 	db 0
+	global dap_read_length
 	dap_read_length: dw 0
+	global dap_offset
 	dap_offset: dw 0
+	global dap_segment
 	dap_segment: dw 0
+	global dap_lba_low
 	dap_lba_low: dd 0
+	global dap_lba_high
 	dap_lba_high: dw 0
 	dw 0
 
@@ -153,6 +160,7 @@ drive_parameters:
 	dd 0
 	dd 0
 	dd 0
+	global drive_bytes_per_sector
 	drive_bytes_per_sector: dw 0
 	dd 0
 
@@ -240,6 +248,26 @@ load_gdt:
 	call print_string
 	cli
 	lgdt [gdtr]
+; Enable unreal mode
+unreal_mode:
+	; Switch to pmode for cache
+	mov eax, cr0
+	or al, 1
+	mov cr0, eax
+	; Save DS segment register before
+	push ds
+	push es
+	; Load the gdt data into segment register, which will save it to cache
+	mov bx, 0x10
+	mov ds, bx
+	mov es, bx
+	; Swtich back to real mode, now in unreal mode
+	and al, 0xfe
+	mov cr0, eax
+	; Restore DS segment register
+	pop es
+	pop ds
+	; Enable interrupts
 	sti
 ; Jump to the stage2 main
 jmp stage2

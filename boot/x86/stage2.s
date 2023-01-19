@@ -1,0 +1,2 @@
+stage2:
+	jmp $
