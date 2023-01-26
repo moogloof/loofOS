@@ -248,30 +248,27 @@ load_gdt:
 	call print_string
 	cli
 	lgdt [gdtr]
-; Enable unreal mode
-unreal_mode:
-	; Switch to pmode for cache
+protected_mode:
+	; Switch to protected mode
 	mov eax, cr0
 	or al, 1
 	mov cr0, eax
-	; Save DS segment register before
-	push ds
-	push es
-	; Load the gdt data into segment register, which will save it to cache
-	mov bx, 0x10
-	mov ds, bx
-	mov es, bx
-	; Swtich back to real mode, now in unreal mode
-	and al, 0xfe
-	mov cr0, eax
-	; Restore DS segment register
-	pop es
-	pop ds
-	; Enable interrupts
-	sti
-; Jump to the stage2 main
-jmp stage2
 
+	; Jump to the stage2 main
+	jmp 0x8:protected_mode_jmp
+[bits 32]
+protected_mode_jmp:
+	; Set environment vars
+	mov ax, 0x10
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+	mov ss, ax
+
+	jmp stage2
+
+[bits 16]
 ; Test if A20 line is enabled
 a20_test:
 	; Push used registers
@@ -331,6 +328,7 @@ a20_success_msg: db "A20 line disabled.", 0x0d, 0x0a, 0
 gdt_load_msg: db "Loading the GDT...", 0x0d, 0x0a, 0
 
 ; GDTR
+global gdtr
 gdtr:
 	dw gdt_end - gdt_start - 1
 	dd gdt_start
@@ -357,6 +355,22 @@ gdt_start:
 		db 0
 		db 1001_0010b
 		db 1100_1111b
+		db 0
+	; Kernel code descriptor
+	gdt_code_real:
+		dw 0xffff
+		dw 0
+		db 0
+		db 1001_1010b
+		db 1000_1111b
+		db 0
+	; Kernel data descriptor
+	gdt_data_real:
+		dw 0xffff
+		dw 0
+		db 0
+		db 1001_0010b
+		db 1000_1111b
 		db 0
 gdt_end:
 

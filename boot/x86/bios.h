@@ -10,16 +10,14 @@ typedef struct {
 	uint16_t load_size;
 	uint16_t load_offset;
 	uint16_t load_segment;
-	uint64_t lba;
+	uint32_t lba_low;
+	uint32_t lba_high;
 } __attribute__((packed)) bios_dap;
 
 // BIOS ext read
-void bios_ext_read(uint8_t*, uint32_t, uint32_t, uint32_t);
-
-// BIOS memcpy
-__attribute__((sysv_abi)) void prot_memcpy(void*, void*, uint32_t);
+void bios_ext_read(uint8_t*, uint32_t, uint32_t);
 
 // BIOS ext read helper
-__attribute__((sysv_abi)) void _bios_ext_read_helper(uint16_t, uint32_t, uint32_t, uint16_t);
+void _bios_ext_read_helper(bios_dap);
 
 #endif

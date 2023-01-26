@@ -1,2 +1,0 @@
-stage2:
-	jmp $
