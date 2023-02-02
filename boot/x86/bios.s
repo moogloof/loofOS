@@ -1,17 +1,21 @@
 [bits 32]
 section .text
-; _bios_ext_read_helper(output_address, lba_address)
-global _bios_ext_read_helper
-_bios_ext_read_helper:
+; _bios_int(registers, code)
+global _bios_int
+_bios_int:
 	push ebp
 	mov ebp, esp
-	push esi
+	push eax
+	push ebx
+	push ecx
 	push edx
+	push esi
+	push edi
 
-	; Prepare for the read
-	jmp 0x18:_bios_ext_read_helper_real
+	; Prepare for the interrupt
+	jmp 0x18:_bios_int_trans
 [bits 16]
-_bios_ext_read_helper_real:
+_bios_int_trans:
 	mov ax, 0x20
 	mov ds, ax
 	mov ss, ax
@@ -26,8 +30,8 @@ _bios_ext_read_helper_real:
 	and al, 0xfe
 	mov cr0, eax
 
-	jmp 0:_bios_ext_read_helper_int
-_bios_ext_read_helper_int:
+	jmp 0:_bios_int_real
+_bios_int_real:
 	mov ax, 0
 	mov ds, ax
 	mov ss, ax
@@ -35,12 +39,21 @@ _bios_ext_read_helper_int:
 	mov fs, ax
 	mov gs, ax
 
-	; Do the read
+	; Load registers
+	mov al, [ebp + 32]
+	mov [_bios_int_number], al
+	mov eax, [ebp + 8]
+	mov ebx, [ebp + 12]
+	mov ecx, [ebp + 16]
+	mov edx, [ebp + 20]
+	mov esi, [ebp + 24]
+	mov edi, [ebp + 28]
+
+	; Do the interrupt
 	sti
-	mov dl, byte [drive_number]
-	lea si, [ebp + 8]
-	mov ah, 0x42
-	int 0x13
+
+	db 0xcd
+	_bios_int_number: db 0
 
 	; Reenter protected mode
 	cli
@@ -49,9 +62,9 @@ _bios_ext_read_helper_int:
 	or al, 1
 	mov cr0, eax
 
-	jmp 0x8:_bios_ext_read_helper_prot
+	jmp 0x8:_bios_int_prot
 [bits 32]
-_bios_ext_read_helper_prot:
+_bios_int_prot:
 	mov ax, 0x10
 	mov ds, ax
 	mov ss, ax
@@ -59,8 +72,12 @@ _bios_ext_read_helper_prot:
 	mov fs, ax
 	mov gs, ax
 
-	pop edx
+	pop edi
 	pop esi
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
 	pop ebp
 	ret
 
@@ -68,10 +85,4 @@ bios_idtr:
 	dw 0x3ff
 	dd 0
 
-extern drive_number
-extern dap_block
-extern dap_offset
-extern dap_lba_low
-extern dap_lba_high
-extern dap_read_length
 extern gdtr

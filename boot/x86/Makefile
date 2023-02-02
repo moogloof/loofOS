@@ -2,7 +2,7 @@ LD=ld.lld
 AS=nasm
 CC=clang
 LDFLAGS=-nostdlib -O0 --format=elf --nmagic --gc-sections --gdb-index
-CFLAGS=-nostdlib -O0 -ffreestanding -arch i386 -m32 -I./ --target=i386-none-gnu -g
+CFLAGS=-nostdlib -O0 -ffreestanding -m32 -I./ -march=i386 --target=i386-linux-gnu -g
 ASFLAGS=-O0 -g
 
 OBJ_DIR=../../obj

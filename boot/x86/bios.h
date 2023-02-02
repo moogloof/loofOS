@@ -14,10 +14,20 @@ typedef struct {
 	uint32_t lba_high;
 } __attribute__((packed)) bios_dap;
 
+// Registers
+typedef struct {
+	uint32_t eax;
+	uint32_t ebx;
+	uint32_t ecx;
+	uint32_t edx;
+	uint32_t esi;
+	uint32_t edi;
+} __attribute__((packed)) bios_registers;
+
 // BIOS ext read
 void bios_ext_read(uint8_t*, uint32_t, uint32_t);
 
-// BIOS ext read helper
-void _bios_ext_read_helper(bios_dap);
+// BIOS int
+void _bios_int(bios_registers, uint8_t);
 
 #endif
