@@ -94,13 +94,13 @@ int _read_file_exfat_helper(const char* name, int name_len, exfat_generic_dir_en
 			int name_entry_count = ((exfat_file_dir_entry*)(dir_buffer + i))->secondary_count - 1;
 			// Get the stream extension entry
 			exfat_extension_dir_entry extension_entry;
-			memcpy(dir_buffer + i + 1, &extension_entry, sizeof(exfat_extension_dir_entry));
+			memcpy(&extension_entry, dir_buffer + i + 1, sizeof(exfat_extension_dir_entry));
 
 			// Get the name of the file
 			for (int j = 0; j < name_entry_count; j++) {
 				// Get name entry
 				exfat_name_dir_entry name_entry;
-				memcpy(dir_buffer + i + j + 2, &name_entry, sizeof(exfat_name_dir_entry));
+				memcpy(&name_entry, dir_buffer + i + j + 2, sizeof(exfat_name_dir_entry));
 				// Copy over the characters
 				for (int x = 0; x < 15; x++) {
 					filename[j*15 + x] = name_entry.name[x];
@@ -132,7 +132,7 @@ int _read_file_exfat_helper(const char* name, int name_len, exfat_generic_dir_en
 					int id_per_cluster = drive_bytes_per_sector * get_cluster_size(1) / 4;
 
 					// Temp FAT storage
-					uint32_t fat_buffer[drive_bytes_per_sector * get_cluster_size(1) / 4];
+					uint32_t fat_buffer[id_per_cluster];
 
 					// Write first FAT to buffer
 					bios_ext_read((uint8_t*)fat_buffer, get_fat_lba(current_cluster_id), get_cluster_size(1));
@@ -168,6 +168,9 @@ int _read_file_exfat_helper(const char* name, int name_len, exfat_generic_dir_en
 					return (int)(extension_entry.data_length + get_cluster_size(1) * drive_bytes_per_sector - 1) / (get_cluster_size(1) * drive_bytes_per_sector);
 				}
 			}
+
+			// Increment stuff
+			i += name_entry_count + 1;
 		}
 	}
 
@@ -194,7 +197,7 @@ int read_file_exfat(const char* path, uint8_t* dest) {
 			for (path_length = 0; path[i + path_length] != '/' && path[i + path_length] != '\0'; path_length++);
 
 			// Load the stuff in the destination
-			dirs_clusters = _read_file_exfat_helper(path + path_length, path_length, (exfat_generic_dir_entry*)dest, dirs_clusters, dest);
+			dirs_clusters = _read_file_exfat_helper(path + i, path_length, (exfat_generic_dir_entry*)dest, dirs_clusters, dest);
 
 			// No file discovered then exit
 			if (dirs_clusters == 0) {
@@ -202,9 +205,9 @@ int read_file_exfat(const char* path, uint8_t* dest) {
 			}
 
 			// Go forward
-			i += path_length;
+			i += path_length - 1;
 		}
 	}
 
-	return dirs_clusters;
+	return dirs_clusters * get_cluster_size(1) * drive_bytes_per_sector;
 }

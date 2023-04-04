@@ -7,6 +7,9 @@
 extern uint16_t drive_bytes_per_sector;
 
 void stage2() {
+	// Size of kernel in bytes
+	int kernel_size;
+
 	// Initializing the VGA display
 	reset_display();
 	set_cursor_pos(0, 0);
@@ -24,14 +27,25 @@ void stage2() {
 
 	// Load kernel and check if kernel exists
 	print("Loading kernel...\r\n");
-	if (read_file_exfat("/system/kernel", 0x100000) == 0) {
+	kernel_size = read_file_exfat("/system/kernel", 0x100000);
+	if (kernel_size == 0) {
 		// No kernel exists so halt
 		print("No kernel detected at /system/kernel\r\n");
 		while (1) {}
 	}
 
+	// Load system processes
+	print("Loading system processes...\r\n");
+	if (read_file_exfat("/system/proc0", 0x100000 + kernel_size) == 0) {
+		// No initial process detected
+		print("System process does not exist\r\n");
+	} else {
+		// Initial process detected
+		print("System process detected at %x. Passing info\r\n", kernel_size);
+	}
+
 	// Enter VBE
-	init_vbe();
+//	init_vbe();
 
 	while (1) {}
 }

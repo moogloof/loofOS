@@ -17,9 +17,9 @@ x86:
 	# Make the boot
 	$(MAKE) -C $(BOOT_DIR)/$@
 	# Make the kernel
-	#$(MAKE) -C $(KERNEL_DIR)/$@
+	$(MAKE) -C $(KERNEL_DIR)/$@
 	# Prepare the directory
-	mkdir $(BUILD_DIR)/sys
+	mkdir -p $(BUILD_DIR)/sys/system
 	mkdir $(BUILD_DIR)/cdrom
 	# Pack into one iso
 	# Make 16 MB iso
@@ -29,6 +29,8 @@ x86:
 	$(ISO_PROG) $(ISO_FLAGS) -b boot -o $(BUILD_DIR)/boot.cdrom $(BUILD_DIR)/cdrom
 	dd if=$(BUILD_DIR)/mbr of=$(BUILD_DIR)/boot.cdrom conv=notrunc bs=512 count=64
 	dd if=$(BUILD_DIR)/boot.cdrom of=$(BUILD_DIR)/loof.iso conv=notrunc bs=512 count=256
+	# Copy in kernel
+	cp $(BUILD_DIR)/kernel $(BUILD_DIR)/sys/system
 	# Copy in the partition
 	$(FS_PROG) $(FS_FLAGS) -srcfolder $(BUILD_DIR)/sys $(BUILD_DIR)/loof
 	dd if=$(BUILD_DIR)/loof.cdr of=$(BUILD_DIR)/loof.iso conv=notrunc bs=512 seek=256

@@ -5,7 +5,7 @@ LDFLAGS=-nostdlib -O0 --format=elf --nmagic --gc-sections --gdb-index
 CFLAGS=-nostdlib -O0 -ffreestanding -m32 -I./ -march=i386 --target=i386-linux-gnu -g
 ASFLAGS=-O0 -g
 
-OBJ_DIR=../../obj
+OBJ_DIR=../../obj/boot
 BUILD_DIR=../../build
 
 SRCS=$(shell find . \( -name "*.s" -or -name "*.c" \) -and \( ! -name "boot.s" -and ! -name "mbr.s" \))
