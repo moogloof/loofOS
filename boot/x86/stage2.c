@@ -45,7 +45,10 @@ void stage2() {
 	}
 
 	// Enter VBE
-//	init_vbe();
+	init_vbe();
+
+	// Long mode transition
+	long_mode();
 
 	while (1) {}
 }
