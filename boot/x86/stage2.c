@@ -44,11 +44,8 @@ void stage2() {
 		print("System process detected at %x. Passing info\r\n", kernel_size);
 	}
 
-	// Enter VBE
+	// Initialize VBE
 	init_vbe();
-
-	// Long mode transition
-	long_mode();
 
 	while (1) {}
 }
