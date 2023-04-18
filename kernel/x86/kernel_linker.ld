@@ -1,9 +1,9 @@
 ENTRY(kernel_main)
-OUTPUT_FORMAT(elf64-x86-64)
-OUTPUT_ARCH(x86-64)
+OUTPUT_FORMAT(elf32-i386)
+OUTPUT_ARCH(i386)
 
 SECTIONS {
-	. = 0x80000000;
+	. = 0xc0000000;
 	.text : {
 		*(.text .text.*)
 		. = ALIGN(512);
