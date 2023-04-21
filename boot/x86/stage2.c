@@ -6,6 +6,7 @@
 #include <paging.h>
 
 extern uint16_t drive_bytes_per_sector;
+extern void kernel_jump();
 
 // Page directory table
 pde_4mib kernel_memory[1024] __attribute__((aligned(4096)));
@@ -63,6 +64,9 @@ void stage2() {
 
 	// Initialize VBE
 	init_vbe();
+
+	// Jump to kernel
+	kernel_jump();
 
 	while (1) {}
 }

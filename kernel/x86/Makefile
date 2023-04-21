@@ -24,5 +24,3 @@ $(OBJ_DIR)/%.s.o: %.s
 $(OBJ_DIR)/%.c.o: %.c
 	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
-
-

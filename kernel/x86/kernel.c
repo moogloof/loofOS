@@ -1,3 +1,4 @@
-__attribute__((noreturn)) void kernel_main() {
+void kernel_main() {
+	// Stuff
 	while (1) {}
 }

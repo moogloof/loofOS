@@ -3,7 +3,7 @@ OUTPUT_FORMAT(elf32-i386)
 OUTPUT_ARCH(i386)
 
 SECTIONS {
-	. = 0xc0000000;
+	. = 0xc0100000;
 	.text : {
 		*(.text .text.*)
 		. = ALIGN(512);
