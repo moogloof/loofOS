@@ -5,6 +5,7 @@ OUTPUT_ARCH(i386)
 SECTIONS {
 	. = 0xc0100000;
 	.text : {
+		KEEP(*(.kernel))
 		*(.text .text.*)
 		. = ALIGN(512);
 	}
