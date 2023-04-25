@@ -87,7 +87,7 @@ void init_gdt() {
 
 	// Set TSS block
 	tss.ss0 = 0x10;
-	tss.esp0 = 0xc8000000;
+	tss.esp0 = 0xc0000000;
 	tss.iopb = sizeof(tss);
 	// Set the TSS gdt segment (the access byte is of a different form)
 	gdt[5] = (struct gdt_segment_desc){.limit1 = sizeof(tss) - 1, .base1 = (uint32_t)(&tss) & 0xffffff, .a = 1, .rw = 0, .dc = 0, .e = 1, .s = 0, .dpl = 0, .p = 1, .limit2 = 0, .zero = 0, .l = 0, .db = 1, .g = 0, .base2 = (uint32_t)(&tss) >> 24};

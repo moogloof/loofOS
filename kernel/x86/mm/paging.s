@@ -1,6 +1,9 @@
 section .text
 global enable_paging
 enable_paging:
+	push ebp
+	mov ebp, esp
+
 	; Enable 4 MiB pages
 	mov eax, cr4
 	or eax, 0x10
@@ -8,7 +11,7 @@ enable_paging:
 	mov cr4, eax
 
 	; Set address of kernel page directory
-	mov eax, 0xf00000
+	mov eax, [ebp + 8]
 	mov cr3, eax
 
 	; Set paging bit of cr0 register
@@ -20,5 +23,5 @@ enable_paging:
 short_jump:
 	jmp 0x8:long_jump
 long_jump:
-
+	pop ebp
 	ret

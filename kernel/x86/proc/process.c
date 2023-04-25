@@ -58,13 +58,11 @@ void switch_process(seg_register_set seg_regs, gen_register_set gen_regs, interr
 }
 
 // Create a process
-void create_process(uint32_t eip, uint8_t ring) {
+void create_process(uint32_t eip) {
 	process_desc* new_process = kernel_allocate(sizeof(process_desc));
-	uint32_t code_segment = ((ring == 0) ? 0x8 : 0x18) | ring;
-	uint32_t data_segment = ((ring == 0) ? 0x10 : 0x20) | ring;
+	uint32_t code_segment = 0x18;
+	uint32_t data_segment = 0x20;
 
-	// Set process ring
-	new_process->ring = ring;
 	// Set address of process
 	new_process->frame.eip = eip;
 	// Set code segment
@@ -92,24 +90,19 @@ void create_process(uint32_t eip, uint8_t ring) {
 	new_process->gen_regs.eax = 0;
 
 	// Set the page directory
-	if (ring == 0) {
-		new_process->page_directory = KERNEL_PAGE_DIRECTORY;
-		new_process->frame.esp = kernel_allocate(1024) + 4092;
-	} else {
-		new_process->page_directory = kernel_allocate(sizeof(pde_4kib) * 1024);
-		// Copy kernel space to user space
-		for (int i = 0; i < PAGE_LENGTH_4M / 4; i++) {
-			((pde_4mib*)new_process->page_directory)[i + (3*PAGE_LENGTH_4M / 4)] = ((pde_4mib*)KERNEL_PAGE_DIRECTORY)[i + (3*PAGE_LENGTH_4M / 4)];
-		}
-		// Allocate stack page
-		// Calculate base address of stack
-		uint32_t base_esp_addr = KERNEL_BASE - (PAGE_SIZE_4K * PROCESS_STACK_PAGES);
-		for (int i = 0; i < PROCESS_STACK_PAGES; i++) {
-			allocate_page((pde_4kib*)new_process->page_directory, base_esp_addr + i*PAGE_SIZE_4K);
-		}
-
-		allocate_page((pde_4kib*)new_process->page_directory, 0);
+	new_process->page_directory = kernel_allocate(sizeof(pde_4kib) * 1024);
+	// Copy kernel space to user space
+	for (int i = 0; i < 256; i++) {
+		((pde_4mib*)new_process->page_directory)[i + 768] = (pde_4mib){.present = 1, .rw = 1, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 1, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = i};
 	}
+	// Allocate stack page
+	// Calculate base address of stack
+	uint32_t base_esp_addr = KERNEL_BASE - (PAGE_SIZE_4K * PROCESS_STACK_PAGES);
+	for (int i = 0; i < PROCESS_STACK_PAGES; i++) {
+		allocate_page((pde_4kib*)new_process->page_directory, base_esp_addr + i*PAGE_SIZE_4K);
+	}
+
+	allocate_page((pde_4kib*)new_process->page_directory, 0);
 
 	// Set state of process as running
 	new_process->state = 0;

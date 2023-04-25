@@ -18,9 +18,6 @@
 // End of the page frames
 #define PAGELIST_END (PAGE_SIZE_4K * PAGE_LENGTH_4K)
 
-// Page directory address for kernel
-#define KERNEL_PAGE_DIRECTORY (KERNEL_BASE + 0xf00000)
-
 // Page directory entry for 4 MiB
 typedef struct {
 	uint8_t present:1; // Present bit; must be 1
@@ -75,7 +72,7 @@ __attribute__((interrupt)) void pagefault_handler_wrapper(interrupt_frame*);
 void pagefault_handler(seg_register_set, gen_register_set, uint32_t, interrupt_frame);
 
 // Enable paging
-void enable_paging();
+void enable_paging(pde_4mib*);
 
 // Allocate a page
 void allocate_page(pde_4kib*, uint32_t);
