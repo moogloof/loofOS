@@ -13,7 +13,7 @@ static uint8_t* pagelist_bitmap;
 
 // Page directory for the kernel
 // 4MiB
-pde_4mib kernel_memory[PAGE_LENGTH_4M];
+pde_4mib kernel_memory[PAGE_LENGTH_4M] __attribute__((aligned(4096)));
 
 // Initialize 32 bit paging
 void init_paging() {
@@ -48,7 +48,7 @@ void init_paging() {
 	set_id(14, &pagefault_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
 
 	// Enable paging
-	enable_paging(kernel_memory);
+	enable_paging((uint32_t)kernel_memory - KERNEL_BASE);
 }
 
 // Page fault handler
