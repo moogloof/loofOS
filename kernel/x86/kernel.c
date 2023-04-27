@@ -30,6 +30,9 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Setup paging
 	init_paging();
 
+	// Initialize processes
+	init_processes();
+
 	// Unmask interrupts
 	enable_interrupts();
 
