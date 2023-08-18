@@ -60,8 +60,8 @@ void switch_process(seg_register_set seg_regs, gen_register_set gen_regs, interr
 // Create a process
 void create_process(uint32_t eip) {
 	process_desc* new_process = kernel_allocate(sizeof(process_desc));
-	uint32_t code_segment = 0x18;
-	uint32_t data_segment = 0x20;
+	uint32_t code_segment = 0x18 | 3;
+	uint32_t data_segment = 0x20 | 3;
 
 	// Set address of process
 	new_process->frame.eip = eip;
