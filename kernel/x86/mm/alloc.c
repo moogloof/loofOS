@@ -1,103 +1,57 @@
+/*
+ * Linked list allocator
+ * The allocator stores the free blocks as a linked list. Free blocks come in multiple sizes. The sizes are powers of two.
+ */
+
 #include <stdint.h>
 #include <mm/alloc.h>
-#include <core/panic.h>
 
-// Create a bitmap for each block in the heap
-// 0 == unused
-// 1 == used
-// 2 == fill
-// 3 == reserved
-static uint8_t* heap_bitmap = HEAP_START;
+// TODO: add, remove, merge, split, how tf will these work
 
-// Size of heap bitmap
-static int heap_bitmap_size = HEAP_LENGTH / (BLOCK_SIZE * 4);
+// Get minimum block size for some size
+// Blocks of that size may not be available
+// Block size is returned as the log base two of a power of two
+static int round_block_size(uint32_t size) {
+	uint32_t block_size = MIN_BLOCK_SIZE - 1;
 
-// Bitmap set helper
-void bitmap_set(int i, int val) {
-	heap_bitmap[i / 4] &= ~(3 << (2 * (i % 4)));
-	heap_bitmap[i / 4] |= (val & 3) << (2 * (i % 4));
+	// Loop block size until smallest block size that contains size
+	while (size >> ++block_size != 0);
+
+	// Return the block size
+	return block_size;
 }
 
-// Bitmap get helper
-int bitmap_get(int i) {
-	return (heap_bitmap[i / 4] >> (2 * (i % 4))) & 3;
-}
+// Allocate an object
+void* memory_allocate(uint32_t size, heap_block blocks[]) {
+	// Just return 0 on size 0
+	if (size == 0) return 0;
 
-// Initialize the kernel heap
-void init_kernel_heap() {
-	// Clear the bitmap first
-	for (int i = 0; i < heap_bitmap_size; i++) {
-		bitmap_set(i, 0);
-	}
-	// First part of heap reserved for the heap bitmap
-	for (int i = 0; i < heap_bitmap_size / BLOCK_SIZE; i++) {
-		bitmap_set(i, 3);
-	}
-}
+	// Check which size is the min block we want
+	int target_block_size = round_block_size(size);
+	int min_block_index = target_block_size - MIN_BLOCK_SIZE;
+	heap_block* allocated_block;
 
-// Allocate a kernel object
-void* kernel_allocate(int size) {
-	// Find level of the object
-	int size_level = BLOCK_SIZE;
+	// Check if the size is available
+	// Also get the minimum size that is available
+	while (min_block_index < TOTAL_BLOCK_LISTS && blocks[min_block_index].next == blocks[min_block_index].prev)
+		min_block_index++;
 
-	// No invalid sizes
-	if (size > HEAP_LENGTH) {
-		return 0;
-	}
+	// Exit if no size available
+	if (min_block_index >= TOTAL_BLOCK_LISTS) return 0;
 
-	// Calculate size level as power of 2
-	while (size_level < size) {
-		size_level *= 2;
+	// Split the blocks until we get target block size
+	while (min_block_index + MIN_BLOCK_SIZE > target_block_size) {
+		// Split the block
+		// Note that the min_block_index is an index of blocks[]
+		split_block(min_block_index, blocks);
+
+		// Decrease block size to split
+		min_block_index--;
 	}
 
-	// Search by level
-	for (int i = 0; i < heap_bitmap_size * 4; i += size_level / BLOCK_SIZE) {
-		// Check for availability
-		if (!bitmap_get(i)) {
-			// Check if the size fits
-			uint8_t mem_found = 1;
+	// Remove block from free list
+	allocated_block = remove_block(min_block_index, blocks);
 
-			for (int j = i; j < i + (size_level / BLOCK_SIZE); j++) {
-				// Check if unused memory
-				if (bitmap_get(j)) {
-					// Exit and continue on finding used or filled
-					mem_found = 0;
-					break;
-				}
-			}
-
-			// Check if correct memory found
-			if (mem_found) {
-				// Return address and fill memory on found
-				bitmap_set(i, 1);
-				for (int j = i + 1; j < i + (size_level / BLOCK_SIZE); j++) {
-					bitmap_set(j, 2);
-				}
-				return (void*)(i * BLOCK_SIZE + HEAP_START);
-			}
-		}
-	}
-
-	// No memory so we panic
-	return 0;
-}
-
-// Free kernel object
-void kernel_free(void* addr) {
-	// Get the bitmap addr
-	int bitmap_addr = ((int)addr - HEAP_START) / BLOCK_SIZE;
-
-	// Make sure the address is within the heap
-	if ((uint32_t)addr < HEAP_START || (uint32_t)addr > HEAP_END - 1) {
-		return;
-	} else if (bitmap_get(bitmap_addr) == 3) {
-		// Make sure the allocated address is not reserved
-		return;
-	}
-
-	// Set it free
-	bitmap_set(bitmap_addr, 0);
-	for (int i = bitmap_addr + 1; bitmap_get(i) == 2; i++) {
-		bitmap_set(i, 0);
-	}
+	// Return allocated block
+	return allocated_block;
 }
