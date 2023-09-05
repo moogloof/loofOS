@@ -1,5 +1,6 @@
 #include <fs/exfat.h>
 #include <stdint.h>
+#include <common.h>
 #include <bios.h>
 
 extern uint16_t drive_bytes_per_sector;
