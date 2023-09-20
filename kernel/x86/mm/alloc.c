@@ -5,6 +5,10 @@
 
 #include <stdint.h>
 #include <mm/alloc.h>
+#include <common.h>
+
+// Kernel alloc config
+static heap_spec kernel_heap = {.start = KERNEL_BASE + 0x10000000, .end = KERNEL_BASE + 0x30000000};
 
 // Split block
 static void split_block(heap_header* block) {
@@ -12,8 +16,8 @@ static void split_block(heap_header* block) {
 	uint32_t new_size = block->size - 1;
 	// Create new buddy
 	heap_header* new_buddy = (char*)block + (1 << new_size);
-	new_buddy.size = new_size;
-	new_buddy.used = 0;
+	new_buddy->size = new_size;
+	new_buddy->used = 0;
 
 	// Edit old block
 	block->size = new_size;
@@ -23,7 +27,7 @@ static void split_block(heap_header* block) {
 static void coalesce_block(heap_header* block, uint32_t offset) {
 	// Get buddy block
 	heap_header* buddy_block = (char*)block - offset;
-	buddy_block ^= 1 << buddy_block->size;
+	buddy_block = (uint32_t)buddy_block ^ (1 << buddy_block->size);
 	buddy_block = (char*)buddy_block + offset;
 
 	// Check if buddy is used
@@ -87,4 +91,44 @@ void memory_free(heap_spec alloc_info, void* addr) {
 
 	// Coalesce the block
 	coalesce_block(addr, alloc_info.start);
+}
+
+// Initialize a heap given heap_spec
+void init_memory(heap_spec alloc_info) {
+	heap_header* block = alloc_info.start;
+	uint32_t heap_length = alloc_info.end - alloc_info.start + 1;
+	uint8_t alloc_size = MIN_BLOCK_SIZE;
+
+	// Pre truncate heap_length
+	heap_length >>= alloc_size;
+
+	// Fill the entire range with blocks
+	while (block < alloc_info.end && heap_length > 0) {
+		// Fill the powers of two blocks
+		// We start with least significant bc usually our first allocs will be small
+		if (heap_length & 1) {
+			// Create new block
+			block->size = alloc_size;
+			block->used = 0;
+			// Move to next
+			block = (char*)block + (1 << alloc_size);
+		}
+		heap_length >>= 1;
+		alloc_size++;
+	}
+}
+
+// Kernel allocate function
+void* kernel_allocate(uint32_t size) {
+	return memory_allocate(kernel_heap, size);
+}
+
+// Kernel free function
+void kernel_free(void* addr) {
+	memory_free(kernel_heap, addr);
+}
+
+// Initialize kernel heap
+void init_kernel_heap() {
+	init_memory(kernel_heap);
 }

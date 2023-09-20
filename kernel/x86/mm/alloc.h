@@ -25,4 +25,16 @@ void* memory_allocate(heap_spec, uint32_t);
 // Free object
 void memory_free(heap_spec, void*);
 
+// Initialize a heap given heap_spec
+void init_memory(heap_spec);
+
+// Kernel allocate function
+void* kernel_allocate(uint32_t);
+
+// Kernel free function
+void kernel_free(void*);
+
+// Initialize kernel heap
+void init_kernel_heap();
+
 #endif
