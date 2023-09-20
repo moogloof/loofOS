@@ -6,52 +6,85 @@
 #include <stdint.h>
 #include <mm/alloc.h>
 
-// TODO: add, remove, merge, split, how tf will these work
+// Split block
+static void split_block(heap_header* block) {
+	// New size
+	uint32_t new_size = block->size - 1;
+	// Create new buddy
+	heap_header* new_buddy = (char*)block + (1 << new_size);
+	new_buddy.size = new_size;
+	new_buddy.used = 0;
+
+	// Edit old block
+	block->size = new_size;
+}
+
+// Coalesce block
+static void coalesce_block(heap_header* block, uint32_t offset) {
+	// Get buddy block
+	heap_header* buddy_block = (char*)block - offset;
+	buddy_block ^= 1 << buddy_block->size;
+	buddy_block = (char*)buddy_block + offset;
+
+	// Check if buddy is used
+	if (!buddy_block->used) {
+		// Get the one that starts and set it to the correct
+		if (buddy_block > block) {
+			block->size++;
+		} else {
+			buddy_block->size++;
+		}
+	}
+}
 
 // Get minimum block size for some size
 // Blocks of that size may not be available
 // Block size is returned as the log base two of a power of two
-static int round_block_size(uint32_t size) {
+static uint32_t round_block_size(uint32_t size) {
 	uint32_t block_size = MIN_BLOCK_SIZE - 1;
 
 	// Loop block size until smallest block size that contains size
-	while (size >> ++block_size != 0);
+	while (((size + (1 << ++block_size) - 1) >> block_size) != 0);
 
 	// Return the block size
 	return block_size;
 }
 
 // Allocate an object
-void* memory_allocate(uint32_t size, heap_block blocks[]) {
-	// Just return 0 on size 0
-	if (size == 0) return 0;
+void* memory_allocate(heap_spec alloc_info, uint32_t size) {
+	heap_header* alloc_addr = alloc_info.start;
+	uint32_t actual_size = round_block_size(size + sizeof(heap_header));
 
-	// Check which size is the min block we want
-	int target_block_size = round_block_size(size);
-	int min_block_index = target_block_size - MIN_BLOCK_SIZE;
-	heap_block* allocated_block;
+	// Search for available that fits size
+	while (alloc_addr <= alloc_info.end) {
+		if (!alloc_addr->used && alloc_addr->size >= actual_size) {
+			// Split to accomodate size
+			while (alloc_addr->size > actual_size) {
+				split_block(alloc_addr);
+			}
 
-	// Check if the size is available
-	// Also get the minimum size that is available
-	while (min_block_index < TOTAL_BLOCK_LISTS && blocks[min_block_index].next == blocks[min_block_index].prev)
-		min_block_index++;
+			// Mark as used
+			alloc_addr->used = 1;
 
-	// Exit if no size available
-	if (min_block_index >= TOTAL_BLOCK_LISTS) return 0;
+			// Return the final split block
+			return (char*)alloc_addr + sizeof(heap_header);
+		}
 
-	// Split the blocks until we get target block size
-	while (min_block_index + MIN_BLOCK_SIZE > target_block_size) {
-		// Split the block
-		// Note that the min_block_index is an index of blocks[]
-		split_block(min_block_index, blocks);
-
-		// Decrease block size to split
-		min_block_index--;
+		// Go to next block
+		alloc_addr = (char*)alloc_addr + (1 << alloc_addr->size);
 	}
 
-	// Remove block from free list
-	allocated_block = remove_block(min_block_index, blocks);
+	// No matches
+	return 0;
+}
 
-	// Return allocated block
-	return allocated_block;
+// Free object
+void memory_free(heap_spec alloc_info, void* addr) {
+	heap_header* free_addr = addr;
+
+	// Free it
+	free_addr->used = 0;
+
+	// Coalesce the block
+	coalesce_block(addr, alloc_info.start);
 }

@@ -2,26 +2,27 @@
 #define MM_ALLOC_H
 
 #include <stdint.h>
+#include <common.h>
 
 // Size of smallest block (2^x)
-#define MIN_BLOCK_SIZE 4
-// Size of the largest block (2^x)
-#define MAX_BLOCK_SIZE 30
-// Number of block lists
-#define TOTAL_BLOCK_LISTS (MAX_BLOCK_SIZE - MIN_BLOCKSIZE + 1)
+#define MIN_BLOCK_SIZE 3
 
-// Heap blocks in a doubly linked list
-// These are stored within the free blocks
-// They are located at the head of the free blocks
-// These will be erased when freed blocks are used for security
-typedef struct heap_block {
-	struct heap_block* prev, next;
-} heap_block;
+// Heap headers stored at the beginning of each thing
+typedef struct {
+	uint8_t size:7;
+	uint8_t used:1;
+} __attribute__((packed)) heap_header;
+
+// Heap specification, contains metadata
+typedef struct {
+	uint32_t start;
+	uint32_t end; // Inclusive (end = last byte addr)
+} heap_spec;
 
 // Allocate an object
-void* memory_allocate(uint32_t, heap_block[]);
+void* memory_allocate(heap_spec, uint32_t);
 
 // Free object
-void memory_free(void*);
+void memory_free(heap_spec, void*);
 
 #endif
