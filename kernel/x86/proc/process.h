@@ -18,6 +18,9 @@ typedef struct process_desc {
 	uint8_t state; // State of the process, 0 == running, 1 == halted, 2 == ended
 } __attribute__((packed)) process_desc;
 
+// Init processes
+void init_processes();
+
 // Switch context
 void switch_process(seg_register_set, gen_register_set, interrupt_frame);
 

@@ -1,8 +1,10 @@
 #include <drivers/timer.h>
 #include <core/isr.h>
 #include <core/idt.h>
+#include <core/gdt.h>
 #include <mm/paging.h>
 #include <mm/alloc.h>
+#include <proc/process.h>
 
 __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Load and init the gdt
