@@ -21,6 +21,9 @@
 // Initialize the timer interrupt
 void init_timer();
 
+// Enable switching (YOU CAN'T GO BACK)
+void enable_switching();
+
 // Wrapper for timer handler
 __attribute__((interrupt)) void timer_handler_wrapper(interrupt_frame*);
 

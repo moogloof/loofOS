@@ -7,13 +7,13 @@
 #include <mm/paging.h>
 #include <common.h>
 
-// Whether context switching is enabled
-uint8_t context_switching;
+// Switching context enable flag
+static uint8_t switching_enabled;
 
 // Initialize the timer interrupt
 void init_timer() {
 	// Zero out vars
-	context_switching = 0;
+	switching_enabled = 0;
 
 	// Divider for the interrputs
 	uint16_t divider = TIMER_FREQ / TIMER_INT_FREQ;
@@ -31,10 +31,15 @@ void init_timer() {
 	outportb(TIMER_CHANNEL0, (uint8_t)((divider >> 8) & 0xff));
 }
 
+// Enable switching (YOU CAN'T GO BACK)
+void enable_switching() {
+	switching_enabled = 1;
+}
+
 // Timer handler
 void timer_handler(seg_register_set seg_regs, gen_register_set gen_regs, interrupt_frame frame) {
-	if (context_switching) {
-		// Switch context
+	// Switch context if enabled
+	if (switching_enabled) {
 		switch_process(seg_regs, gen_regs, frame);
 	}
 

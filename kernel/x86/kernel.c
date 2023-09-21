@@ -38,6 +38,9 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Unmask interrupts
 	enable_interrupts();
 
+	// Enable switching
+	enable_switching();
+
 	// Stuff
 	while (1) {}
 }
