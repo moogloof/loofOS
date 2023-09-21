@@ -25,18 +25,28 @@ static void split_block(heap_header* block) {
 
 // Coalesce block
 static void coalesce_block(heap_header* block, uint32_t offset) {
-	// Get buddy block
-	heap_header* buddy_block = (char*)block - offset;
-	buddy_block = (uint32_t)buddy_block ^ (1 << buddy_block->size);
-	buddy_block = (char*)buddy_block + offset;
+	// Get buddy blocks
+	heap_header* buddy_block1 = block;
+	heap_header* buddy_block2;
 
-	// Check if buddy is used
-	if (!buddy_block->used) {
-		// Get the one that starts and set it to the correct
-		if (buddy_block > block) {
-			block->size++;
+	// Keep coalescing
+	while (1) {
+		// Set buddys
+		buddy_block2 = (char*)buddy_block1 - offset;
+		buddy_block2 = (uint32_t)buddy_block2 ^ (1 << buddy_block1->size);
+		buddy_block2 = (char*)buddy_block2 + offset;
+
+		// Check if buddy is used
+		if (!buddy_block2->used && buddy_block2->size == buddy_block1->size) {
+			// Get the one that starts and set it to the correct
+			if (buddy_block2 > buddy_block1) {
+				buddy_block1->size++;
+			} else {
+				buddy_block2->size++;
+				buddy_block1 = buddy_block2;
+			}
 		} else {
-			buddy_block->size++;
+			return;
 		}
 	}
 }
