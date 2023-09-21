@@ -48,10 +48,10 @@ static uint32_t round_block_size(uint32_t size) {
 	uint32_t block_size = MIN_BLOCK_SIZE - 1;
 
 	// Loop block size until smallest block size that contains size
-	while (((size + (1 << ++block_size) - 1) >> block_size) != 0);
+	while ((size >> ++block_size) != 0);
 
-	// Return the block size
-	return block_size;
+	// Return the block size rounded
+	return (size > (1 << block_size)) ? (block_size + 1) : block_size;
 }
 
 // Allocate an object
