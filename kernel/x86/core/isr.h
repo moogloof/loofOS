@@ -32,10 +32,10 @@ typedef struct {
 void init_pic();
 
 // Enable interrupts
-#define enable_interrupts() __asm__("sti");
+#define enable_interrupts() __asm__("sti\n");
 
 // Disable interrupts
-#define disable_interrupts() __asm__("cli");
+#define disable_interrupts() __asm__("cli\n");
 
 // Enable and add exceptions
 void init_exceptions();
