@@ -16,6 +16,13 @@ timer_handler_wrapper:
 	push es
 	push ds
 
+	; Set segments
+	mov ax, 0x10
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+
 	; Call the handler
 	call timer_handler
 

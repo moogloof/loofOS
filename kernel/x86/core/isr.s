@@ -13,6 +13,13 @@
 	push fs
 	push es
 	push ds
+
+	; Change segs
+	mov ax, 0x10
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 %endmacro
 
 %macro END_ISR 0
