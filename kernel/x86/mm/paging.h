@@ -13,10 +13,13 @@
 #define PAGE_LENGTH_4K 0x100000
 // Number of 4M pages
 #define PAGE_LENGTH_4M 1024
-// Start of the page frames
-#define PAGELIST_START 0x00000000
-// End of the page frames
-#define PAGELIST_END (PAGE_SIZE_4K * PAGE_LENGTH_4K)
+// Physical page offset
+#define PAGE_OFFSET 0x40000000
+
+// Header for each page
+typedef struct page_block {
+	struct page_block* next;
+} __attribute__((packed)) page_block;
 
 // Page directory entry for 4 MiB
 typedef struct {
@@ -81,6 +84,6 @@ void allocate_page(pde_4kib*, uint32_t);
 void free_page(pde_4kib*, uint32_t);
 
 // Map two pages, virtual -> physical
-void map_page(pde_4mib*, uint32_t, uint32_t, int, int);
+//void map_page(pde_4mib*, uint32_t, uint32_t, int, int);
 
 #endif
