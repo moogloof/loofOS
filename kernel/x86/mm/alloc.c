@@ -8,7 +8,7 @@
 #include <common.h>
 
 // Kernel alloc config
-static heap_spec kernel_heap = {.start = KERNEL_BASE + 0x10000000, .end = KERNEL_BASE + 0x30000000};
+static heap_spec kernel_heap = {.start = KERNEL_BASE + 0x10000000 - sizeof(heap_header), .end = KERNEL_BASE + 0x30000000 - sizeof(heap_header)};
 
 // Split block
 static void split_block(heap_header* block) {
