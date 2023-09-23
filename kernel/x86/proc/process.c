@@ -109,6 +109,17 @@ void create_process(uint32_t eip) {
 	// Allocate first page
 	allocate_page((pde_4kib*)new_process->page_directory, 0);
 
+	enable_paging(new_process->page_directory - KERNEL_BASE);
+
+	volatile char* a = 0;
+	a[0] = 0xe9;
+	a[1] = 0xfb;
+	a[2] = 0xff;
+	a[3] = 0xff;
+	a[4] = 0xff;
+
+	enable_paging((uint32_t)kernel_memory - KERNEL_BASE);
+
 	// Set state of process as running
 	new_process->state = 0;
 

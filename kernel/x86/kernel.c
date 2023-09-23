@@ -41,6 +41,8 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Enable switching
 	enable_switching();
 
+	create_process(0);
+
 	// Stuff
 	while (1) {}
 }
