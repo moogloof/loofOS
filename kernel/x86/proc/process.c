@@ -126,6 +126,6 @@ void create_process(uint32_t eip) {
 }
 
 // End a process
-void end_process() {
-	current_process->state = 2;
+void update_process(uint8_t state) {
+	current_process->state = state;
 }

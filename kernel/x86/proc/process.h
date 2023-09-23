@@ -32,6 +32,6 @@ void switch_context(seg_register_set, gen_register_set, interrupt_frame, uint32_
 void create_process(uint32_t);
 
 // End a process
-void end_process();
+void update_process(uint8_t);
 
 #endif
