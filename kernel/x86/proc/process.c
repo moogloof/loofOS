@@ -29,7 +29,7 @@ void switch_process(seg_register_set seg_regs, gen_register_set gen_regs, interr
 
 	if (priv_level == 3) {
 		// Check if current process is running
-		if (current_process->state == 0) {
+		if (current_process->state == PROCESS_RUNNING) {
 			// Freeze registers
 			// Frame registers
 			current_process->frame = frame;
@@ -57,7 +57,7 @@ void switch_process(seg_register_set seg_regs, gen_register_set gen_regs, interr
 		do {
 			// Update previous context
 			current_process = current_process->next;
-		} while (current_process->state == 1);
+		} while (current_process->state == PROCESS_HALTED);
 	} else {
 	}
 

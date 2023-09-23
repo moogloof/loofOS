@@ -5,6 +5,12 @@
 #include <core/isr.h>
 #include <core/registers.h>
 
+// Process states
+// Running state
+#define PROCESS_RUNNING 0
+// Halted state
+#define PROCESS_HALTED 1
+
 // Define number of pages to allocate for a process stack
 #define PROCESS_STACK_PAGES 1
 
