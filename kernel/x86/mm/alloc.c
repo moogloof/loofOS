@@ -94,7 +94,7 @@ void* memory_allocate(heap_spec alloc_info, uint32_t size) {
 
 // Free object
 void memory_free(heap_spec alloc_info, void* addr) {
-	heap_header* free_addr = addr;
+	heap_header* free_addr = addr - sizeof(heap_header);
 
 	// Free it
 	free_addr->used = 0;
