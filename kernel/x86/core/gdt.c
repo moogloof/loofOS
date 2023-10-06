@@ -93,6 +93,11 @@ void init_gdt() {
 	gdt[5] = (struct gdt_segment_desc){.limit1 = sizeof(tss) - 1, .base1 = (uint32_t)(&tss) & 0xffffff, .a = 1, .rw = 0, .dc = 0, .e = 1, .s = 0, .dpl = 0, .p = 1, .limit2 = 0, .zero = 0, .l = 0, .db = 1, .g = 0, .base2 = (uint32_t)(&tss) >> 24};
 }
 
+// Set tss stack
+void set_tss_stack(uint32_t esp0) {
+	tss.esp0 = esp0;
+}
+
 // Load the global descriptor table
 void load_gdt() {
 	// Load the gdtr

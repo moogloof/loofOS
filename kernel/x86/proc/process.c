@@ -2,6 +2,7 @@
 #include <common.h>
 #include <mm/alloc.h>
 #include <mm/paging.h>
+#include <core/gdt.h>
 
 // All externs
 extern pde_4mib kernel_memory[PAGE_LENGTH_4M];
@@ -27,44 +28,46 @@ void switch_process(seg_register_set seg_regs, gen_register_set gen_regs, interr
 	// Get priv level of interrupted thread
 	uint8_t priv_level = frame.cs & 3;
 
-	if (priv_level == 3) {
-		// Check if current process is running
-		if (current_process->state == PROCESS_RUNNING) {
-			// Freeze registers
-			// Frame registers
-			current_process->frame = frame;
-			// Segment registers
-			current_process->seg_regs = seg_regs;
-			// General registers
-			current_process->gen_regs = gen_regs;
-		} else if (current_process->state == 2) {
-			// On state ended, delete process
-			kernel_free(current_process->frame.esp);
-			kernel_free(current_process);
+	// Check if current process is running
+	if (current_process->state == PROCESS_RUNNING) {
+		// Freeze registers
+		// Frame registers
+		current_process->frame = frame;
+		// Segment registers
+		current_process->seg_regs = seg_regs;
+		// General registers
+		current_process->gen_regs = gen_regs;
+	} else if (current_process->state == 2) {
+		// On state ended, delete process
+		kernel_free(current_process->frame.esp);
+		kernel_free(current_process);
 
-			// Clear current_process
-			if (current_process == current_process->next) {
-				// TODO: Properly handle this case
-				current_process = 0;
-			} else {
-				current_process->prev->next = current_process->next;
-				current_process->next->prev = current_process->prev;
-			}
+		// Clear current_process
+		if (current_process == current_process->next) {
+			// TODO: Properly handle this case
+			current_process = 0;
+		} else {
+			current_process->prev->next = current_process->next;
+			current_process->next->prev = current_process->prev;
 		}
-
-		// Update current process
-		// Skip all halted processes
-		do {
-			// Update previous context
-			current_process = current_process->next;
-		} while (current_process->state == PROCESS_HALTED);
-	} else {
 	}
+
+	// Update current process
+	// Skip all halted processes
+	do {
+		// Update previous context
+		current_process = current_process->next;
+	} while (current_process->state == PROCESS_HALTED);
+
+	// Set TSS
+	set_tss_stack(current_process->esp0);
 
 	switch_context(current_process->seg_regs, current_process->gen_regs, current_process->frame, current_process->page_directory - KERNEL_BASE);
 }
 
 // Create a process
+// Kernel proceses should be explicitly defined within the kernel code
+// No spawning kernel processes through some user interface
 void create_process(uint32_t eip) {
 	process_desc* new_process = kernel_allocate(sizeof(process_desc));
 	uint32_t code_segment = 0x18 | 3;
@@ -96,6 +99,8 @@ void create_process(uint32_t eip) {
 	new_process->gen_regs.ecx = 0;
 	new_process->gen_regs.eax = 0;
 
+	// Get new kernel stack
+	new_process->esp0 = kernel_allocate(4096) + 4092;
 	// Set the page directory
 	new_process->page_directory = kernel_allocate(sizeof(pde_4kib) * 1024);
 	// Copy kernel space to user space

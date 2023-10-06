@@ -5,6 +5,10 @@
 #include <core/isr.h>
 #include <core/registers.h>
 
+// Process priv level
+#define RING_KERNEL 0
+#define RING_USER 3
+
 // Process states
 // Running state
 #define PROCESS_RUNNING 0
@@ -19,6 +23,7 @@ typedef struct process_desc {
 	interrupt_frame frame; // All register sets
 	gen_register_set gen_regs;
 	seg_register_set seg_regs;
+	uint32_t esp0; // For kernel stack
 	uint32_t page_directory; // Page directory address
 	struct process_desc* prev; // Prev process in queue
 	struct process_desc* next; // Next process in queue
