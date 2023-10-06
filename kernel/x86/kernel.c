@@ -38,10 +38,11 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Unmask interrupts
 	enable_interrupts();
 
+	// IMPORTANT: STUFF THIS BEFORE ENABLING SWITCHING
+	create_process(0);
+
 	// Enable switching
 	enable_switching();
-
-	create_process(0);
 
 	// Stuff
 	while (1) {}
