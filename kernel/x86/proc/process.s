@@ -59,4 +59,5 @@ switch_to_user:
 switch_to_kernel:
 	pop esp
 switch_end:
+	sti
 	iret
