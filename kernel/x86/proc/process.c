@@ -16,6 +16,11 @@ void init_processes() {
 	current_process = 0;
 }
 
+// Force enter userland
+void force_enter_userland() {
+	switch_context(current_process->seg_regs, current_process->gen_regs, current_process->frame, current_process->page_directory - KERNEL_BASE);
+}
+
 // Switch context
 // Round robin
 // PLANS: WE NEED TO DO STUFF

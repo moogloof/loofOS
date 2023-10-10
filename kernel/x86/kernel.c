@@ -44,6 +44,10 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main() {
 	// Enable switching
 	enable_switching();
 
+	// Force enter into user
+	// This should be the only time this is used
+	force_enter_userland();
+
 	// Stuff
 	while (1) {}
 }
