@@ -2,6 +2,7 @@ section .text
 global timer_handler_wrapper
 timer_handler_wrapper:
 	; Push for gen_register_set struct
+	push esp
 	push eax
 	push ecx
 	push edx
@@ -38,6 +39,7 @@ timer_handler_wrapper:
 	pop edx
 	pop ecx
 	pop eax
+	pop esp
 
 	; IRET
 	iret

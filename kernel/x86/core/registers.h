@@ -11,6 +11,7 @@ typedef struct {
 	uint32_t edx;
 	uint32_t ecx;
 	uint32_t eax;
+	uint32_t esp; // Extra stack reg just in case there's no priv change
 } gen_register_set; // Symmetric of pusha
 
 typedef struct {

@@ -21,7 +21,7 @@ void init_processes() {
 // PLANS: WE NEED TO DO STUFF
 void switch_process(seg_register_set seg_regs, gen_register_set gen_regs, interrupt_frame frame) {
 	// No process is no switch
-	if (!current_process) {
+	if (!current_process || current_process->next == &current_process) {
 		return;
 	}
 
@@ -50,6 +50,22 @@ void switch_process(seg_register_set seg_regs, gen_register_set gen_regs, interr
 			current_process->prev->next = current_process->next;
 			current_process->next->prev = current_process->prev;
 		}
+	}
+
+	// Update stack for stuf bc stack won't change
+	if (priv_level == RING_KERNEL) {
+		// This is super important to remember
+		// SUPER IMPORTANT
+		// When the context switches from a kernel thread, the stack doesn't change
+		// But when we go back, we'll have to change back to the stack
+		// It's tricky to do that, but we can use a little magic trick
+		// The interrupt arguments will be preserved on the stack
+		// This is super hacky in my opinion, but for now it works
+		// So yeah
+		current_process->frame.ss = 0x10;
+		current_process->frame.esp = current_process->gen_regs.esp;
+	} else {
+		current_process->frame.esp = 0;
 	}
 
 	// Update current process
