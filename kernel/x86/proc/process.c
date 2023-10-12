@@ -18,6 +18,7 @@ void init_processes() {
 
 // Force enter userland
 void force_enter_userland() {
+	set_tss_stack(current_process->esp0);
 	switch_context(current_process->seg_regs, current_process->gen_regs, current_process->frame, current_process->page_directory - KERNEL_BASE);
 }
 
