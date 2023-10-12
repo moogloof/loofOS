@@ -70,7 +70,7 @@ void switch_process(seg_register_set seg_regs, gen_register_set gen_regs, interr
 		current_process->frame.ss = 0x10;
 		current_process->frame.esp = current_process->gen_regs.esp;
 	} else {
-		current_process->frame.esp = 0;
+		current_process->gen_regs.esp = 0;
 	}
 
 	// Update current process
@@ -119,6 +119,7 @@ void create_process(uint32_t eip) {
 	new_process->gen_regs.edx = 0;
 	new_process->gen_regs.ecx = 0;
 	new_process->gen_regs.eax = 0;
+	new_process->gen_regs.esp = 0;
 
 	// Get new kernel stack
 	new_process->esp0 = kernel_allocate(4096) + 4092;
