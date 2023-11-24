@@ -2,6 +2,7 @@ BUILD_DIR=build
 OBJ_DIR=obj
 KERNEL_DIR=kernel
 BOOT_DIR=boot
+SYS_PROG_DIR=system
 FS_PROG=hdiutil create
 FS_FLAGS=-format UDTO -layout NONE -ov -fs ExFAT
 ISO_PROG=mkisofs
@@ -12,15 +13,16 @@ all:
 
 x86:
 	rm -rf $(BUILD_DIR)
-	mkdir -p $(BUILD_DIR)
 	mkdir -p $(OBJ_DIR)
+	# Prepare the directory
+	mkdir -p $(BUILD_DIR)/sys/system
+	mkdir $(BUILD_DIR)/cdrom
 	# Make the boot
 	$(MAKE) -C $(BOOT_DIR)/$@
 	# Make the kernel
 	$(MAKE) -C $(KERNEL_DIR)/$@
-	# Prepare the directory
-	mkdir -p $(BUILD_DIR)/sys/system
-	mkdir $(BUILD_DIR)/cdrom
+	# Make the system programs
+	$(MAKE) -C $(SYS_PROG_DIR)
 	# Pack into one iso
 	# Make 16 MB iso
 	dd if=/dev/zero of=$(BUILD_DIR)/loof.iso bs=16M count=1
