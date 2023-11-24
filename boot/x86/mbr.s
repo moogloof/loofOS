@@ -172,7 +172,7 @@ dw 0
 db 0x80
 dw 0
 db 0
-db 7
+db 0x96
 dw 0
 db 0
 dd 0
@@ -181,7 +181,7 @@ dd 0x100
 db 0x80
 dw 0
 db 0
-db 0x96
+db 0x7
 dw 0
 db 0
 dd 0x100
