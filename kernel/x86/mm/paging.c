@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <common.h>
+#include <string.h>
 #include <mm/paging.h>
 #include <mm/alloc.h>
 #include <core/isr.h>

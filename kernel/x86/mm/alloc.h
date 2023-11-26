@@ -2,7 +2,7 @@
 #define MM_ALLOC_H
 
 #include <stdint.h>
-#include <common.h>
+#include <string.h>
 
 // Size of smallest block (2^x)
 #define MIN_BLOCK_SIZE 3

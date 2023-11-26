@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <core/isr.h>
-#include <common.h>
+#include <string.h>
 
 // Section of physical memory set aside for users
 // Size of the page frames

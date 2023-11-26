@@ -5,7 +5,7 @@
 #include <core/isr.h>
 #include <proc/process.h>
 #include <mm/paging.h>
-#include <common.h>
+#include <string.h>
 
 // Switching context enable flag
 static uint8_t switching_enabled;

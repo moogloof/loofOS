@@ -1,5 +1,6 @@
 #include <proc/process.h>
-#include <common.h>
+#include <string.h>
+#include <presets.h>
 #include <mm/alloc.h>
 #include <mm/paging.h>
 #include <core/gdt.h>

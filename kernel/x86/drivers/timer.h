@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <core/isr.h>
 #include <core/registers.h>
-#include <common.h>
+#include <presets.h>
 
 // Peripheral ports for timer
 // PIT channels

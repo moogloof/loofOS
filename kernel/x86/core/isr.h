@@ -2,7 +2,7 @@
 #define CORE_ISR_H
 
 #include <stdint.h>
-#include <common.h>
+#include <presets.h>
 #include <core/registers.h>
 
 // Define EOI code

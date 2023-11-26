@@ -1,5 +1,5 @@
 #include <vesa/vbe.h>
-#include <common.h>
+#include <string.h>
 #include <bios.h>
 
 struct {
