@@ -1,8 +1,8 @@
 LD=ld.lld
 AS=nasm
 CC=clang
-LDFLAGS=-nostdlib -O0 --format=elf --nmagic --gc-sections --gdb-index
-CFLAGS=-nostdlib -O0 -ffreestanding -m32 -I./ -I../../common -march=i386 --target=i386-linux-gnu -g
+LDFLAGS=-nostdlib -O3 --format=elf --nmagic --gc-sections --gdb-index
+CFLAGS=-nostdlib -O3 -ffreestanding -m32 -I./ -I../../common -march=i386 --target=i386-linux-gnu -g
 ASFLAGS=-O0 -g
 
 OBJ_DIR=../../obj/kernel
