@@ -42,6 +42,7 @@ void stage2() {
 	// Load system processes
 	print("Loading system processes...\r\n");
 	print("Loading VGA driver\r\n");
+	print("Kernel Size: %x\r\n", kernel_size);
 	if (read_file_exfat("/system/vga", 0x100000 + kernel_size) == 0) {
 		// No initial process detected
 		print("System process does not exist\r\n");
