@@ -13,7 +13,7 @@ struct {
 } __attribute__((packed)) vbe_cib;
 
 // Initialize vbe
-void init_vbe() {
+void init_vbe(void) {
 	// Set stuff
 	vbe_cib.vbe_signature[0] = 'V';
 	vbe_cib.vbe_signature[1] = 'B';
@@ -23,7 +23,7 @@ void init_vbe() {
 	// Trash buffer to use for CRTC block
 	uint8_t crtc[64] = {0};
 	// Registers to use for the int
-	bios_registers registers = (bios_registers){.eax = 0x4f00, .ebx = 0, .ecx = 0, .edx = 0, .esi = 0, .edi = &vbe_cib};
+	bios_registers registers = (bios_registers){.eax = 0x4f00, .ebx = 0, .ecx = 0, .edx = 0, .esi = 0, .edi = (int)(&vbe_cib)};
 	// Get the controller information
 	_bios_int(registers, 0x10);
 
@@ -33,7 +33,7 @@ void init_vbe() {
 		vbe_mib video_mode_info = {0};
 		registers.eax = 0x4f01;
 		registers.ecx = vbe_cib.video_mode_ptr[i];
-		registers.edi = &video_mode_info;
+		registers.edi = (int)(&video_mode_info);
 		_bios_int(registers, 0x10);
 
 		// Check if video mode info is compatible
@@ -46,7 +46,7 @@ void init_vbe() {
 					// Switch to the video mode
 					registers.eax = 0x4f02;
 					registers.ebx = vbe_cib.video_mode_ptr[i];
-					registers.edi = crtc;
+					registers.edi = (int)crtc;
 					_bios_int(registers, 0x10);
 					break;
 				}

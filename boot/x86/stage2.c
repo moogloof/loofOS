@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <bios.h>
 #include <print.h>
 #include <vesa/vga.h>
@@ -6,12 +7,12 @@
 #include <paging.h>
 
 extern uint16_t drive_bytes_per_sector;
-extern void kernel_jump();
+extern void kernel_jump(void);
 
 // Page directory table
 pde_4mib kernel_memory[1024] __attribute__((aligned(4096)));
 
-void stage2() {
+void stage2(void) {
 	// Size of kernel in bytes
 	int kernel_size;
 
@@ -32,7 +33,7 @@ void stage2() {
 
 	// Load kernel and check if kernel exists
 	print("Loading kernel...\r\n");
-	kernel_size = read_file_exfat("/system/kernel", 0x100000);
+	kernel_size = read_file_exfat("/system/kernel", (uint8_t*)0x100000);
 	if (kernel_size == 0) {
 		// No kernel exists so halt
 		print("No kernel detected at /system/kernel\r\n");
@@ -43,7 +44,7 @@ void stage2() {
 	print("Loading system processes...\r\n");
 	print("Loading VGA driver\r\n");
 	print("Kernel Size: %x\r\n", kernel_size);
-	if (read_file_exfat("/system/vga", 0x100000 + kernel_size) == 0) {
+	if (read_file_exfat("/system/vga", (uint8_t*)(0x100000 + kernel_size)) == 0) {
 		// No initial process detected
 		print("System process does not exist\r\n");
 	} else {

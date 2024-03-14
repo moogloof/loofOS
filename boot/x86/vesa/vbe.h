@@ -52,6 +52,6 @@ typedef struct {
 } __attribute__((packed)) vbe_mib;
 
 // Initialize vbe
-void init_vbe();
+void init_vbe(void);
 
 #endif

@@ -9,9 +9,9 @@ void bios_ext_read(uint8_t* output_address, uint32_t lba_offset, uint32_t length
 	// Make buffer
 	uint8_t temp_buffer[drive_bytes_per_sector];
 	// Make packet
-	bios_dap temp_dap = (bios_dap){.dap_size = 0x10, .unused = 0, .load_size = 1, .load_offset = temp_buffer, .load_segment = 0, .lba_low = lba_offset, .lba_high = 0};
+	bios_dap temp_dap = (bios_dap){.dap_size = 0x10, .unused = 0, .load_size = 1, .load_offset = (int)temp_buffer, .load_segment = 0, .lba_low = lba_offset, .lba_high = 0};
 	// Make registers
-	bios_registers registers = (bios_registers){.eax = 0x4200, .ebx = 0, .ecx = 0, .edx = drive_number, .esi = &temp_dap, .edi = 0};
+	bios_registers registers = (bios_registers){.eax = 0x4200, .ebx = 0, .ecx = 0, .edx = drive_number, .esi = (int)(&temp_dap), .edi = 0};
 
 	// Read loop
 	for (int i = 0; i < length; i++) {

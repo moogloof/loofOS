@@ -120,7 +120,7 @@ typedef struct {
 } __attribute__((packed)) exfat_volume_guid_dir_entry;
 
 // Initialize the exfat filesystem
-void init_exfat();
+void init_exfat(void);
 
 // Read the exfat file
 int _read_file_exfat_helper(const char*, int, exfat_generic_dir_entry*, int, uint8_t*);

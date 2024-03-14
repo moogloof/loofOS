@@ -49,11 +49,9 @@ static uint32_t get_cluster_size(uint32_t size) {
 }
 
 // Initialize the exfat filesystem
-void init_exfat() {
+void init_exfat(void) {
 	// Load buffer
 	uint8_t load_buffer[drive_bytes_per_sector];
-	// Buffer index
-	int buffer_i;
 
 	// Load boot record
 	bios_ext_read(load_buffer, 0x100 * 512 / drive_bytes_per_sector, 1);
@@ -68,7 +66,7 @@ void init_exfat() {
 	// Search for and load upcase table
 	for (int i = 0; i < drive_bytes_per_sector; i += 32) {
 		if (load_buffer[i] == 0x82) {
-			exfat_upcase_dir_entry* upcase_entry = &(load_buffer[i]);
+			exfat_upcase_dir_entry* upcase_entry = (exfat_upcase_dir_entry*)(&(load_buffer[i]));
 
 			// Load the upcase cluster
 			bios_ext_read(load_buffer, get_heap_lba(upcase_entry->first_cluster), 1);
@@ -83,9 +81,6 @@ void init_exfat() {
 int _read_file_exfat_helper(const char* name, int name_len, exfat_generic_dir_entry* dir_buffer, int clusters, uint8_t* dest_buffer) {
 	// Temp name buffer
 	uint16_t filename[255] = {0};
-
-	// Number of clusters written
-	int clusters_written = 0;
 
 	// Loop through the directory entries
 	for (int i = 0; i < drive_bytes_per_sector * get_cluster_size(clusters) / 32; i++) {

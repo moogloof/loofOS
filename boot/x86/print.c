@@ -39,7 +39,7 @@ void print(const char* format, ...) {
 			switch (cur_char) {
 				case 'c':
 					// Substitute a character
-					outb(va_arg(arglist, char));
+					outb((char)va_arg(arglist, int));
 					break;
 				case 'd':
 					// Substitute a signed integer in decimal

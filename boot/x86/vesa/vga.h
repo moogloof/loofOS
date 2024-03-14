@@ -16,7 +16,7 @@ void display_char(char, int, int);
 void display_string(const char*, int, int);
 
 // Clear the screen
-void reset_display();
+void reset_display(void);
 
 // Set the color of the background and foreground
 void set_color(int, int);
@@ -25,13 +25,13 @@ void set_color(int, int);
 void enable_cursor(uint8_t, uint8_t);
 
 // Disable the cursor
-void disable_cursor();
+void disable_cursor(void);
 
 // Set the cursor position
 void set_cursor_pos(int, int);
 
 // Get the cursor position
-uint16_t get_cursor_pos();
+uint16_t get_cursor_pos(void);
 
 // Output method for prints
 void vga_output_char(char);
