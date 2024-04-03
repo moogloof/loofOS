@@ -19,10 +19,10 @@
 #define TIMER_INT_FREQ 1000
 
 // Initialize the timer interrupt
-void init_timer();
+void init_timer(void);
 
 // Enable switching (YOU CAN'T GO BACK)
-void enable_switching();
+void enable_switching(void);
 
 // Wrapper for timer handler
 __attribute__((interrupt)) void timer_handler_wrapper(interrupt_frame*);

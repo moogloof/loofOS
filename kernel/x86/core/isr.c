@@ -6,35 +6,35 @@
 #include <core/registers.h>
 
 // Initialize the PIC
-void init_pic() {
+void init_pic(void) {
 	// ICW1
 	// Start PIC initialization
-	outportb(PIC_COMMAND1, 0x11);
-	outportb(PIC_COMMAND2, 0x11);
+	outportb((uint8_t*)PIC_COMMAND1, 0x11);
+	outportb((uint8_t*)PIC_COMMAND2, 0x11);
 
 	// ICW2
 	// Set the PIC vector offsets
-	outportb(PIC_DATA1, IRQ_OFFSET);
-	outportb(PIC_DATA2, IRQ_OFFSET);
+	outportb((uint8_t*)PIC_DATA1, IRQ_OFFSET);
+	outportb((uint8_t*)PIC_DATA2, IRQ_OFFSET);
 
 	// ICW3
 	// Tell master PIC to commuicate through IRQ2 with slave PIC
-	outportb(PIC_DATA1, 0b00000100);
+	outportb((uint8_t*)PIC_DATA1, 0x04);
 	// Set cascade
-	outportb(PIC_DATA2, 2);
+	outportb((uint8_t*)PIC_DATA2, 2);
 
 	// ICW4
 	// Set 8086 mode
-	outportb(PIC_DATA1, 1);
-	outportb(PIC_DATA2, 1);
+	outportb((uint8_t*)PIC_DATA1, 1);
+	outportb((uint8_t*)PIC_DATA2, 1);
 
 	// Clear masks on all lines
-	outportb(PIC_DATA1, 0);
-	outportb(PIC_DATA2, 0);
+	outportb((uint8_t*)PIC_DATA1, 0);
+	outportb((uint8_t*)PIC_DATA2, 0);
 }
 
 // Enable and add exceptions
-void init_exceptions() {
+void init_exceptions(void) {
 	// Set the divide-by-zero exception
 	set_id(0, &divbyzero_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
 	set_id(1, &debug_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);

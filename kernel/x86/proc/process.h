@@ -31,10 +31,10 @@ typedef struct process_desc {
 } __attribute__((packed)) process_desc;
 
 // Init processes
-void init_processes();
+void init_processes(void);
 
 // Force enter userland
-void force_enter_userland();
+void force_enter_userland(void);
 
 // Switch context
 void switch_process(seg_register_set, gen_register_set, interrupt_frame);

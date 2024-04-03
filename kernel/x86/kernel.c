@@ -6,7 +6,7 @@
 #include <mm/alloc.h>
 #include <proc/process.h>
 
-__attribute__((section(".kernel"), noreturn)) void kernel_main() {
+__attribute__((section(".kernel"), noreturn)) void kernel_main(void) {
 	// Load and init the gdt
 	init_gdt();
 	load_gdt();

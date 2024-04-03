@@ -66,7 +66,7 @@ typedef struct {
 } __attribute__((packed)) pte_4kib;
 
 // Initialize 32 bit paging
-void init_paging();
+void init_paging(void);
 
 // Page fault handler wrapper
 __attribute__((interrupt)) void pagefault_handler_wrapper(interrupt_frame*);

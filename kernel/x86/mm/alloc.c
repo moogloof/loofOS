@@ -15,7 +15,7 @@ static void split_block(heap_header* block) {
 	// New size
 	uint32_t new_size = block->size - 1;
 	// Create new buddy
-	heap_header* new_buddy = (char*)block + (1 << new_size);
+	heap_header* new_buddy = (heap_header*)((int)block + (1 << new_size));
 	new_buddy->size = new_size;
 	new_buddy->used = 0;
 
@@ -32,9 +32,9 @@ static void coalesce_block(heap_header* block, uint32_t offset) {
 	// Keep coalescing
 	while (1) {
 		// Set buddys
-		buddy_block2 = (char*)buddy_block1 - offset;
-		buddy_block2 = (uint32_t)buddy_block2 ^ (1 << buddy_block1->size);
-		buddy_block2 = (char*)buddy_block2 + offset;
+		buddy_block2 = (heap_header*)((char*)buddy_block1 - offset);
+		buddy_block2 = (heap_header*)((int)buddy_block2 ^ (1 << buddy_block1->size));
+		buddy_block2 = (heap_header*)((char*)buddy_block2 + offset);
 
 		// Check if buddy is used
 		if (!buddy_block2->used && buddy_block2->size == buddy_block1->size) {
@@ -66,11 +66,11 @@ static uint32_t round_block_size(uint32_t size) {
 
 // Allocate an object
 void* memory_allocate(heap_spec alloc_info, uint32_t size) {
-	heap_header* alloc_addr = alloc_info.start;
+	heap_header* alloc_addr = (heap_header*)alloc_info.start;
 	uint32_t actual_size = round_block_size(size + sizeof(heap_header));
 
 	// Search for available that fits size
-	while (alloc_addr <= alloc_info.end) {
+	while ((uint32_t)alloc_addr <= alloc_info.end) {
 		if (!alloc_addr->used && alloc_addr->size >= actual_size) {
 			// Split to accomodate size
 			while (alloc_addr->size > actual_size) {
@@ -85,7 +85,7 @@ void* memory_allocate(heap_spec alloc_info, uint32_t size) {
 		}
 
 		// Go to next block
-		alloc_addr = (char*)alloc_addr + (1 << alloc_addr->size);
+		alloc_addr = (heap_header*)((char*)alloc_addr + (1 << alloc_addr->size));
 	}
 
 	// No matches
@@ -94,7 +94,7 @@ void* memory_allocate(heap_spec alloc_info, uint32_t size) {
 
 // Free object
 void memory_free(heap_spec alloc_info, void* addr) {
-	heap_header* free_addr = addr - sizeof(heap_header);
+	heap_header* free_addr = (heap_header*)((uint32_t)addr - sizeof(heap_header));
 
 	// Free it
 	free_addr->used = 0;
@@ -105,7 +105,7 @@ void memory_free(heap_spec alloc_info, void* addr) {
 
 // Initialize a heap given heap_spec
 void init_memory(heap_spec alloc_info) {
-	heap_header* block = alloc_info.start;
+	heap_header* block = (heap_header*)alloc_info.start;
 	uint32_t heap_length = alloc_info.end - alloc_info.start + 1;
 	uint8_t alloc_size = MIN_BLOCK_SIZE;
 
@@ -113,7 +113,7 @@ void init_memory(heap_spec alloc_info) {
 	heap_length >>= alloc_size;
 
 	// Fill the entire range with blocks
-	while (block < alloc_info.end && heap_length > 0) {
+	while ((uint32_t)block < alloc_info.end && heap_length > 0) {
 		// Fill the powers of two blocks
 		// We start with least significant bc usually our first allocs will be small
 		if (heap_length & 1) {
@@ -121,7 +121,7 @@ void init_memory(heap_spec alloc_info) {
 			block->size = alloc_size;
 			block->used = 0;
 			// Move to next
-			block = (char*)block + (1 << alloc_size);
+			block = (heap_header*)((char*)block + (1 << alloc_size));
 		}
 		heap_length >>= 1;
 		alloc_size++;
@@ -139,6 +139,6 @@ void kernel_free(void* addr) {
 }
 
 // Initialize kernel heap
-void init_kernel_heap() {
+void init_kernel_heap(void) {
 	init_memory(kernel_heap);
 }

@@ -22,7 +22,7 @@ struct idtr_desc {
 } __attribute__((packed)) idtr;
 
 // Initialize IDT structures
-void init_idt() {
+void init_idt(void) {
 	int idt_len = sizeof(struct idt_desc) * IDT_LIMIT;
 	idt = kernel_allocate(idt_len);
 	idtr = (struct idtr_desc){.size = idt_len - 1, .offset = (int32_t)(idt)};
@@ -42,7 +42,7 @@ void set_id(uint8_t idt_pos, void (*offset)(interrupt_frame*), uint16_t selector
 }
 
 // Load the interrupt descriptor table
-void load_idt() {
+void load_idt(void) {
 	// Load the idtr
 	__asm__("lidt %0" : : "m"(idtr));
 }

@@ -16,7 +16,7 @@ static page_block* page_freelist;
 pde_4mib kernel_memory[PAGE_LENGTH_4M] __attribute__((aligned(4096)));
 
 // Initialize 32 bit paging
-void init_paging() {
+void init_paging(void) {
 	// Zero out the page directory for the time being
 	for (int i = 0; i < PAGE_LENGTH_4M; i++) {
 		kernel_memory[i] = (pde_4mib){.present = 0, .rw = 0, .us = 0, .pwt = 0, .pcd = 0, .a = 0, .d = 0, .ps = 0, .g = 0, .ignored = 0, .pat = 0, .highaddr = 0, .lowaddr = 0};
@@ -35,12 +35,12 @@ void init_paging() {
 	set_id(14, &pagefault_handler_wrapper, 0x08, IDT_PROT_INTR, 0, 1);
 
 	// Enable paging
-	enable_paging((uint32_t)kernel_memory - KERNEL_BASE);
+	enable_paging((pde_4mib*)((uint32_t)kernel_memory - KERNEL_BASE));
 
 	// Setup freelist stack below high memory
 	for (uint32_t i = 0; i < KERNEL_BASE; i += PAGE_SIZE_4K) {
-		page_freelist = i;
-		page_freelist->next = i + PAGE_SIZE_4K;
+		page_freelist = (page_block*)i;
+		page_freelist->next = (page_block*)(i + PAGE_SIZE_4K);
 	}
 	page_freelist = 0;
 }
@@ -54,7 +54,7 @@ void pagefault_handler(seg_register_set seg_regs, gen_register_set gen_regs, uin
 void allocate_page(pde_4kib* page_dir, uint32_t addr) {
 	// See if any pages are in stack
 	// Deny allocation into kernel space
-	if (page_freelist >= KERNEL_BASE || addr >= KERNEL_BASE) {
+	if ((uint32_t)page_freelist >= KERNEL_BASE || addr >= KERNEL_BASE) {
 		return;
 	}
 
@@ -74,7 +74,7 @@ void allocate_page(pde_4kib* page_dir, uint32_t addr) {
 			return;
 		}
 
-		page_table = (page_dir[dir_index].addr << 12) + KERNEL_BASE;
+		page_table = (pte_4kib*)((page_dir[dir_index].addr << 12) + KERNEL_BASE);
 	} else {
 		page_table = kernel_allocate(sizeof(pte_4kib) * 1024);
 		page_dir[dir_index] = (pde_4kib){.present = 1, .rw = 1, .us = 1, .pwt = 0, .pcd = 0, .a = 0, .ignored = 0, .ps = 0, .ignored2 = 0, .addr = ((uint32_t)page_table - KERNEL_BASE) >> 12};
@@ -87,7 +87,7 @@ void allocate_page(pde_4kib* page_dir, uint32_t addr) {
 	}
 
 	// Get available page physical addr
-	available_page = (uint32_t)page_freelist + PAGE_OFFSET;
+	available_page = (page_block*)((uint32_t)page_freelist + PAGE_OFFSET);
 	// Pop stack
 	page_freelist = page_freelist->next;
 
@@ -107,12 +107,12 @@ void free_page(pde_4kib* page_dir, uint32_t addr) {
 
 	// Check if the table exists
 	if (page_dir[dir_index].present) {
-		page_table = (page_dir[dir_index].addr << 12) - KERNEL_BASE;
+		page_table = (pte_4kib*)((page_dir[dir_index].addr << 12) - KERNEL_BASE);
 
 		// Check if the page exists
 		if (page_table[table_index].present) {
 			// Push page back on stack
-			page_block* freed_page = (page_table[table_index].addr << 12) - PAGE_OFFSET;
+			page_block* freed_page = (page_block*)((page_table[table_index].addr << 12) - PAGE_OFFSET);
 			freed_page->next = page_freelist;
 			page_freelist = freed_page;
 			// Erase the page from the table

@@ -35,6 +35,6 @@ void* kernel_allocate(uint32_t);
 void kernel_free(void*);
 
 // Initialize kernel heap
-void init_kernel_heap();
+void init_kernel_heap(void);
 
 #endif

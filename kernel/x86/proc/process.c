@@ -12,13 +12,13 @@ extern pde_4mib kernel_memory[PAGE_LENGTH_4M];
 static process_desc* current_process;
 
 // Init processes
-void init_processes() {
+void init_processes(void) {
 	// Zero out vars
 	current_process = 0;
 }
 
 // Force enter userland
-void force_enter_userland() {
+void force_enter_userland(void) {
 	set_tss_stack(current_process->esp0);
 	switch_context(current_process->seg_regs, current_process->gen_regs, current_process->frame, current_process->page_directory - KERNEL_BASE);
 }
@@ -28,7 +28,7 @@ void force_enter_userland() {
 // PLANS: WE NEED TO DO STUFF
 void switch_process(seg_register_set seg_regs, gen_register_set gen_regs, interrupt_frame frame) {
 	// No process is no switch
-	if (!current_process || current_process->next == &current_process) {
+	if (!current_process || current_process->next == current_process) {
 		return;
 	}
 
@@ -46,8 +46,8 @@ void switch_process(seg_register_set seg_regs, gen_register_set gen_regs, interr
 		current_process->gen_regs = gen_regs;
 	} else if (current_process->state == 2) {
 		// On state ended, delete process
-		kernel_free(current_process->frame.esp);
-		kernel_free(current_process);
+		kernel_free((void*)current_process->frame.esp);
+		kernel_free((void*)current_process);
 
 		// Clear current_process
 		if (current_process == current_process->next) {
@@ -124,9 +124,9 @@ void create_process(uint32_t eip) {
 	new_process->gen_regs.esp = 0;
 
 	// Get new kernel stack
-	new_process->esp0 = kernel_allocate(4096) + 4092;
+	new_process->esp0 = (uint32_t)kernel_allocate(4096) + 4092;
 	// Set the page directory
-	new_process->page_directory = kernel_allocate(sizeof(pde_4kib) * 1024);
+	new_process->page_directory = (uint32_t)kernel_allocate(sizeof(pde_4kib) * 1024);
 	// Copy kernel space to user space
 	for (int i = 0; i < 256; i++) {
 		((pde_4mib*)new_process->page_directory)[i + 768] = kernel_memory[i + 768];
@@ -138,7 +138,7 @@ void create_process(uint32_t eip) {
 	// Allocate first page
 	allocate_page((pde_4kib*)new_process->page_directory, 0);
 
-	enable_paging(new_process->page_directory - KERNEL_BASE);
+	enable_paging((pde_4mib*)(new_process->page_directory - KERNEL_BASE));
 
 	volatile char* a = 0;
 	a[0] = 0xe9;
@@ -147,7 +147,7 @@ void create_process(uint32_t eip) {
 	a[3] = 0xff;
 	a[4] = 0xff;
 
-	enable_paging((uint32_t)kernel_memory - KERNEL_BASE);
+	enable_paging((pde_4mib*)((uint32_t)kernel_memory - KERNEL_BASE));
 
 	// Set state of process as running
 	new_process->state = 0;

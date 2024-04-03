@@ -29,7 +29,7 @@ typedef struct {
 } interrupt_frame;
 
 // Initialize the PIC
-void init_pic();
+void init_pic(void);
 
 // Enable interrupts
 #define enable_interrupts() __asm__("sti\n");
@@ -38,7 +38,7 @@ void init_pic();
 #define disable_interrupts() __asm__("cli\n");
 
 // Enable and add exceptions
-void init_exceptions();
+void init_exceptions(void);
 
 // Exception handlers
 // Divide-by-zero error

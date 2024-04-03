@@ -16,12 +16,12 @@
 #define IRQ_OFFSET 0x20
 
 // Initialize IDT structures
-void init_idt();
+void init_idt(void);
 
 // Add interrupt descriptor to the IDT
 void set_id(uint8_t, void (*)(interrupt_frame*), uint16_t, uint8_t, uint8_t, uint8_t);
 
 // Load the IDT
-void load_idt();
+void load_idt(void);
 
 #endif

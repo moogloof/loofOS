@@ -69,7 +69,7 @@ struct {
 } __attribute__((packed)) tss = {0};
 
 // Initialize GDT structures
-void init_gdt() {
+void init_gdt(void) {
 	int gdt_len = sizeof(struct gdt_segment_desc) * GDT_LIMIT;
 	gdtr = (struct gdtr_desc){.size = gdt_len - 1, .offset = (uint32_t)(gdt)};
 
@@ -99,7 +99,7 @@ void set_tss_stack(uint32_t esp0) {
 }
 
 // Load the global descriptor table
-void load_gdt() {
+void load_gdt(void) {
 	// Load the gdtr
 	__asm__("lgdt %0" : : "m"(gdtr));
 	// Load the TSS

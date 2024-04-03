@@ -7,15 +7,15 @@
 #define GDT_LIMIT 256
 
 // Initialize GDT structures
-void init_gdt();
+void init_gdt(void);
 
 // Set the tss stack
 void set_tss_stack(uint32_t);
 
 // Load the global descriptor table
-void load_gdt();
+void load_gdt(void);
 
 // Do GDT segments
-void load_gdt_segments();
+void load_gdt_segments(void);
 
 #endif
