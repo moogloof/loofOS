@@ -14,17 +14,21 @@ OBJS=$(SRCS:%=$(OBJ_DIR)/%.o)
 all: $(BUILD_DIR)/mbr $(BUILD_DIR)/boot
 
 $(BUILD_DIR)/mbr: $(OBJS) $(OBJ_DIR)/mbr.s.o
-	$(LD) $(LDFLAGS) --oformat binary --script=boot_linker.ld -o $@ $^
-	$(LD) $(LDFLAGS) --oformat elf_i386 --script=boot_linker.ld -o $@.o $^
+	@printf "Linking MBR"
+	@$(LD) $(LDFLAGS) --oformat binary --script=boot_linker.ld -o $@ $^
+	@$(LD) $(LDFLAGS) --oformat elf_i386 --script=boot_linker.ld -o $@.o $^
 
 $(BUILD_DIR)/boot: $(OBJS) $(OBJ_DIR)/boot.s.o
-	$(LD) $(LDFLAGS) --oformat binary --script=boot_linker.ld -o $@ $^
-	$(LD) $(LDFLAGS) --oformat elf_i386 --script=boot_linker.ld -o $@.o $^
+	@printf "Linking CD BOOT"
+	@$(LD) $(LDFLAGS) --oformat binary --script=boot_linker.ld -o $@ $^
+	@$(LD) $(LDFLAGS) --oformat elf_i386 --script=boot_linker.ld -o $@.o $^
 
 $(OBJ_DIR)/%.s.o: %.s
-	mkdir -p $(dir $@)
-	$(AS) $(ASFLAGS) -f elf32 -o $@ $<
+	@mkdir -p $(dir $@)
+	@$(AS) $(ASFLAGS) -f elf32 -o $@ $<
+	@printf "AS :: $<\r\n"
 
 $(OBJ_DIR)/%.c.o: %.c
-	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	@mkdir -p $(dir $@)
+	@$(CC) $(CFLAGS) -c -o $@ $<
+	@printf "CC :: $<\r\n"
