@@ -30,7 +30,7 @@ switch_context:
 
 	; Notify of finished interrupt
 	mov al, 0x20
-	out 0xc0000020, al
+	out 0x20, al
 
 	; Change page directory
 	mov eax, [ebp + 68]
