@@ -14,7 +14,7 @@ OBJS=$(SRCS:%=$(OBJ_DIR)/%.o)
 all: $(BUILD_DIR)/kernel
 
 $(BUILD_DIR)/kernel: $(OBJS)
-	@printf "Linking KERNEL\r\n"
+	@printf "LD :: kernel\r\n"
 	@$(LD) $(LDFLAGS) --oformat binary --script=kernel_linker.ld -o $@ $^
 	@$(LD) $(LDFLAGS) --oformat elf_i386 --script=kernel_linker.ld -o $@.o $^
 

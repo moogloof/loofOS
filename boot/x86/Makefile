@@ -14,12 +14,12 @@ OBJS=$(SRCS:%=$(OBJ_DIR)/%.o)
 all: $(BUILD_DIR)/mbr $(BUILD_DIR)/boot
 
 $(BUILD_DIR)/mbr: $(OBJS) $(OBJ_DIR)/mbr.s.o
-	@printf "Linking MBR"
+	@printf "LD :: mbr\r\n"
 	@$(LD) $(LDFLAGS) --oformat binary --script=boot_linker.ld -o $@ $^
 	@$(LD) $(LDFLAGS) --oformat elf_i386 --script=boot_linker.ld -o $@.o $^
 
 $(BUILD_DIR)/boot: $(OBJS) $(OBJ_DIR)/boot.s.o
-	@printf "Linking CD BOOT"
+	@printf "LD :: boot\r\n"
 	@$(LD) $(LDFLAGS) --oformat binary --script=boot_linker.ld -o $@ $^
 	@$(LD) $(LDFLAGS) --oformat elf_i386 --script=boot_linker.ld -o $@.o $^
 
