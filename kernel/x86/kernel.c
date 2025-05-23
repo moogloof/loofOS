@@ -37,7 +37,7 @@ __attribute__((section(".kernel"), noreturn)) void kernel_main(void) {
 
 	// Unmask interrupts
 	// IMPORTANT: NEVER UNCOMMENT
-//	enable_interrupts();
+	enable_interrupts();
 
 	// IMPORTANT: STUFF THIS BEFORE ENABLING SWITCHING
 	create_process(0);
