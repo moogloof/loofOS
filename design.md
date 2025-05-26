@@ -1,6 +1,11 @@
 # LoofOS Kernel Design stuff
 Some stuff about the design considerations of loofOS. It will hopefully prevent the codebase from becoming a clusterheck of badness.
 
+## Project structure
+Kernel/Driver separation
+- The kernel code, controlling the logic of processes and memory, should be separate from all hardware related stuff
+- In other words, if the system changes, the kernel code should remain the same
+
 ## Processes and Threads
 - No process or thread hierarchy.
 	- Process and threads can spawn threads and processes, but there will be no parent or child structure.
@@ -12,5 +17,4 @@ Some stuff about the design considerations of loofOS. It will hopefully prevent 
 - Round robin scheduler design will be used
 
 ## Memory
-
-##
+TODO
