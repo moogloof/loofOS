@@ -27,3 +27,34 @@ void bios_ext_read(uint8_t* output_address, uint32_t lba_offset, uint32_t length
 			temp_dap.lba_high++;
 	}
 }
+
+// BIOS memory scan
+void bios_mem_scan(address_range* buffer, int* length) {
+	// Make command registers
+	bios_registers registers = (bios_registers){
+		.eax = 0xe820,
+		.ebx = 0,                     // 0 at first, don't change after
+		.ecx = sizeof(address_range), // Minimum size must be 20
+		.edx = 0x534d4150,            // Must be SMAP
+		.esi = 0,
+		.edi = (uint32_t)buffer
+	};
+	// Result register buffer
+	bios_registers result_registers = {0};
+
+	// Scan loop
+	for (int i = 0; i < *length; i++) {
+		// Scan one block
+		_bios_int(registers, 0x15, &result_registers);
+
+		if (result_registers.ebx == 0) {
+			// Set actual length
+			*length = i + 1;
+			break;
+		}
+
+		// Go to next block
+		registers.ebx = result_registers.ebx;
+		registers.edi += sizeof(bios_registers);
+	}
+}
