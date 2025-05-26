@@ -25,7 +25,7 @@ void init_vbe(void) {
 	// Registers to use for the int
 	bios_registers registers = (bios_registers){.eax = 0x4f00, .ebx = 0, .ecx = 0, .edx = 0, .esi = 0, .edi = (int)(&vbe_cib)};
 	// Get the controller information
-	_bios_int(registers, 0x10);
+	_bios_int(registers, 0x10, 0);
 
 	// Iterate through the list of modes
 	for (int i = 0; vbe_cib.video_mode_ptr[i] != 0xffff; i++) {
@@ -34,7 +34,7 @@ void init_vbe(void) {
 		registers.eax = 0x4f01;
 		registers.ecx = vbe_cib.video_mode_ptr[i];
 		registers.edi = (int)(&video_mode_info);
-		_bios_int(registers, 0x10);
+		_bios_int(registers, 0x10, 0);
 
 		// Check if video mode info is compatible
 		// First check for linear frame buffer
@@ -47,7 +47,7 @@ void init_vbe(void) {
 					registers.eax = 0x4f02;
 					registers.ebx = vbe_cib.video_mode_ptr[i];
 					registers.edi = (int)crtc;
-					_bios_int(registers, 0x10);
+					_bios_int(registers, 0x10, 0);
 					break;
 				}
 			}

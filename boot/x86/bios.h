@@ -28,6 +28,6 @@ typedef struct {
 void bios_ext_read(uint8_t*, uint32_t, uint32_t);
 
 // BIOS int
-void _bios_int(bios_registers, uint8_t);
+void _bios_int(bios_registers, uint8_t, bios_registers*);
 
 #endif

@@ -16,7 +16,7 @@ void bios_ext_read(uint8_t* output_address, uint32_t lba_offset, uint32_t length
 	// Read loop
 	for (int i = 0; i < length; i++) {
 		// Read using bios calls
-		_bios_int(registers, 0x13);
+		_bios_int(registers, 0x13, 0);
 
 		// Copy the buffer to correct place
 		for (int j = 0; j < drive_bytes_per_sector; j++) {
