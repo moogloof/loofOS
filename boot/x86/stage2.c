@@ -12,6 +12,13 @@ extern void kernel_jump(void);
 // Page directory table
 pde_4mib kernel_memory[1024] __attribute__((aligned(4096)));
 
+// Available memory list
+// First memory starts off as unavailable
+// Memory blocks alternate between unavailable and available
+// Stops once memory exceeds max memory available (assumed to be above 1 GB)
+// NOTE: The 64 is probably enough for now
+address_range mem_blocks[64];
+
 void stage2(void) {
 	// Size of kernel in bytes
 	int kernel_size;
@@ -50,6 +57,17 @@ void stage2(void) {
 	} else {
 		// Initial process detected
 		print("System process detected at %x. Passing info\r\n", 0x100000 + kernel_size);
+	}
+
+	// Do memory scan
+	int mem_blocks_len = 64;
+	bios_mem_scan(mem_blocks, &mem_blocks_len);
+
+	// Display memory map
+	print("\nMemory Table:\r\n");
+	print("Base             | Size             | Type\r\n");
+	for (int i = 0; i < mem_blocks_len; i++) {
+		print("%x%x | %x%x | %x\r\n", mem_blocks[i].base_addr_high, mem_blocks[i].base_addr_low, mem_blocks[i].size_high, mem_blocks[i].size_low, mem_blocks[i].type);
 	}
 
 	// Initialize paging
