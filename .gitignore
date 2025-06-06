@@ -6,3 +6,4 @@ build/
 obj/
 .DS_Store
 *.vdi
+.sconsign.dblite
