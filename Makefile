@@ -22,7 +22,9 @@ x86:
 	@$(MAKE) -C $(BOOT_DIR)/$@
 	@# Make the kernel
 	@printf "Compiling kernel\r\n"
-	@$(MAKE) -C $(KERNEL_DIR)/$@
+	@$(MAKE) -C $(KERNEL_DIR)
+	@$(MAKE) -C $(ARCH_DIR)/$@
+	@$(MAKE) -C $(COMMON_DIR)
 	@# Make the system programs
 	@printf "Compiling system programs\r\n"
 	@$(MAKE) -C $(SYS_PROG_DIR)
