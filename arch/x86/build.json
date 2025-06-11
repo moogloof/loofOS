@@ -1,7 +1,8 @@
 {
 	"CC": "clang",
 	"CCFLAGS": "-nostdlib -Wall -Werror -Wpedantic -O3 -ffreestanding -m32 -march=i386 --target=i386-linux-gnu -g",
-	"LINKFLAGS": "-nostdlib -O3 --format=elf --nmagic --gc-sections --gdb-index --oformat elf_i386",
+	"LD": "ld.lld",
+	"LINKFLAGS": "-nostdlib -O3 --format=elf --nmagic --gc-sections --gdb-index --oformat binary",
 	"AS": "nasm",
 	"ASFLAGS": "-O0 -g -f elf32"
 }
