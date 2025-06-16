@@ -2,6 +2,8 @@
 # loofOS
 A novice OS.
 
+## I am working on restructuring and migrating from make to scons on the main branch (poor decision I know). And the mem branch is where code changes are being made.
+
 **CURRENT WORK:** I am programming drivers, syscalls, and also trying to port this over to 64 bit.
 
 **NOTE:** Currently I have paused work on the ARM arch kernel, as qemu for some reason decided to leave out emulation for the timer (bcm2837). Without the timer, I will not be able to test out context switching, multitasking, nor will I be able to write the scheduler. So until I find a solution that doesn't involve overwriting the kernel of my only ARM system that I need for development, I will be dropping all work on that end.
